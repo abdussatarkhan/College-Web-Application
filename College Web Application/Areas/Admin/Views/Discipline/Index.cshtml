@@ -1,0 +1,272 @@
+@model List<College_Web_Application.Models.ViewModels.RusticatedStudentItemViewModel>
+@{
+    ViewData["Title"] = "HSSC 3-Day Absence Rustication & Parent Visits";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-shield-exclamation text-danger me-2"></i>HSSC Rustication Watchlist & Parent Clearance
+        </h4>
+        <div class="text-muted small">
+            Government Degree College Madyan Swat | Disciplinary Committee & Principal Office
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="AttendanceSummary" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+            <i class="bi bi-bar-chart-line me-1"></i> Attendance Summary Register
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-x-circle-fill me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- POLICY NOTICE BANNER -->
+<div class="alert alert-danger border-danger shadow-sm mb-4 p-3 rounded-3">
+    <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-2 text-danger flex-shrink-0"></i>
+        <div>
+            <strong class="d-block text-dark">Institutional Rule (Higher Education Department KP & GDC Madyan Swat):</strong>
+            <span class="small text-muted">
+                Any Intermediate (HSSC - F.Sc Pre-Med, Pre-Eng, ICS, FA) student marked <strong>Absent for 3 consecutive working/class days</strong> without prior approved leave is automatically rusticated (struck off). The teacher's class register locks them as <strong>"Absent (Locked)"</strong> until their father/guardian visits the Principal Office in person and submits a written undertaking.
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="card card-portal shadow-sm">
+    <div class="card-header-portal">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-x-fill text-danger fs-5"></i>
+            <span>Rustication Watchlist & Reinstatement Log</span>
+        </div>
+        <span class="badge bg-danger text-white">
+            @Model.Count(r => !r.IsReinstated) Pending Parent Visit(s)
+        </span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small text-uppercase fw-bold text-muted">
+                    <tr>
+                        <th class="ps-4">Student & Roll No</th>
+                        <th>Program / Class</th>
+                        <th>Father / Guardian Phone</th>
+                        <th>Absence Details & Reason</th>
+                        <th>Disciplinary Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="@(!item.IsReinstated ? "table-danger bg-opacity-25" : "")">
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@item.FullName</div>
+                                    <div class="font-monospace text-primary small">@item.RollNumber</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info bg-opacity-15 text-info fw-semibold">
+                                        @item.Level
+                                    </span>
+                                    <div class="small text-dark fw-semibold mt-1">@item.ProgramTitle</div>
+                                    <span class="badge bg-light text-muted border">Sec @item.Section</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">S/O @item.FatherName</div>
+                                    <div class="small text-muted font-monospace"><i class="bi bi-telephone me-1"></i>@item.Phone</div>
+                                    
+                                    @if (!item.IsReinstated)
+                                    {
+                                        <!-- 1-Click WhatsApp Parent Alert Button -->
+                                        <a href="@item.WhatsAppUrl" 
+                                           target="_blank" 
+                                           class="btn btn-sm btn-success py-0.5 px-2 mt-1 rounded-pill shadow-xs fw-semibold" 
+                                           style="font-size: 0.72rem;"
+                                           title="Send pre-filled Urdu/English official attendance summoning notice to Father/Guardian">
+                                            <i class="bi bi-whatsapp me-1"></i> Send Parent Alert (WhatsApp)
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold text-danger">
+                                        <i class="bi bi-calendar-x me-1"></i> Rusticated on @item.RusticationDate.ToString("dd MMM yyyy")
+                                    </div>
+                                    <div class="small text-muted text-wrap" style="max-width: 280px; font-size: 0.76rem;">
+                                        @item.Reason
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!item.IsReinstated)
+                                    {
+                                        <span class="badge bg-danger text-white py-1.5 px-2.5">
+                                            <i class="bi bi-slash-circle me-1"></i> STRUCK OFF (PARENT REQUIRED)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success bg-opacity-20 text-success border border-success py-1.5 px-2.5">
+                                            <i class="bi bi-check-circle-fill me-1"></i> REINSTATED & ACTIVE
+                                        </span>
+                                        <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                                            Visited by: <strong>@item.ParentNameVisited</strong> (@item.ReinstatedDate?.ToString("dd MMM"))
+                                        </div>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    @if (!item.IsReinstated)
+                                    {
+                                        <button type="button" 
+                                                class="btn btn-sm btn-danger fw-bold px-3 shadow-sm"
+                                                onclick="openReinstateModal(@item.RecordId, '@item.FullName', '@item.RollNumber', '@item.FatherName')">
+                                            <i class="bi bi-person-check-fill me-1"></i> Document Visit & Reinstate
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-secondary px-2" 
+                                                title="View Clearance Notes"
+                                                onclick="viewClearanceDetails('@item.FullName', '@item.ParentNameVisited', '@item.ParentCNIC', '@item.ParentUndertakingNotes', '@item.FinePaidAmount', '@(item.ReinstatedDate?.ToString("dd MMM yyyy, hh:mm tt"))')">
+                                            <i class="bi bi-file-text me-1"></i> Undertaking Note
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-shield-check fs-1 d-block mb-2 text-success opacity-50"></i>
+                                Excellent! No students are currently rusticated. Full attendance compliance.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Parent Visit Documentation & Reinstatement Modal -->
+<div class="modal fade" id="reinstateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="ReinstateStudent" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="RecordId" id="modalRecordId" />
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-person-check-fill me-2"></i>Document Parent Visit & Reinstatement
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-light border small mb-3">
+                        Reinstating: <strong id="modalStudentName" class="text-dark"></strong> (<span id="modalRollNo" class="font-monospace text-primary"></span>)
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Visiting Parent / Guardian Full Name <span class="text-danger">*</span></label>
+                        <input type="text" name="ParentNameVisited" id="modalParentName" class="form-control" required placeholder="e.g. Fazal Wadood (Father)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Parent / Guardian CNIC</label>
+                        <input type="text" name="ParentCNIC" class="form-control font-monospace" placeholder="e.g. 15602-1234567-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Written Undertaking & Attendance Commitment Notes</label>
+                        <textarea name="ParentUndertakingNotes" class="form-control" rows="3" placeholder="e.g. Father visited Principal Office, cited family illness, and submitted a signed stamped undertaking promising 85%+ future attendance."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Re-Admission / Late Absence Fine (PKR)</label>
+                        <input type="number" step="50" min="0" name="FinePaidAmount" class="form-control" value="0" />
+                        <div class="form-text small">Standard College Fine is Rs. 0 to 500 (Waivable by Principal).</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success fw-bold px-4">
+                        <i class="bi bi-check2-circle me-1"></i> Approve Reinstatement & Unlock Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Undertaking Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-file-earmark-check-fill text-warning me-2"></i>Documented Parent Undertaking
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-2"><strong>Student:</strong> <span id="detStudent"></span></div>
+                <div class="mb-2"><strong>Parent Visited:</strong> <span id="detParent"></span></div>
+                <div class="mb-2"><strong>CNIC:</strong> <span id="detCnic" class="font-monospace"></span></div>
+                <div class="mb-2"><strong>Reinstated Date:</strong> <span id="detDate"></span></div>
+                <div class="mb-3"><strong>Fine Paid:</strong> PKR <span id="detFine"></span></div>
+                <div class="p-3 bg-light rounded border">
+                    <strong class="d-block text-muted small text-uppercase mb-1">Clearance Notes:</strong>
+                    <div id="detNotes" class="small text-dark fst-italic"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openReinstateModal(recordId, name, roll, father) {
+            document.getElementById('modalRecordId').value = recordId;
+            document.getElementById('modalStudentName').textContent = name;
+            document.getElementById('modalRollNo').textContent = roll;
+            document.getElementById('modalParentName').value = father;
+
+            var modal = new bootstrap.Modal(document.getElementById('reinstateModal'));
+            modal.show();
+        }
+
+        function viewClearanceDetails(student, parent, cnic, notes, fine, date) {
+            document.getElementById('detStudent').textContent = student;
+            document.getElementById('detParent').textContent = parent;
+            document.getElementById('detCnic').textContent = cnic;
+            document.getElementById('detNotes').textContent = notes;
+            document.getElementById('detFine').textContent = fine;
+            document.getElementById('detDate').textContent = date;
+
+            var modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+            modal.show();
+        }
+    </script>
+}

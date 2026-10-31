@@ -1,0 +1,332 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Government Degree College Madyan Swat</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 & Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Favicon & College Crest -->
+    <link rel="icon" type="image/png" href="~/images/gdc-madyan-logo.png" />
+    <link rel="apple-touch-icon" href="~/images/gdc-madyan-logo.png" />
+    
+    <!-- GIKI-Inspired Flagship Stylesheet -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- 1. TOP INSTITUTIONAL UTILITY BAR (GIKI-STYLE) -->
+    <div class="top-gov-bar d-none d-lg-block">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Left Info -->
+            <div class="d-flex align-items-center gap-3">
+                <span class="d-flex align-items-center gap-1.5">
+                    <i class="bi bi-shield-check text-warning"></i>
+                    Higher Education Department (HED) — Khyber Pakhtunkhwa
+                </span>
+                <span class="text-white-50">|</span>
+                <span class="arabic-motto text-warning fw-bold fs-6">
+                    رَبِّ زِدْنِي عِلْماً
+                </span>
+                <span class="text-white-50">|</span>
+                <span class="text-white-50 small">Est. 2006</span>
+            </div>
+
+            <!-- Right Links -->
+            <div class="d-flex align-items-center gap-3">
+                <a asp-controller="Notices" asp-action="Index" asp-route-category="General" class="top-link-item">
+                    <i class="bi bi-book text-warning"></i> Digital Library
+                </a>
+                <span class="text-white-50">|</span>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="qec" class="top-link-item">
+                    <i class="bi bi-patch-check text-warning"></i> QEC
+                </a>
+                <span class="text-white-50">|</span>
+                <a asp-controller="Notices" asp-action="Index" class="top-link-item">
+                    <i class="bi bi-download text-warning"></i> Downloads
+                </a>
+                <span class="text-white-50">|</span>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="alumni" class="top-link-item">
+                    <i class="bi bi-mortarboard text-warning"></i> Alumni
+                </a>
+                <span class="text-white-50">|</span>
+
+                <!-- Dynamic Role-Aware Login Pill -->
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    if (User.IsInRole("SuperAdmin") || User.IsInRole("Principal") || User.IsInRole("ControllerExams") || User.IsInRole("Clerk"))
+                    {
+                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="top-login-pill">
+                            <i class="bi bi-speedometer2 me-1"></i> Admin ERP Portal
+                        </a>
+                    }
+                    else if (User.IsInRole("Faculty") || User.IsInRole("HOD"))
+                    {
+                        <a asp-area="Faculty" asp-controller="Dashboard" asp-action="Index" class="top-login-pill">
+                            <i class="bi bi-person-workspace me-1"></i> Faculty Portal
+                        </a>
+                    }
+                    else if (User.IsInRole("Student"))
+                    {
+                        <a asp-area="Student" asp-controller="Portal" asp-action="Index" class="top-login-pill">
+                            <i class="bi bi-person-badge me-1"></i> Student Portal
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Logout" class="top-login-pill">
+                            <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="top-login-pill">
+                        <i class="bi bi-lock-fill me-1"></i> CMS Portal Login
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN STICKY NAVBAR WITH GIKI MEGA-MENUS -->
+    <nav class="navbar navbar-expand-xl main-navbar-sticky">
+        <div class="container position-relative">
+            <!-- Brand Logo & Title -->
+            <a class="navbar-brand navbar-brand-wrapper" asp-controller="Home" asp-action="Index">
+                <img src="~/images/gdc-madyan-logo.png" alt="GDC Madyan Swat Crest" class="navbar-brand-logo" onerror="this.src='/images/crest-placeholder.png'" />
+                <div class="d-flex flex-column">
+                    <span class="brand-text-main">GOVERNMENT DEGREE COLLEGE</span>
+                    <span class="brand-text-sub">MADYAN SWAT &bull; EST. 2006</span>
+                </div>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainGdcNavbar" aria-controls="mainGdcNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="mainGdcNavbar">
+                <ul class="navbar-nav ms-auto align-items-xl-center mb-2 mb-xl-0">
+                    
+                    <!-- 1. HOME -->
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+
+                    <!-- 2. VISION & MISSION -->
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index" asp-fragment="vision">Vision & Mission</a>
+                    </li>
+
+                    <!-- 3. ABOUT GDC DROPDOWN -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            About GDC
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 rounded-3 p-2" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="about"><i class="bi bi-info-circle text-success me-2"></i>Institutional Overview</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="principal-message"><i class="bi bi-chat-square-quote text-success me-2"></i>Principal's Message</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="history"><i class="bi bi-hourglass-split text-success me-2"></i>College History Since 2006</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="campus-facilities"><i class="bi bi-building text-success me-2"></i>Campus Buildings & Location</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="contact"><i class="bi bi-geo-alt text-success me-2"></i>Contact & Visit Us</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- 4. ACADEMICS 2-COLUMN MEGA-MENU -->
+                    <li class="nav-item dropdown dropdown-mega">
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="academicsMegaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Academics
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-mega" aria-labelledby="academicsMegaDropdown">
+                            <div class="container px-0">
+                                <div class="row g-4">
+                                    <!-- Column 1: Academic Overview & Units -->
+                                    <div class="col-12 col-md-6 col-lg-5 border-end-lg">
+                                        <div class="mega-menu-title">Academic Framework & Examination</div>
+                                        <ul class="mega-menu-list">
+                                            <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-journal-bookmark-fill"></i>Academic Programs & Curricula</a></li>
+                                            <li><a asp-controller="Home" asp-action="Index" asp-fragment="qec"><i class="bi bi-patch-check-fill"></i>Quality Enhancement Cell (QEC)</a></li>
+                                            <li><a asp-area="Admin" asp-controller="ExamControllerOffice" asp-action="Index"><i class="bi bi-card-checklist"></i>Office of the Controller of Examinations</a></li>
+                                            <li><a asp-controller="Notices" asp-action="Index" asp-route-category="Exam"><i class="bi bi-calendar3"></i>Date Sheets & Examination Schedules</a></li>
+                                            <li><a asp-controller="Notices" asp-action="Index" asp-route-category="General"><i class="bi bi-book-half"></i>Central College Library & E-Resources</a></li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Column 2: Faculties & Departments -->
+                                    <div class="col-12 col-md-6 col-lg-7">
+                                        <div class="mega-menu-title">Faculties & Academic Departments</div>
+                                        <div class="row g-2">
+                                            <div class="col-12 col-sm-6">
+                                                <ul class="mega-menu-list">
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-laptop"></i>Computer Science & IT</a></li>
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-capsule"></i>Biological Sciences (Pre-Medical)</a></li>
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-gear-wide-connected"></i>Physical Sciences (Pre-Engineering)</a></li>
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-diagram-3"></i>Political Science</a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <ul class="mega-menu-list">
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-translate"></i>English Literature & Linguistics</a></li>
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-bank"></i>Islamic Studies</a></li>
+                                                    <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-feather"></i>Urdu & Regional Languages</a></li>
+                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index"><i class="bi bi-people-fill"></i>Complete Faculty Directory</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- 5. ADMISSIONS MEGA-MENU -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="admissionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Admissions
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 rounded-3 p-2" aria-labelledby="admissionsDropdown">
+                            <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="Apply"><i class="bi bi-pencil-square text-success me-2"></i>Online Admission Application (Apply Now)</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="MeritLists"><i class="bi bi-card-checklist text-success me-2"></i>Merit Lists 2026 (Provisional & Final)</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-mortarboard text-success me-2"></i>Intermediate (F.Sc & ICS) Admissions</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-award text-success me-2"></i>Undergraduate BS 4-Year Admissions</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="scholarships"><i class="bi bi-cash-stack text-success me-2"></i>HED, HEC & Mora Scholarships</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- 6. ADMINISTRATION -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Administration
+                        </a>
+                        <ul class="dropdown-menu shadow-sm border-0 rounded-3 p-2" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="principal-message"><i class="bi bi-person-badge text-success me-2"></i>Principal's Office</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="FacultyDirectory" asp-action="Index"><i class="bi bi-person-lines-fill text-success me-2"></i>Faculty & Staff Directory</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Index" asp-fragment="campus-facilities"><i class="bi bi-shield-shaded text-success me-2"></i>Chief Proctor & Discipline Committee</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Notices" asp-action="Index"><i class="bi bi-megaphone text-success me-2"></i>Official Institutional Notices</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- 7. CAMPUS LIFE -->
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index" asp-fragment="campus-life">Campus Life</a>
+                    </li>
+
+                    <!-- 8. GOLD APPLY ONLINE CTA BUTTON -->
+                    <li class="nav-item ms-xl-2 mt-2 mt-xl-0">
+                        <a asp-controller="Admissions" asp-action="Apply" class="btn btn-cta-gold">
+                            <i class="bi bi-pencil-square me-1"></i> Apply Online
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY CONTENT -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- 3. FOOTER (GIKI-STYLE MULTI-COLUMN) -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Col 1: Institutional Identity -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <img src="~/images/gdc-madyan-logo.png" alt="GDC Madyan Crest" style="width: 48px; height: 48px;" onerror="this.src='/images/crest-placeholder.png'" />
+                        <div>
+                            <h6 class="fw-bold text-white mb-0">GOVERNMENT DEGREE COLLEGE</h6>
+                            <div class="small text-warning">MADYAN SWAT &bull; EST. 2006</div>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-3" style="line-height: 1.6;">
+                        A premier public sector educational institution under the Higher Education Department, Govt. of Khyber Pakhtunkhwa. Affiliated with <strong>BISE Swat</strong> for HSSC and <strong>University of Swat</strong> for BS 4-Year degrees.
+                    </p>
+                    <div class="arabic-motto text-warning fs-5">
+                        رَبِّ زِدْنِي عِلْماً
+                    </div>
+                </div>
+
+                <!-- Col 2: Academic Programs -->
+                <div class="col-6 col-lg-2">
+                    <div class="footer-heading">Academics</div>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>F.Sc Pre-Medical</a></li>
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>F.Sc Pre-Engineering</a></li>
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>FCS / ICS Computer</a></li>
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>BS Computer Science</a></li>
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>BS Political Science</a></li>
+                        <li><a asp-controller="Home" asp-action="Index" asp-fragment="programs"><i class="bi bi-chevron-right small"></i>BS English</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Student & Portals -->
+                <div class="col-6 col-lg-3">
+                    <div class="footer-heading">Portals & Services</div>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Admissions" asp-action="Apply"><i class="bi bi-chevron-right small"></i>Online Admissions 2026</a></li>
+                        <li><a asp-controller="Admissions" asp-action="MeritLists"><i class="bi bi-chevron-right small"></i>Provisional Merit Lists</a></li>
+                        <li><a asp-controller="Account" asp-action="Login"><i class="bi bi-chevron-right small"></i>Student SIS Login</a></li>
+                        <li><a asp-controller="Account" asp-action="Login"><i class="bi bi-chevron-right small"></i>Faculty & Staff Portal</a></li>
+                        <li><a asp-controller="Notices" asp-action="Index"><i class="bi bi-chevron-right small"></i>Digital Notice Board</a></li>
+                        <li><a asp-controller="FacultyDirectory" asp-action="Index"><i class="bi bi-chevron-right small"></i>Teaching Faculty Directory</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Contact & Location -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="footer-heading">Contact & Location</div>
+                    <div class="small mb-2">
+                        <i class="bi bi-geo-alt-fill text-warning me-2"></i>
+                        Main Kalam Road, Madyan, District Swat, Khyber Pakhtunkhwa, Pakistan
+                    </div>
+                    <div class="small mb-2">
+                        <i class="bi bi-telephone-fill text-warning me-2"></i>
+                        (0946) 881234 / 881235
+                    </div>
+                    <div class="small mb-3">
+                        <i class="bi bi-envelope-fill text-warning me-2"></i>
+                        info@gdcmadyan.edu.pk
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="https://www.youtube.com/watch?v=93BMTsHutKs" target="_blank" class="btn btn-outline-warning btn-sm" title="Watch Campus Drone Tour">
+                            <i class="bi bi-youtube me-1"></i> Drone Video Tour
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright & Credit Bar -->
+            <div class="footer-bottom-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                <div>
+                    &copy; @DateTime.UtcNow.Year Government Degree College Madyan Swat. All Rights Reserved.
+                </div>
+                <div class="text-white-50">
+                    Affiliated with <strong>University of Swat</strong> &bull; <strong>BISE Swat</strong> &bull; Higher Education Department KP
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 Scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

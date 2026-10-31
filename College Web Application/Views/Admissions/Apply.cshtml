@@ -1,0 +1,439 @@
+@model College_Web_Application.Models.ViewModels.AdmissionApplyViewModel
+@{
+    ViewData["Title"] = "Online Admission Application - Fall 2026";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb & Motto -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-success">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="MeritLists" class="text-decoration-none text-success">Admissions</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Online Application Form</li>
+            </ol>
+        </nav>
+        <div class="text-success fw-bold arabic-motto" style="font-size: 1.1rem;">
+            رَبِّ زِدْنِي عِلْماً
+        </div>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 50%, #145A32 100%);">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-mortarboard-fill me-1"></i> Academic Session 2026-2027
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Online Admission Application Form</h1>
+                <p class="text-white-50 mb-0">
+                    Apply online for Intermediate (F.Sc, ICS, FA - BISE Swat) and BS 4-Year Semester Programs (University of Swat).
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="TrackStatus" class="btn btn-outline-light btn-sm fw-semibold">
+                    <i class="bi bi-search me-1"></i> Track Existing Application
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form asp-controller="Admissions" asp-action="Apply" method="post" enctype="multipart/form-data" id="admissionForm">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+        <div class="row g-4">
+            <!-- Left 8 Columns: Form Fields -->
+            <div class="col-12 col-lg-8">
+                <!-- Section 1: Academic Program Selection -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-award text-success me-2"></i>1. Desired Academic Program & Quota
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-8">
+                            <label asp-for="AppliedProgramId" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="AppliedProgramId" class="form-select" id="programSelect" required>
+                                <option value="">-- Choose Desired Academic Program --</option>
+                                <optgroup label="BS 4-Year Programs (University of Swat)">
+                                    @foreach (var prog in Model.Programs.Where(p => p.Level == "BS"))
+                                    {
+                                        <option value="@prog.Id" data-level="BS">@prog.Title (Semester System)</option>
+                                    }
+                                </optgroup>
+                                <optgroup label="Intermediate Programs (BISE Swat)">
+                                    @foreach (var prog in Model.Programs.Where(p => p.Level == "HSSC"))
+                                    {
+                                        <option value="@prog.Id" data-level="HSSC">@prog.Title (HSSC 2-Year)</option>
+                                    }
+                                </optgroup>
+                            </select>
+                            <span asp-validation-for="AppliedProgramId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label asp-for="QuotaCategory" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="QuotaCategory" class="form-select" required>
+                                <option value="Open Merit">Open Merit (General)</option>
+                                <option value="Sports">Sports Quota</option>
+                                <option value="Disabled">Disabled Persons Quota</option>
+                                <option value="Hafiz-e-Quran">Hafiz-e-Quran Quota</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check form-switch mt-2">
+                                <input asp-for="IsHafizQuran" class="form-check-input" type="checkbox" role="switch" id="hafizCheck" />
+                                <label class="form-check-label fw-semibold small text-dark" for="hafizCheck">
+                                    Are you a verified Hafiz-e-Quran? (+20 bonus marks added to merit aggregate)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Personal Particulars -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-lines-fill text-success me-2"></i>2. Personal Particulars
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="ApplicantName" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="ApplicantName" class="form-control" placeholder="Enter full name as per Matric DMC" required />
+                            <span asp-validation-for="ApplicantName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="FatherName" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="FatherName" class="form-control" placeholder="Enter father's name" required />
+                            <span asp-validation-for="FatherName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="CNIC" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="CNIC" class="form-control font-monospace" id="cnicInput" placeholder="15602-0000000-0" required />
+                            <small class="text-muted">Applicant CNIC or B-Form number.</small>
+                            <span asp-validation-for="CNIC" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <label asp-for="DateOfBirth" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" required />
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <label asp-for="Gender" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="Phone" class="form-control font-monospace" id="phoneInput" placeholder="0300-0000000" required />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="GuardianPhone" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="GuardianPhone" class="form-control font-monospace" placeholder="0300-0000000" />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="DomicileDistrict" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="DomicileDistrict" class="form-control" value="Swat" required />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Tehsil" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="Tehsil" class="form-select" required>
+                                <option value="Bahrain / Madyan" selected>Bahrain / Madyan</option>
+                                <option value="Matta">Matta</option>
+                                <option value="Khwazakhela">Khwazakhela</option>
+                                <option value="Babuzai">Babuzai / Mingora</option>
+                                <option value="Kabal">Kabal</option>
+                                <option value="Barikot">Barikot</option>
+                                <option value="Charbagh">Charbagh</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="PostalAddress" class="form-label fw-semibold small text-dark"></label>
+                            <textarea asp-for="PostalAddress" class="form-control" rows="2" placeholder="Village, Post Office, Tehsil & District..." required></textarea>
+                            <span asp-validation-for="PostalAddress" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: SSC / Matric Academic Record -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-mortarboard text-success me-2"></i>3. SSC / Matric Academic Record
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label asp-for="SscBoard" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="SscBoard" class="form-select">
+                                <option value="BISE Swat" selected>BISE Swat</option>
+                                <option value="BISE Malakand">BISE Malakand</option>
+                                <option value="BISE Mardan">BISE Mardan</option>
+                                <option value="BISE Peshawar">BISE Peshawar</option>
+                                <option value="Federal Board (FBISE)">Federal Board (FBISE)</option>
+                                <option value="Other">Other Board</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-4">
+                            <label asp-for="SscRollNumber" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="SscRollNumber" class="form-control" placeholder="e.g. 451204" required />
+                            <span asp-validation-for="SscRollNumber" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-6 col-md-4">
+                            <label asp-for="SscPassingYear" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="SscPassingYear" type="number" class="form-control" value="2024" required />
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <label asp-for="SscObtainedMarks" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="SscObtainedMarks" type="number" step="1" class="form-control calc-trigger" id="sscObt" placeholder="e.g. 950" required />
+                            <span asp-validation-for="SscObtainedMarks" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <label asp-for="SscTotalMarks" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="SscTotalMarks" type="number" step="1" class="form-control calc-trigger" id="sscTot" value="1100" required />
+                            <span asp-validation-for="SscTotalMarks" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: HSSC / Intermediate (Dynamically toggled for BS applicants) -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white" id="hsscSection">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-journal-text text-success me-2"></i>4. HSSC / Intermediate Record (For BS 4-Year Applicants)
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label asp-for="HsscBoard" class="form-label fw-semibold small text-dark"></label>
+                            <select asp-for="HsscBoard" class="form-select">
+                                <option value="BISE Swat" selected>BISE Swat</option>
+                                <option value="BISE Malakand">BISE Malakand</option>
+                                <option value="BISE Peshawar">BISE Peshawar</option>
+                                <option value="Federal Board (FBISE)">Federal Board (FBISE)</option>
+                                <option value="Other">Other Board</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-md-4">
+                            <label asp-for="HsscRollNumber" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="HsscRollNumber" class="form-control" placeholder="e.g. 889012" />
+                        </div>
+
+                        <div class="col-6 col-md-4">
+                            <label asp-for="HsscPassingYear" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="HsscPassingYear" type="number" class="form-control" value="2026" />
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <label asp-for="HsscObtainedMarks" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="HsscObtainedMarks" type="number" step="1" class="form-control calc-trigger" id="hsscObt" placeholder="e.g. 910" />
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <label asp-for="HsscTotalMarks" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="HsscTotalMarks" type="number" step="1" class="form-control calc-trigger" id="hsscTot" value="1100" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Document Scans -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-file-earmark-arrow-up text-success me-2"></i>5. Document Scans (Optional for initial submission)
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label asp-for="PassportPhoto" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="PassportPhoto" type="file" class="form-control" accept="image/*" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label asp-for="DmcScanFile" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="DmcScanFile" type="file" class="form-control" accept=".jpg,.png,.pdf" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label asp-for="DomicileOrBFormFile" class="form-label fw-semibold small text-dark"></label>
+                            <input asp-for="DomicileOrBFormFile" type="file" class="form-control" accept=".jpg,.png,.pdf" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mb-5">
+                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow py-3">
+                        <i class="bi bi-send-check-fill me-2"></i> Submit Online Admission Application
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right 4 Columns: Live Estimated Merit Aggregate Box -->
+            <div class="col-12 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 85px;">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold mb-2">
+                        Automated KP HED Formula
+                    </span>
+                    <h5 class="fw-bold text-dark mb-1">Live Merit Preview</h5>
+                    <p class="text-muted small mb-3">Calculated live according to official HED KP admission formulas.</p>
+
+                    <!-- Large Aggregate Display -->
+                    <div class="p-4 rounded-3 text-center mb-3 text-white" style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 100%);">
+                        <small class="text-white-50 text-uppercase letter-spacing-1">Estimated Aggregate</small>
+                        <div class="display-4 fw-bold text-warning" id="liveMeritScore">0.00%</div>
+                        <span class="badge bg-white bg-opacity-25 text-white mt-1" id="meritModeBadge">Select Program</span>
+                    </div>
+
+                    <!-- Breakdown Box -->
+                    <div class="small text-muted border rounded p-3 mb-3 bg-light">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>SSC / Matric Share:</span>
+                            <strong class="text-dark" id="sscShareText">--</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" id="hsscShareRow">
+                            <span>HSSC / Inter Share:</span>
+                            <strong class="text-dark" id="hsscShareText">--</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Hafiz-e-Quran Marks:</span>
+                            <strong class="text-success" id="hafizScoreText">0 Marks</strong>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="small text-muted">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle-fill text-warning me-1"></i> Important Instructions:</h6>
+                        <ul class="ps-3 mb-0" style="line-height: 1.6;">
+                            <li>Enter obtained and total marks accurately as printed on official board DMCs.</li>
+                            <li>A unique tracking number will be issued upon form submission.</li>
+                            <li>Download and print your application receipt for document verification at the college.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const programSelect = document.getElementById('programSelect');
+            const hsscSection = document.getElementById('hsscSection');
+            const cnicInput = document.getElementById('cnicInput');
+            const phoneInput = document.getElementById('phoneInput');
+            const sscObt = document.getElementById('sscObt');
+            const sscTot = document.getElementById('sscTot');
+            const hsscObt = document.getElementById('hsscObt');
+            const hsscTot = document.getElementById('hsscTot');
+            const hafizCheck = document.getElementById('hafizCheck');
+            const liveScore = document.getElementById('liveMeritScore');
+            const meritMode = document.getElementById('meritModeBadge');
+            const sscShare = document.getElementById('sscShareText');
+            const hsscShare = document.getElementById('hsscShareText');
+            const hsscRow = document.getElementById('hsscShareRow');
+            const hafizText = document.getElementById('hafizScoreText');
+
+            // Auto-mask CNIC (15602-0000000-0)
+            if (cnicInput) {
+                cnicInput.addEventListener('input', function (e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length > 13) v = v.substring(0, 13);
+                    if (v.length > 12) {
+                        e.target.value = v.substring(0, 5) + '-' + v.substring(5, 12) + '-' + v.substring(12, 13);
+                    } else if (v.length > 5) {
+                        e.target.value = v.substring(0, 5) + '-' + v.substring(5);
+                    } else {
+                        e.target.value = v;
+                    }
+                });
+            }
+
+            // Auto-mask Phone (0300-0000000)
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function (e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length > 11) v = v.substring(0, 11);
+                    if (v.length > 4) {
+                        e.target.value = v.substring(0, 4) + '-' + v.substring(4);
+                    } else {
+                        e.target.value = v;
+                    }
+                });
+            }
+
+            // Live Merit Calculation
+            function calculateMerit() {
+                const opt = programSelect.options[programSelect.selectedIndex];
+                const level = opt ? opt.getAttribute('data-level') : 'BS';
+                const isHafiz = hafizCheck.checked;
+                const hafizBonus = isHafiz ? 20 : 0;
+                hafizText.innerText = isHafiz ? '+20 Marks' : '0 Marks';
+
+                const sscO = parseFloat(sscObt.value) || 0;
+                const sscT = parseFloat(sscTot.value) || 1100;
+                const hsscO = parseFloat(hsscObt.value) || 0;
+                const hsscT = parseFloat(hsscTot.value) || 1100;
+
+                if (level === 'HSSC') {
+                    // Hide HSSC section for matric graduates
+                    hsscSection.style.display = 'none';
+                    hsscRow.style.display = 'none';
+                    meritMode.innerText = 'Intermediate (SSC 100%)';
+
+                    if (sscO > 0 && sscT > 0) {
+                        const agg = ((sscO + hafizBonus) / sscT) * 100;
+                        liveScore.innerText = agg.toFixed(2) + '%';
+                        sscShare.innerText = agg.toFixed(2) + '%';
+                    } else {
+                        liveScore.innerText = '0.00%';
+                        sscShare.innerText = '--';
+                    }
+                } else {
+                    // Show HSSC section for BS applicants
+                    hsscSection.style.display = 'block';
+                    hsscRow.style.display = 'flex';
+                    meritMode.innerText = 'BS 4-Year (SSC 40% + HSSC 60%)';
+
+                    let sscPart = 0;
+                    let hsscPart = 0;
+
+                    if (sscO > 0 && sscT > 0) {
+                        sscPart = (sscO / sscT) * 40;
+                        sscShare.innerText = sscPart.toFixed(2) + ' / 40';
+                    } else {
+                        sscShare.innerText = '--';
+                    }
+
+                    if (hsscO > 0 && hsscT > 0) {
+                        hsscPart = ((hsscO + hafizBonus) / hsscT) * 60;
+                        hsscShare.innerText = hsscPart.toFixed(2) + ' / 60';
+                    } else {
+                        hsscShare.innerText = '--';
+                    }
+
+                    const totalAgg = sscPart + hsscPart;
+                    liveScore.innerText = totalAgg.toFixed(2) + '%';
+                }
+            }
+
+            programSelect.addEventListener('change', calculateMerit);
+            document.querySelectorAll('.calc-trigger').forEach(el => el.addEventListener('input', calculateMerit));
+            hafizCheck.addEventListener('change', calculateMerit);
+
+            // Initial run
+            calculateMerit();
+        });
+    </script>
+}

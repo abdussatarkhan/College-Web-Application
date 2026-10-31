@@ -1,0 +1,135 @@
+@model College_Web_Application.Models.ViewModels.EnrollApplicantViewModel
+@{
+    ViewData["Title"] = "Enroll Merit Applicant";
+}
+
+<div class="container-fluid px-0" style="max-width: 900px;">
+    <!-- Header -->
+    <div class="mb-4">
+        <a asp-area="Admin" asp-controller="Students" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to SIS Directory
+        </a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold">
+                <i class="bi bi-person-check-fill me-1"></i> Admission Converter
+            </span>
+        </div>
+        <h2 class="h3 fw-bold text-dark mt-2 mb-0">Enroll Merit Listed Applicant</h2>
+        <p class="text-muted small mb-0">Review verified applicant credentials, confirm official sequential roll number, and provision portal login.</p>
+    </div>
+
+    <div class="card card-portal shadow-sm">
+        <div class="card-header-portal">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-card-checklist text-success"></i>
+                <span>Applicant Information & Verification</span>
+            </div>
+            <span class="badge bg-success">Merit Score: @Model.MeritScore.ToString("0.00")%</span>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Applicant Summary Box -->
+            <div class="bg-light rounded-3 p-3 mb-4 border">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">Applicant Name</small>
+                        <strong class="text-dark">@Model.ApplicantName</strong>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">Father Name</small>
+                        <strong class="text-dark">@Model.FatherName</strong>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">CNIC / Form-B</small>
+                        <span class="badge bg-white text-dark border">@Model.CNIC</span>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <small class="text-muted d-block">Contact Phone</small>
+                        <span>@Model.Phone</span>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <small class="text-muted d-block">Applied Program</small>
+                        <span class="fw-semibold text-success">@Model.ProgramTitle</span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-area="Admin" asp-controller="Students" asp-action="EnrollApplicant" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ApplicationId" />
+                <input type="hidden" asp-for="ApplicantName" />
+                <input type="hidden" asp-for="FatherName" />
+                <input type="hidden" asp-for="CNIC" />
+                <input type="hidden" asp-for="Phone" />
+                <input type="hidden" asp-for="ProgramId" />
+                <input type="hidden" asp-for="ProgramTitle" />
+                <input type="hidden" asp-for="MeritScore" />
+
+                <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-gear-fill text-warning me-1"></i> Institutional Enrollment Credentials
+                </h6>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="RollNumber" class="form-label fw-semibold small">Generated College Roll Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                            <input asp-for="RollNumber" class="form-control font-monospace fw-bold text-success" />
+                        </div>
+                        <small class="text-muted">Auto-generated unique college format (e.g., GDCM-BSCS-2026-001).</small>
+                        <span asp-validation-for="RollNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="RegistrationNo" class="form-label fw-semibold small">University / Board Registration No</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-journal-bookmark"></i></span>
+                            <input asp-for="RegistrationNo" class="form-control font-monospace" />
+                        </div>
+                        <small class="text-muted">UOS or BISE Swat registration number.</small>
+                        <span asp-validation-for="RegistrationNo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-6 col-md-6">
+                        <label asp-for="CurrentSemester" class="form-label fw-semibold small">Initial Semester</label>
+                        <select asp-for="CurrentSemester" class="form-select">
+                            <option value="1">Semester 1 (Freshman)</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3 (Migration / Transfer)</option>
+                        </select>
+                        <span asp-validation-for="CurrentSemester" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-6 col-md-6">
+                        <label asp-for="Section" class="form-label fw-semibold small">Assigned Section</label>
+                        <select asp-for="Section" class="form-select">
+                            <option value="A">Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                        </select>
+                        <span asp-validation-for="Section" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Account Provisioning Alert -->
+                <div class="alert alert-warning border-0 d-flex align-items-center gap-3 mb-4">
+                    <i class="bi bi-shield-lock-fill fs-3 text-warning"></i>
+                    <div class="small">
+                        <strong>Automatic Portal Account Creation:</strong>
+                        Upon submission, a student login account will be generated. The username will be 
+                        <code>@Model.RollNumber</code> and default initial password will be the CNIC digits.
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-area="Admin" asp-controller="Students" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-gdc-primary px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Complete Enrollment & Generate Fee Challan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

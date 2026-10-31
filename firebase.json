@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": "College Web Application/wwwroot",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "gdc-madyan-portal",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

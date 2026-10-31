@@ -1,0 +1,298 @@
+@model College_Web_Application.Models.ViewModels.StudentListViewModel
+@{
+    ViewData["Title"] = "Student Information System (SIS)";
+}
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-people-fill me-1"></i> SIS Directory
+                </span>
+                <span class="text-muted small">| Active Records: @Model.TotalCount</span>
+            </div>
+            <h2 class="h3 fw-bold text-dark mt-2 mb-0">Student Information System (SIS)</h2>
+            <p class="text-muted small mb-0">Manage 5,000+ enrolled students across HSSC & BS programs, handle roll numbers, and semester promotions.</p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#batchPromotionModal">
+                <i class="bi bi-arrow-up-right-circle me-1"></i> Batch Semester Promotion
+            </button>
+            <a asp-area="" asp-controller="Admissions" asp-action="MeritLists" class="btn btn-gdc-primary btn-sm shadow-sm">
+                <i class="bi bi-person-check-fill me-1"></i> Enroll From Merit List
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="card card-portal mb-4 p-3 bg-white">
+        <form asp-area="Admin" asp-controller="Students" asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="searchQuery" value="@Model.SearchQuery" class="form-control" placeholder="Name, Roll No, CNIC..." />
+                </div>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <select name="departmentId" class="form-select form-select-sm">
+                    <option value="">All Departments</option>
+                    @foreach (var dept in Model.Departments)
+                    {
+                        <option value="@dept.Id" selected="@(Model.DepartmentId == dept.Id)">@dept.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <select name="programId" class="form-select form-select-sm">
+                    <option value="">All Programs</option>
+                    @foreach (var prog in Model.Programs)
+                    {
+                        <option value="@prog.Id" selected="@(Model.ProgramId == prog.Id)">@prog.Title</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-4 col-md-2">
+                <select name="semester" class="form-select form-select-sm">
+                    <option value="">All Semesters</option>
+                    @for (int i = 1; i <= 8; i++)
+                    {
+                        <option value="@i" selected="@(Model.Semester == i)">Semester @i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-4 col-md-1">
+                <select name="section" class="form-select form-select-sm">
+                    <option value="">Sec</option>
+                    <option value="A" selected="@(Model.Section == "A")">A</option>
+                    <option value="B" selected="@(Model.Section == "B")">B</option>
+                    <option value="C" selected="@(Model.Section == "C")">C</option>
+                </select>
+            </div>
+
+            <div class="col-4 col-md-1 d-flex gap-1">
+                <button type="submit" class="btn btn-gdc-primary btn-sm w-100" title="Filter Records">
+                    <i class="bi bi-funnel-fill"></i>
+                </button>
+                <a asp-area="Admin" asp-controller="Students" asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Clear Filters">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Student Table Card -->
+    <div class="card card-portal">
+        <div class="card-header-portal">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-mortarboard text-success"></i>
+                <span>Enrolled Students Directory</span>
+            </div>
+            <span class="badge bg-light text-secondary border">Showing @Model.Students.Count of @Model.TotalCount Records</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 130px;">Roll Number</th>
+                        <th>Student Details</th>
+                        <th>CNIC / Form-B</th>
+                        <th>Program</th>
+                        <th>Semester / Sec</th>
+                        <th>CGPA</th>
+                        <th>Contact</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Students.Any())
+                    {
+                        foreach (var student in Model.Students)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-success font-monospace">@student.RollNumber</span>
+                                    <div class="text-muted" style="font-size: 0.72rem;">@student.RegistrationNo</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@student.FullName</div>
+                                    <div class="text-muted small">S/O @student.FatherName</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">@student.CNIC</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                        @student.Program?.Title
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">Sem @student.CurrentSemester</span>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border ms-1">Sec @student.Section</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold @(student.CGPA >= 3.5m ? "text-success" : student.CGPA >= 2.5m ? "text-primary" : "text-warning")">
+                                        @student.CGPA.ToString("0.00")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div><i class="bi bi-telephone text-muted me-1"></i>@student.Phone</div>
+                                    <div class="text-muted text-truncate" style="max-width: 160px; font-size: 0.75rem;" title="@student.Address">
+                                        <i class="bi bi-geo-alt me-1"></i>@student.DomicileDistrict
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-area="Admin" asp-controller="FeeChallans" asp-action="Index" asp-route-searchQuery="@student.RollNumber" 
+                                           class="btn btn-outline-secondary" title="View Fee Challans">
+                                            <i class="bi bi-receipt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="bi bi-search fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                    No student profiles found matching the current search criteria.
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Server-Side Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer bg-white border-top p-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <div class="text-muted small">
+                    Page <strong>@Model.CurrentPage</strong> of <strong>@Model.TotalPages</strong> (Total @Model.TotalCount items)
+                </div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.CurrentPage - 1)" 
+                               asp-route-searchQuery="@Model.SearchQuery" 
+                               asp-route-departmentId="@Model.DepartmentId" 
+                               asp-route-programId="@Model.ProgramId" 
+                               asp-route-semester="@Model.Semester" 
+                               asp-route-section="@Model.Section">
+                                Previous
+                            </a>
+                        </li>
+                        
+                        @for (int p = Math.Max(1, Model.CurrentPage - 2); p <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); p++)
+                        {
+                            <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" asp-action="Index" 
+                                   asp-route-page="@p" 
+                                   asp-route-searchQuery="@Model.SearchQuery" 
+                                   asp-route-departmentId="@Model.DepartmentId" 
+                                   asp-route-programId="@Model.ProgramId" 
+                                   asp-route-semester="@Model.Semester" 
+                                   asp-route-section="@Model.Section">
+                                    @p
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@(Model.CurrentPage + 1)" 
+                               asp-route-searchQuery="@Model.SearchQuery" 
+                               asp-route-departmentId="@Model.DepartmentId" 
+                               asp-route-programId="@Model.ProgramId" 
+                               asp-route-semester="@Model.Semester" 
+                               asp-route-section="@Model.Section">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal: Batch Semester Promotion -->
+<div class="modal fade" id="batchPromotionModal" tabindex="-1" aria-labelledby="batchPromotionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form asp-area="Admin" asp-controller="Students" asp-action="PromoteBatch" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="batchPromotionModalLabel">
+                        <i class="bi bi-arrow-up-right-circle me-1"></i> Batch Semester Promotion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info border-0 small mb-3">
+                        <i class="bi bi-info-circle-fill me-1"></i> 
+                        This action will promote all active students in the selected class in a single transaction.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Select Academic Program</label>
+                        <select name="ProgramId" class="form-select" required>
+                            <option value="">-- Choose Program --</option>
+                            @foreach (var prog in Model.Programs)
+                            {
+                                <option value="@prog.Id">@prog.Title (@prog.Level)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Current Semester</label>
+                            <select name="CurrentSemester" class="form-select" required>
+                                @for (int i = 1; i <= 7; i++)
+                                {
+                                    <option value="@i">Semester @i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Promote to Semester</label>
+                            <select name="NextSemester" class="form-select" required>
+                                @for (int i = 2; i <= 8; i++)
+                                {
+                                    <option value="@i">Semester @i</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small">Section (Optional)</label>
+                        <select name="Section" class="form-select">
+                            <option value="">All Sections</option>
+                            <option value="A">Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-gdc-primary btn-sm">Confirm Batch Promotion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

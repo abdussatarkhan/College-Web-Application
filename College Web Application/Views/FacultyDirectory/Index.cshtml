@@ -1,0 +1,180 @@
+@model College_Web_Application.Models.ViewModels.FacultyDirectoryViewModel
+@{
+    ViewData["Title"] = "Faculty & Academic Staff Directory";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb & Arabic Motto -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-success">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Faculty Directory</li>
+            </ol>
+        </nav>
+        <div class="text-success fw-bold arabic-motto" style="font-size: 1.1rem;">
+            رَبِّ زِدْنِي عِلْماً
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4 position-relative overflow-hidden" 
+         style="background: linear-gradient(135deg, #063B13 0%, #0B6623 50%, #084C1A 100%);">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2" style="letter-spacing: 0.8px;">
+                    <i class="bi bi-mortarboard-fill me-1"></i> Academic Pedagogy & Research
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Faculty & Academic Staff Directory</h1>
+                <p class="text-white-50 mb-0">
+                    Distinguished professors, research scholars, and lecturers of Government Degree College Madyan Swat serving the youth of Upper Swat.
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <div class="bg-white bg-opacity-10 rounded-3 p-3 text-center d-inline-block border border-white border-opacity-25">
+                    <div class="h3 fw-bold text-warning mb-0">100+</div>
+                    <div class="small text-white-50">Faculty & Administrative Staff</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Card -->
+    <div class="card border-0 shadow-sm mb-5 p-3 bg-white rounded-3">
+        <div class="row g-3 align-items-center">
+            <!-- Department Filter Pills -->
+            <div class="col-12 col-lg-8">
+                <div class="d-flex flex-wrap gap-1.5">
+                    <a asp-action="Index" asp-route-departmentId="" asp-route-search="@Model.SearchQuery"
+                       class="btn btn-sm rounded-pill px-3 @(!Model.SelectedDepartmentId.HasValue ? "btn-success fw-bold" : "btn-outline-secondary")">
+                        All Departments
+                    </a>
+                    @foreach (var dept in Model.Departments)
+                    {
+                        bool isSelected = Model.SelectedDepartmentId == dept.Id;
+                        <a asp-action="Index" asp-route-departmentId="@dept.Id" asp-route-search="@Model.SearchQuery"
+                           class="btn btn-sm rounded-pill px-3 @(isSelected ? "btn-success fw-bold" : "btn-outline-secondary")">
+                            @dept.Name
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Search Form -->
+            <div class="col-12 col-lg-4">
+                <form asp-action="Index" method="get" class="d-flex gap-2">
+                    @if (Model.SelectedDepartmentId.HasValue)
+                    {
+                        <input type="hidden" name="departmentId" value="@Model.SelectedDepartmentId.Value" />
+                    }
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="search" value="@Model.SearchQuery" class="form-control" placeholder="Search by name, designation..." />
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                    {
+                        <a asp-action="Index" asp-route-departmentId="@Model.SelectedDepartmentId" class="btn btn-sm btn-outline-secondary" title="Clear Search">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Sections -->
+    @if (Model.DepartmentGroups.Any())
+    {
+        foreach (var group in Model.DepartmentGroups)
+        {
+            <div class="mb-5">
+                <!-- Department Header Box -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 pb-3 mb-4 border-bottom border-2 border-success border-opacity-25">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold">
+                                Department of @group.Department.Name
+                            </span>
+                            <span class="text-muted small">Code: @group.Department.Code</span>
+                        </div>
+                        <h3 class="h4 fw-bold text-dark mt-2 mb-1">@group.Department.Name</h3>
+                        <p class="text-muted small mb-0">@group.Department.Description</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(group.Department.HODName))
+                    {
+                        <div class="bg-light p-2.5 rounded-3 border text-md-end">
+                            <div class="text-muted small">Head of Department (HOD)</div>
+                            <div class="fw-bold text-success">@group.Department.HODName</div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Faculty Member Grid -->
+                <div class="row g-4">
+                    @if (group.FacultyMembers.Any())
+                    {
+                        foreach (var member in group.FacultyMembers)
+                        {
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center bg-white transition-hover position-relative" style="border-top: 4px solid #0B6623 !important;">
+                                    <!-- Photo or Initials Avatar -->
+                                    <div class="mx-auto mb-3 position-relative">
+                                        @if (!string.IsNullOrEmpty(member.PhotoUrl) && System.IO.File.Exists(member.PhotoUrl))
+                                        {
+                                            <img src="@member.PhotoUrl" alt="@member.FullName" class="rounded-circle shadow-sm border border-3 border-success border-opacity-25" style="width: 90px; height: 90px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle shadow-sm d-flex align-items-center justify-content-center text-white fw-bold mx-auto" 
+                                                 style="width: 90px; height: 90px; background: linear-gradient(135deg, #0B6623 0%, #145A32 100%); font-size: 1.8rem; border: 3px solid rgba(212, 175, 55, 0.4);">
+                                                @(string.Join("", member.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(s => s[0])))
+                                            </div>
+                                        }
+                                        <span class="position-absolute bottom-0 start-50 translate-middle-x badge bg-dark text-warning border border-warning border-opacity-50" style="font-size: 0.68rem;">
+                                            @member.BPSGrade
+                                        </span>
+                                    </div>
+
+                                    <!-- Member Particulars -->
+                                    <h5 class="fw-bold text-dark mb-1">@member.FullName</h5>
+                                    <div class="fw-semibold text-success small mb-2">@member.Designation</div>
+
+                                    <div class="bg-light p-2 rounded-3 text-muted small mb-3 border" style="font-size: 0.8rem; line-height: 1.4;">
+                                        <i class="bi bi-award text-warning me-1"></i>
+                                        @member.Qualification
+                                    </div>
+
+                                    <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center text-muted" style="font-size: 0.75rem;">
+                                        <span>Code: @member.EmployeeCode</span>
+                                        <span>Since: @member.JoiningDate.Year</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="text-muted small p-3 bg-light rounded text-center">
+                                Faculty listings for this department will be published shortly.
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm p-5 text-center bg-white rounded-4">
+            <i class="bi bi-person-x fs-1 text-muted mb-3 opacity-50"></i>
+            <h5 class="fw-bold text-dark">No faculty members found</h5>
+            <p class="text-muted mb-3">No profiles matched your search term.</p>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-success btn-sm">Reset Directory</a>
+            </div>
+        </div>
+    }
+</div>

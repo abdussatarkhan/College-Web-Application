@@ -1,0 +1,240 @@
+@model College_Web_Application.Models.ViewModels.MarkAttendanceViewModel
+@{
+    ViewData["Title"] = $"Class Attendance - {Model.CourseCode} ({Model.Section})";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-calendar-check-fill text-success me-2"></i>Class Attendance & Disciplinary Compliance
+        </h4>
+        <div class="text-muted small">
+            Instructor: <strong>@Model.TeacherName</strong> | Strict Subject Lock & Automated 3-Day HSSC Rustication Engine
+        </div>
+    </div>
+    <div class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
+        <i class="bi bi-shield-exclamation me-1"></i> 3-Day Consecutive Absence Rule Active (HSSC)
+    </div>
+</div>
+
+@if (TempData["RusticationAlert"] != null)
+{
+    <div class="alert alert-danger border-danger shadow-sm alert-dismissible fade show p-3 mb-4 rounded-3" role="alert">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-exclamation-octagon-fill fs-3 text-danger flex-shrink-0"></i>
+            <div>
+                <h6 class="fw-bold mb-1">AUTOMATED RUSTICATION TRIGGERED</h6>
+                <div>@TempData["RusticationAlert"]</div>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-x-circle-fill me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- WORKLOAD & DATE SELECTION BAR -->
+<div class="card card-portal shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-6">
+                <label class="form-label small fw-bold text-muted mb-1">Select Assigned Course & Section</label>
+                <select name="courseId" class="form-select form-select-sm" onchange="this.form.submit()">
+                    @foreach (var opt in Model.AssignedCourses)
+                    {
+                        <option value="@opt.CourseId" selected="@(opt.CourseId == Model.CourseId ? "selected" : null)">
+                            [@opt.ProgramLevel] @opt.CourseCode - @opt.CourseTitle (Sec @opt.Section)
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label small fw-bold text-muted mb-1">Class Attendance Date</label>
+                <input type="date" name="date" class="form-control form-control-sm" value="@Model.AttendanceDate.ToString("yyyy-MM-dd")" onchange="this.form.submit()" />
+            </div>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-sm btn-dark w-100">
+                    <i class="bi bi-arrow-repeat me-1"></i> Refresh Sheet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form asp-action="MarkClassAttendance" method="post" id="attendanceForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="CourseId" />
+    <input type="hidden" asp-for="Section" />
+    <input type="hidden" asp-for="AttendanceDate" />
+    <input type="hidden" asp-for="AcademicSession" />
+
+    <div class="card card-portal shadow-sm">
+        <div class="card-header-portal">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-person-lines-fill text-success fs-5"></i>
+                <span>@Model.CourseCode - @Model.CourseTitle (Sec @Model.Section)</span>
+                <span class="badge @(Model.ProgramLevel == "HSSC" ? "bg-info bg-opacity-20 text-info" : "bg-primary bg-opacity-20 text-primary") ms-2">
+                    @Model.ProgramLevel
+                </span>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-success btn-sm fw-semibold" onclick="markAllPresent()">
+                    <i class="bi bi-check-all me-1"></i> Mark Eligible as Present
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="attendanceTable">
+                    <thead class="table-light small text-uppercase fw-bold text-muted">
+                        <tr>
+                            <th class="ps-4" style="width: 50px;">#</th>
+                            <th style="min-width: 140px;">Roll Number</th>
+                            <th style="min-width: 220px;">Student & Father Name</th>
+                            <th style="min-width: 130px;">Absence Streak</th>
+                            <th class="text-center" style="min-width: 260px;">Attendance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Students.Any())
+                        {
+                            for (int i = 0; i < Model.Students.Count; i++)
+                            {
+                                var student = Model.Students[i];
+                                var isRusticated = student.IsRusticated;
+
+                                <tr class="@(isRusticated ? "table-danger border-start border-4 border-danger" : "")">
+                                    <td class="ps-4 text-muted fw-semibold">
+                                        @(i + 1)
+                                        <input type="hidden" name="Students[@i].StudentId" value="@student.StudentId" />
+                                        <input type="hidden" name="Students[@i].RollNumber" value="@student.RollNumber" />
+                                        <input type="hidden" name="Students[@i].FullName" value="@student.FullName" />
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold font-monospace text-dark">@student.RollNumber</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@student.FullName</div>
+                                        <div class="text-muted small">S/O @student.FatherName</div>
+                                        @if (isRusticated)
+                                        {
+                                            <div class="badge bg-danger text-white mt-1 p-1 px-2" style="font-size: 0.72rem;">
+                                                <i class="bi bi-slash-circle-fill me-1"></i> 🚫 RUSTICATED (3 Days Continuous Absence - Parent Visit Required)
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (student.ConsecutiveAbsentDays > 0)
+                                        {
+                                            <span class="badge @(student.ConsecutiveAbsentDays >= 3 ? "bg-danger" : "bg-warning text-dark") fw-bold px-2 py-1">
+                                                <i class="bi bi-fire me-1"></i> @student.ConsecutiveAbsentDays Day@(student.ConsecutiveAbsentDays > 1 ? "s" : "") Streak
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border">Regular</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (isRusticated)
+                                        {
+                                            <!-- Rusticated Student Locked from Present -->
+                                            <div class="d-inline-flex align-items-center gap-2 p-1.5 bg-white border border-danger rounded-pill shadow-xs">
+                                                <span class="badge bg-danger text-white px-3 py-1.5 fw-bold">
+                                                    <i class="bi bi-lock-fill me-1"></i> ABSENT (LOCKED)
+                                                </span>
+                                                <input type="hidden" name="Students[@i].Status" value="Absent" />
+                                                <span class="text-danger small fst-italic pe-2" style="font-size: 0.72rem;">
+                                                    Parent visit required
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <input type="radio" 
+                                                       class="btn-check status-radio status-present" 
+                                                       name="Students[@i].Status" 
+                                                       id="p_@i" 
+                                                       value="Present" 
+                                                       @(student.Status == "Present" ? "checked" : "") />
+                                                <label class="btn btn-outline-success fw-semibold px-3" for="p_@i">
+                                                    <i class="bi bi-check-circle me-1"></i> Present
+                                                </label>
+
+                                                <input type="radio" 
+                                                       class="btn-check status-radio status-absent" 
+                                                       name="Students[@i].Status" 
+                                                       id="a_@i" 
+                                                       value="Absent" 
+                                                       @(student.Status == "Absent" ? "checked" : "") />
+                                                <label class="btn btn-outline-danger fw-semibold px-3" for="a_@i">
+                                                    <i class="bi bi-x-circle me-1"></i> Absent
+                                                </label>
+
+                                                <input type="radio" 
+                                                       class="btn-check status-radio" 
+                                                       name="Students[@i].Status" 
+                                                       id="l_@i" 
+                                                       value="Leave" 
+                                                       @(student.Status == "Leave" ? "checked" : "") />
+                                                <label class="btn btn-outline-warning fw-semibold px-3" for="l_@i">
+                                                    <i class="bi bi-envelope-open me-1"></i> Leave
+                                                </label>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    No students enrolled in this course section.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light p-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+            <div class="text-muted small">
+                <i class="bi bi-shield-lock-fill text-success me-1"></i>
+                Subject ownership verified for @Model.TeacherName. Intermediate (HSSC) students marked absent 3 consecutive class days are automatically rusticated.
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
+                    <i class="bi bi-cloud-check-fill me-1"></i> Save Class Attendance
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function markAllPresent() {
+            document.querySelectorAll('tr:not(.table-danger) .status-present').forEach(function (radio) {
+                radio.checked = true;
+            });
+        }
+    </script>
+}

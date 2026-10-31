@@ -1,0 +1,147 @@
+@model College_Web_Application.Models.ViewModels.ApplicationStatusViewModel
+@{
+    ViewData["Title"] = "Track Admission Application Status";
+}
+
+<div class="container py-4" style="max-width: 850px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-success">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="Apply" class="text-decoration-none text-success">Admissions</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Track Status</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 bg-white text-center">
+        <div class="mx-auto mb-3 text-success">
+            <i class="bi bi-search fs-1"></i>
+        </div>
+        <h2 class="h3 fw-bold text-dark mb-1">Track Admission Status</h2>
+        <p class="text-muted small mb-4">
+            Enter your <strong>Tracking Number</strong> (e.g., <code>GDCM-ADM-2026-0001</code>) or <strong>CNIC / Form-B Number</strong> to check real-time verification and merit status.
+        </p>
+
+        <!-- Search Form -->
+        <form asp-action="TrackStatus" method="get" class="row g-2 justify-content-center">
+            <div class="col-12 col-md-8">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                    <input type="text" name="query" class="form-control" placeholder="Tracking Number or CNIC (15602-xxxxxxx-x)" required autofocus />
+                    <button type="submit" class="btn btn-success fw-bold px-4">
+                        <i class="bi bi-arrow-right-circle-fill me-1"></i> Track
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        @if (ViewBag.NotFoundMessage != null)
+        {
+            <div class="alert alert-warning border-0 mt-4 mb-0 text-start small">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @ViewBag.NotFoundMessage
+            </div>
+        }
+    </div>
+
+    <!-- Application Details Card if found -->
+    @if (Model != null)
+    {
+        <div class="card border-0 shadow rounded-4 p-4 p-md-5 bg-white mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold">
+                        Registered Applicant
+                    </span>
+                    <h4 class="fw-bold text-dark mt-2 mb-0">@Model.ApplicantName</h4>
+                    <span class="text-muted small">S/O @Model.FatherName | CNIC: @Model.CNIC</span>
+                </div>
+                <div class="text-md-end mt-2 mt-md-0">
+                    <div class="font-monospace fw-bold text-dark fs-6">@Model.TrackingNumber</div>
+                    <small class="text-muted">Applied on @Model.AppliedDate.ToString("dd MMMM yyyy")</small>
+                </div>
+            </div>
+
+            <!-- Visual Progress Timeline -->
+            <h6 class="fw-bold text-dark mb-4">Admission Progression Lifecycle</h6>
+            <div class="row g-2 text-center mb-5">
+                <!-- Step 1 -->
+                <div class="col-3">
+                    <div class="p-2 rounded-3 bg-success text-white mb-2 shadow-sm">
+                        <i class="bi bi-file-earmark-check-fill fs-4"></i>
+                    </div>
+                    <div class="fw-bold small text-dark">Submitted</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Online Form</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="col-3">
+                    <div class="p-2 rounded-3 @(Model.Status != "Pending" ? "bg-success text-white" : "bg-light text-muted border") mb-2">
+                        <i class="bi bi-clipboard2-check-fill fs-4"></i>
+                    </div>
+                    <div class="fw-bold small text-dark">Verified</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Document Scrutiny</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="col-3">
+                    <div class="p-2 rounded-3 @(Model.Status == "MeritListed" || Model.Status == "Admitted" ? "bg-success text-white" : "bg-light text-muted border") mb-2">
+                        <i class="bi bi-card-checklist fs-4"></i>
+                    </div>
+                    <div class="fw-bold small text-dark">Merit List</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Selected</div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="col-3">
+                    <div class="p-2 rounded-3 @(Model.Status == "Admitted" ? "bg-success text-white" : "bg-light text-muted border") mb-2">
+                        <i class="bi bi-mortarboard-fill fs-4"></i>
+                    </div>
+                    <div class="fw-bold small text-dark">Enrolled</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Fee Paid & Active</div>
+                </div>
+            </div>
+
+            <!-- Status Details Card -->
+            <div class="bg-light p-4 rounded-3 border mb-4">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <small class="text-muted d-block">Applied Academic Program</small>
+                        <h5 class="fw-bold text-success mb-1">@Model.AppliedProgramTitle</h5>
+                        <span class="badge bg-secondary">Quota: @Model.QuotaCategory</span>
+                    </div>
+
+                    <div class="col-12 col-md-6 text-md-end">
+                        <small class="text-muted d-block">Official Merit Aggregate</small>
+                        <div class="h3 fw-bold text-dark mb-0">@Model.MeritScore.ToString("0.00")%</div>
+                        <span class="text-muted small">Matric: @Model.MatricObtainedMarks / @Model.MatricTotalMarks</span>
+                    </div>
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small">Current Application Status:</span>
+                        @if (Model.Status == "Admitted")
+                        {
+                            <span class="badge bg-success ms-2 px-3 py-1.5 fs-6">Admitted - Student Enrolled</span>
+                        }
+                        else if (Model.Status == "MeritListed")
+                        {
+                            <span class="badge bg-primary ms-2 px-3 py-1.5 fs-6">Selected in Merit List</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark ms-2 px-3 py-1.5 fs-6">Under Verification (Pending)</span>
+                        }
+                    </div>
+
+                    <a asp-action="Confirmation" asp-route-trackingNumber="@Model.TrackingNumber" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-printer me-1"></i> Print Admission Slip
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

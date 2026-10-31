@@ -1,0 +1,249 @@
+@model College_Web_Application.Models.ViewModels.OfficialDmcViewModel
+@{
+    ViewData["Title"] = $"DMC - {Model.RollNumber} (Semester {Model.Semester})";
+}
+
+<!-- Print Action Bar (Hidden on Print) -->
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Controller Office
+        </a>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success fw-bold px-4 rounded-pill shadow-sm" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i> Print Official DMC (A4)
+        </button>
+    </div>
+</div>
+
+@if (!Model.IsFullyVerified)
+{
+    <div class="alert alert-warning border-warning shadow-sm no-print mb-4 p-3 rounded-3">
+        <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+            <div>
+                <h6 class="fw-bold mb-1 text-dark">PROVISIONAL TRANSCRIPT ONLY — PENDING FINAL CONTROLLER APPROVAL</h6>
+                <div class="small text-muted mb-2">
+                    This document cannot be certified as an official Master DMC because the following course award lists are not yet verified and approved by the Controller of Examinations:
+                </div>
+                <ul class="small mb-0 text-danger fw-semibold">
+                    @foreach (var unv in Model.UnverifiedCourseCodes)
+                    {
+                        <li>@unv</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- OFFICIAL DETAILED MARKS CERTIFICATE (A4 SECURITY DOCUMENT CONTAINER) -->
+<div class="dmc-sheet bg-white p-4 p-md-5 mx-auto border shadow-sm">
+    <!-- Institutional Top Crest & Header -->
+    <div class="text-center position-relative pb-3 border-bottom border-3 border-success mb-4">
+        <!-- Arabic Motto -->
+        <div class="arabic-motto text-success fw-bold mb-1" style="font-size: 1.4rem;">
+            رَبِّ زِدْنِي عِلْماً
+        </div>
+
+        <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+            <!-- College Crest -->
+            <div class="brand-crest-emblem" style="width: 65px; height: 65px; font-size: 2rem; border-color: #D4AF37;">
+                <i class="bi bi-mortarboard-fill text-success"></i>
+            </div>
+            <div class="text-start">
+                <h3 class="fw-black mb-0 text-dark tracking-wide" style="font-size: 1.5rem; letter-spacing: 0.5px;">
+                    GOVERNMENT DEGREE COLLEGE MADYAN SWAT
+                </h3>
+                <div class="text-secondary small fw-bold">
+                    HIGHER EDUCATION DEPARTMENT (HED) — GOVERNMENT OF KHYBER PAKHTUNKHWA
+                </div>
+                <div class="text-muted small" style="font-size: 0.78rem;">
+                    Affiliated with <strong>University of Swat</strong> & <strong>BISE Swat</strong> | Established 2006
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-success text-white py-1.5 px-4 d-inline-block rounded-pill text-uppercase fw-bold letter-spacing-1 mt-2" style="font-size: 0.88rem; letter-spacing: 1.5px;">
+            OFFICIAL DETAILED MARKS CERTIFICATE (DMC)
+        </div>
+        <div class="text-muted small mt-1">SEMESTER EXAMINATION TRANSCRIPT</div>
+    </div>
+
+    <!-- Security Serial & Verification Block -->
+    <div class="d-flex justify-content-between align-items-center mb-3 text-muted small pb-2 border-bottom">
+        <div>
+            <strong>Serial No:</strong> <span class="font-monospace text-dark fw-bold">@Model.SerialNumber</span>
+        </div>
+        <div>
+            <strong>Issue Date:</strong> @Model.IssueDate.ToString("dd MMMM yyyy")
+        </div>
+        <div>
+            <strong>Status:</strong> 
+            <span class="badge @(Model.IsFullyVerified ? "bg-success" : "bg-warning text-dark")">
+                @(Model.IsFullyVerified ? "OFFICIALLY CERTIFIED" : "PROVISIONAL")
+            </span>
+        </div>
+    </div>
+
+    <!-- Candidate Identification Grid -->
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-sm small align-middle mb-0">
+            <tbody>
+                <tr>
+                    <th class="table-light text-muted text-uppercase" style="width: 18%;">Student Name</th>
+                    <td class="fw-bold text-dark fs-6" style="width: 32%;">@Model.FullName</td>
+                    <th class="table-light text-muted text-uppercase" style="width: 18%;">Roll Number</th>
+                    <td class="fw-bold text-primary fs-6 font-monospace" style="width: 32%;">@Model.RollNumber</td>
+                </tr>
+                <tr>
+                    <th class="table-light text-muted text-uppercase">Father's Name</th>
+                    <td class="fw-bold text-dark">@Model.FatherName</td>
+                    <th class="table-light text-muted text-uppercase">Registration No</th>
+                    <td class="fw-bold font-monospace text-dark">@Model.RegistrationNo</td>
+                </tr>
+                <tr>
+                    <th class="table-light text-muted text-uppercase">Academic Program</th>
+                    <td class="fw-bold text-dark">@Model.ProgramTitle</td>
+                    <th class="table-light text-muted text-uppercase">Department</th>
+                    <td class="fw-bold text-dark">@Model.DepartmentName</td>
+                </tr>
+                <tr>
+                    <th class="table-light text-muted text-uppercase">Semester / Session</th>
+                    <td class="fw-bold text-dark">Semester @Model.Semester (@Model.AcademicSession)</td>
+                    <th class="table-light text-muted text-uppercase">Examination Center</th>
+                    <td class="fw-bold text-dark">Main Examination Hall, GDC Madyan Swat</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Course Grades Table -->
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-sm small text-center align-middle mb-0">
+            <thead class="table-light text-uppercase fw-bold text-dark">
+                <tr>
+                    <th style="width: 5%;">S#</th>
+                    <th style="width: 15%;" class="text-start">Course Code</th>
+                    <th style="width: 35%;" class="text-start">Course Title</th>
+                    <th style="width: 7%;">Cr.Hrs</th>
+                    <th style="width: 8%;">Mid<br><small class="text-muted">(30)</small></th>
+                    <th style="width: 8%;">Sess<br><small class="text-muted">(20)</small></th>
+                    <th style="width: 8%;">Final<br><small class="text-muted">(50)</small></th>
+                    <th style="width: 9%;">Total<br><small class="text-muted">(100)</small></th>
+                    <th style="width: 8%;">Grade</th>
+                    <th style="width: 7%;">GP</th>
+                    <th style="width: 8%;">QP</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Courses.Count; i++)
+                {
+                    var c = Model.Courses[i];
+                    <tr>
+                        <td class="text-muted">@(i + 1)</td>
+                        <td class="text-start fw-bold font-monospace">@c.CourseCode</td>
+                        <td class="text-start fw-semibold text-dark">@c.CourseTitle</td>
+                        <td>@c.CreditHours</td>
+                        <td>@c.MidTermMarks.ToString("0.#")</td>
+                        <td>@c.SessionalMarks.ToString("0.#")</td>
+                        <td>@c.FinalMarks.ToString("0.#")</td>
+                        <td class="fw-bold">@c.TotalMarks.ToString("0.#")</td>
+                        <td class="fw-bold">@c.Grade</td>
+                        <td>@c.GradePoints.ToString("0.00")</td>
+                        <td class="fw-bold text-dark">@c.QualityPoints.ToString("0.00")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td colspan="3" class="text-end text-uppercase">Total Academic Load & Quality Points:</td>
+                    <td class="text-center text-primary">@Model.TotalCreditHours</td>
+                    <td colspan="6" class="text-end text-uppercase">Total Quality Points:</td>
+                    <td class="text-center text-primary">@Model.TotalQualityPoints.ToString("0.00")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Official Results Summary Box -->
+    <div class="row g-3 align-items-center mb-5 p-3 rounded-3 border bg-light">
+        <div class="col-6 col-md-3 text-center border-end">
+            <div class="text-muted text-uppercase" style="font-size: 0.72rem;">Semester GPA (SGPA)</div>
+            <div class="fw-bold text-success fs-3">@Model.SGPA.ToString("0.00")</div>
+            <div class="small text-muted">Out of 4.00</div>
+        </div>
+        <div class="col-6 col-md-3 text-center border-end">
+            <div class="text-muted text-uppercase" style="font-size: 0.72rem;">Cumulative GPA (CGPA)</div>
+            <div class="fw-bold text-primary fs-3">@Model.CGPA.ToString("0.00")</div>
+            <div class="small text-muted">Progressive Average</div>
+        </div>
+        <div class="col-6 col-md-3 text-center border-end">
+            <div class="text-muted text-uppercase" style="font-size: 0.72rem;">Examination Remarks</div>
+            <div class="fw-bold text-dark fs-5 mt-1">@Model.Remarks</div>
+            <div class="badge bg-success bg-opacity-20 text-success" style="font-size: 0.68rem;">CLEARED</div>
+        </div>
+        <div class="col-6 col-md-3 text-center">
+            <!-- Simulated QR Security Code -->
+            <div class="d-inline-block border p-1.5 bg-white shadow-xs rounded">
+                <div style="width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; background:#0F172A; color:#ffffff; font-size:0.6rem; text-align:center; line-height: 1.1;">
+                    <i class="bi bi-qr-code fs-1 text-white"></i>
+                </div>
+            </div>
+            <div class="text-muted" style="font-size: 0.65rem;">Digital Verification ID</div>
+        </div>
+    </div>
+
+    <!-- Official Signature Blocks -->
+    <div class="row text-center pt-4 mt-5">
+        <div class="col-4">
+            <div class="border-top border-dark pt-2 mx-3">
+                <strong class="small d-block text-dark">Prepared By</strong>
+                <span class="text-muted" style="font-size: 0.72rem;">Computer Operator / Tabulator</span>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="border-top border-dark pt-2 mx-3">
+                <strong class="small d-block text-dark">Checked By</strong>
+                <span class="text-muted" style="font-size: 0.72rem;">Superintendent Examinations</span>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="border-top border-dark pt-2 mx-3">
+                <strong class="small d-block text-dark">Controller of Examinations</strong>
+                <span class="text-muted" style="font-size: 0.72rem;">Govt. Degree College Madyan Swat</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Notice Footer -->
+    <div class="text-center text-muted border-top mt-4 pt-2" style="font-size: 0.68rem;">
+        This official Detailed Marks Certificate (DMC) is issued under the seal and authority of the Office of the Controller of Examinations, Government Degree College Madyan Swat. Any alteration, erasure, or unauthorized tampering invalidates this document.
+    </div>
+</div>
+
+<style>
+    .dmc-sheet {
+        max-width: 880px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    @@media print {
+        body {
+            background-color: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .dmc-sheet {
+            max-width: 100% !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+</style>

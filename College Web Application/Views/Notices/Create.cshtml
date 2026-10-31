@@ -1,0 +1,84 @@
+@model College_Web_Application.Models.ViewModels.CreateNoticeViewModel
+@{
+    ViewData["Title"] = "Publish Official Notice";
+}
+
+<div class="container py-4" style="max-width: 800px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-success text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Notices" asp-action="Index" class="text-success text-decoration-none">Notice Board</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Publish Notice</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white p-3 p-md-4" style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 100%);">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h4 class="h5 fw-bold mb-1"><i class="bi bi-pencil-square me-2"></i>Publish Institutional Circular</h4>
+                    <p class="text-white-50 small mb-0">Government Degree College Madyan Swat - Official Circular System</p>
+                </div>
+                <span class="arabic-motto text-warning fs-5">رَبِّ زِدْنِي عِلْماً</span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-controller="Notices" asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-semibold small text-dark"></label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. Schedule for BS Semester Mid-Term Examinations Fall 2026" required />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Category" class="form-label fw-semibold small text-dark"></label>
+                        <select asp-for="Category" class="form-select" required>
+                            <option value="Admission">Admission Notice</option>
+                            <option value="Exam">Examination & Datesheet</option>
+                            <option value="Scholarship">Scholarship & Financial Aid</option>
+                            <option value="TimeTable">Academic Time Table</option>
+                            <option value="General" selected>General Announcement</option>
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="PdfFile" class="form-label fw-semibold small text-dark"></label>
+                        <input asp-for="PdfFile" type="file" class="form-control" accept=".pdf" />
+                        <small class="text-muted d-block mt-1">Optional. Only .pdf documents up to 5MB.</small>
+                        <span asp-validation-for="PdfFile" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-semibold small text-dark"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5" placeholder="Enter complete notice text, dates, instructions for students, and contact details..." required></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input asp-for="IsPinned" class="form-check-input" type="checkbox" role="switch" id="isPinnedSwitch" />
+                        <label class="form-check-label fw-semibold small text-dark" for="isPinnedSwitch">
+                            Pin this notice to top of Notice Board & Live Scrolling Ticker
+                        </label>
+                    </div>
+                    <small class="text-muted">Pinned notices appear with high priority on the homepage ticker and notice board.</small>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success fw-semibold px-4">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Publish Notice
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,196 @@
+@model College_Web_Application.Models.AdmissionApplication
+@{
+    ViewData["Title"] = $"Application Slip - {Model.TrackingNumber}";
+}
+
+<style>
+    @@media print {
+        header, footer, .top-gov-bar, .institutional-navbar, .no-print, .btn {
+            display: none !important;
+        }
+        body {
+            background: #ffffff !important;
+            padding: 0 !important;
+        }
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        .printable-slip {
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 20px !important;
+        }
+    }
+</style>
+
+<div class="container py-4" style="max-width: 900px;">
+    <!-- Top Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <a asp-action="Apply" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Apply for Another Program
+        </a>
+        <div class="d-flex gap-2">
+            <a asp-action="TrackStatus" asp-route-query="@Model.TrackingNumber" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-search me-1"></i> Track Status
+            </a>
+            <button onclick="window.print()" class="btn btn-success btn-sm shadow-sm fw-semibold">
+                <i class="bi bi-printer-fill me-1"></i> Print Admission Slip / Save as PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Printable Slip -->
+    <div class="card border-0 shadow rounded-4 p-4 p-md-5 bg-white printable-slip">
+        <!-- Institutional Header -->
+        <div class="text-center border-bottom pb-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="text-start">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill">
+                        HED Khyber Pakhtunkhwa
+                    </span>
+                    <div class="text-muted small mt-1">Est. 2006 | Affiliated: BISE & UOS</div>
+                </div>
+                <div class="arabic-motto text-success fw-bold fs-4">رَبِّ زِدْنِي عِلْماً</div>
+                <div class="text-end">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill">
+                        Fall 2026 Session
+                    </span>
+                    <div class="text-muted small mt-1">Receipt Date: @Model.AppliedDate.ToString("dd-MM-yyyy")</div>
+                </div>
+            </div>
+
+            <h3 class="fw-bold text-dark mb-1">GOVERNMENT DEGREE COLLEGE MADYAN SWAT</h3>
+            <div class="text-muted small">Online Admission Application & Verification Slip</div>
+            <div class="mt-3">
+                <span class="badge bg-dark text-warning font-monospace fs-6 px-3 py-2">
+                    Tracking #: @Model.TrackingNumber
+                </span>
+            </div>
+        </div>
+
+        <!-- Success Confirmation Ribbon -->
+        <div class="alert alert-success border-0 rounded-3 mb-4 d-flex align-items-center gap-3 no-print">
+            <i class="bi bi-check-circle-fill fs-3 text-success"></i>
+            <div>
+                <strong>Application Successfully Submitted!</strong>
+                <div class="small">Your admission application is registered with GDC Madyan Swat. Please keep this tracking receipt safe.</div>
+            </div>
+        </div>
+
+        <!-- Particulars Grid -->
+        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Applicant Particulars</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4">
+                <span class="text-muted small d-block">Full Name</span>
+                <strong class="text-dark">@Model.ApplicantName</strong>
+            </div>
+            <div class="col-6 col-md-4">
+                <span class="text-muted small d-block">Father's Name</span>
+                <strong class="text-dark">@Model.FatherName</strong>
+            </div>
+            <div class="col-6 col-md-4">
+                <span class="text-muted small d-block">CNIC / Form-B</span>
+                <span class="font-monospace fw-semibold text-dark">@Model.CNIC</span>
+            </div>
+            <div class="col-6 col-md-4">
+                <span class="text-muted small d-block">Phone / WhatsApp</span>
+                <span>@Model.Phone</span>
+            </div>
+            <div class="col-6 col-md-4">
+                <span class="text-muted small d-block">Domicile / Tehsil</span>
+                <span>@Model.DomicileDistrict / @Model.Tehsil</span>
+            </div>
+            <div class="col-12 col-md-4">
+                <span class="text-muted small d-block">Postal Address</span>
+                <span class="text-muted small">@Model.PostalAddress</span>
+            </div>
+        </div>
+
+        <!-- Academic & Merit Aggregate Section -->
+        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Program & Calculated Merit Aggregate</h6>
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+                <div class="bg-light p-3 rounded-3 border">
+                    <span class="text-muted small d-block">Applied Academic Program</span>
+                    <h5 class="fw-bold text-success mb-1">@Model.AppliedProgram?.Title</h5>
+                    <span class="badge bg-secondary">Quota: @Model.QuotaCategory</span>
+                    @if (Model.IsHafizQuran)
+                    {
+                        <span class="badge bg-success ms-1">Hafiz-e-Quran (+20)</span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="p-3 rounded-3 text-white text-center" style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 100%);">
+                    <small class="text-white-50 text-uppercase">Official Merit Aggregate</small>
+                    <div class="display-6 fw-bold text-warning">@Model.MeritScore.ToString("0.00")%</div>
+                    <small class="text-white-50">Calculated as per HED KP Admission Policy</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Record Summary Table -->
+        <table class="table table-bordered table-sm mb-4" style="font-size: 0.88rem;">
+            <thead class="table-light">
+                <tr>
+                    <th>Examination</th>
+                    <th>Board / Institution</th>
+                    <th>Roll Number</th>
+                    <th>Passing Year</th>
+                    <th class="text-end">Obtained</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>SSC / Matric</strong></td>
+                    <td>@Model.SscBoard</td>
+                    <td class="font-monospace">@Model.SscRollNumber</td>
+                    <td>@Model.SscPassingYear</td>
+                    <td class="text-end">@Model.MatricObtainedMarks.ToString("N0")</td>
+                    <td class="text-end">@Model.MatricTotalMarks.ToString("N0")</td>
+                    <td class="text-end fw-bold text-success">@((Model.MatricObtainedMarks / Model.MatricTotalMarks * 100).ToString("0.00"))%</td>
+                </tr>
+                @if (Model.HsscObtainedMarks.HasValue && Model.HsscObtainedMarks.Value > 0)
+                {
+                    <tr>
+                        <td><strong>HSSC / Inter</strong></td>
+                        <td>@Model.HsscBoard</td>
+                        <td class="font-monospace">@Model.HsscRollNumber</td>
+                        <td>@Model.HsscPassingYear</td>
+                        <td class="text-end">@Model.HsscObtainedMarks.Value.ToString("N0")</td>
+                        <td class="text-end">@(Model.HsscTotalMarks ?? 1100)</td>
+                        <td class="text-end fw-bold text-success">@((Model.HsscObtainedMarks.Value / (Model.HsscTotalMarks ?? 1100) * 100).ToString("0.00"))%</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Document Verification Notice & Signatures -->
+        <div class="bg-light p-3 rounded-3 border mb-4 small text-muted">
+            <h6 class="fw-bold text-dark mb-1">Instructions for Document Scrutiny & Interview:</h6>
+            <ol class="mb-0 ps-3">
+                <li>Bring this printed slip along with original Matric & Inter DMCs, Domicile certificate, and Form-B/CNIC to the Admission Cell, GDC Madyan Swat.</li>
+                <li>Hafiz-e-Quran applicants must appear for the Quran recitation oral test on the specified interview date.</li>
+                <li>Upon selection in the merit list, collect the 3-copy Bank of Khyber (BoK) admission fee voucher from the accounts office.</li>
+            </ol>
+        </div>
+
+        <div class="row pt-5 mt-4 text-center">
+            <div class="col-4">
+                <div class="border-top pt-2 small text-muted">Applicant Signature</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top pt-2 small text-muted">Admission Scrutiny Officer</div>
+            </div>
+            <div class="col-4">
+                <div class="border-top pt-2 small text-muted">Convener Admission Committee</div>
+            </div>
+        </div>
+    </div>
+</div>

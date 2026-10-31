@@ -1,0 +1,401 @@
+@model College_Web_Application.Models.ViewModels.AttendanceShortageListViewModel
+@{
+    ViewData["Title"] = "BS 75% Attendance Shortage & Debarment Gazette";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="d-print-none mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Portal</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="ExamControllerOffice" asp-action="Index">Exam Controller</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Attendance Shortage Notice</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Printable Official Institutional Header -->
+    <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="card-header bg-dark text-white py-3 px-4 d-flex flex-wrap justify-content-between align-items-center" style="background: linear-gradient(135deg, #063B13 0%, #0F172A 100%) !important;">
+            <div class="d-flex align-items-center gap-3">
+                <img src="~/images/gdc-madyan-logo.png" alt="GDC Madyan Crest" style="height: 60px; width: 60px;" class="bg-white rounded-circle p-1 shadow-sm" onerror="this.src='/images/crest-placeholder.png'" />
+                <div>
+                    <h5 class="fw-bold mb-0 text-white letter-spacing-1">GOVERNMENT DEGREE COLLEGE MADYAN SWAT</h5>
+                    <div class="small text-warning font-monospace">OFFICE OF THE CONTROLLER OF EXAMINATIONS &bull; ATTENDANCE SCRUTINY COMMITTEE</div>
+                    <div class="small text-light opacity-75">Higher Education Department, Govt. of Khyber Pakhtunkhwa | Affiliated with University of Swat</div>
+                </div>
+            </div>
+            <div class="text-end mt-2 mt-md-0 d-print-none">
+                <button type="button" onclick="window.print()" class="btn btn-warning btn-sm fw-bold px-3 shadow-sm me-2">
+                    <i class="bi bi-printer-fill me-1"></i> Print Official Notice
+                </button>
+                <a asp-action="Index" class="btn btn-outline-light btn-sm px-3">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Award Lists
+                </a>
+            </div>
+        </div>
+
+        <!-- Official Dispatch Banner for Printed Gazette -->
+        <div class="bg-light border-bottom px-4 py-2 d-flex justify-content-between align-items-center text-muted small">
+            <div>
+                <strong>Ref No:</strong> <span class="font-monospace text-dark">GDCM/EXAM-ATT/@DateTime.UtcNow.Year/@Model.SelectedProgramId-@Model.SelectedSemester</span>
+            </div>
+            <div>
+                <strong>Statutory Notice Date:</strong> <span class="text-dark">@DateTime.UtcNow.ToString("dd MMMM yyyy")</span>
+            </div>
+            <div>
+                <strong>Target Examination:</strong> <span class="text-dark fw-bold">Fall 2026 Final Term</span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Statutory Policy Citation Alert -->
+            <div class="alert alert-warning border-warning border-start border-4 shadow-sm mb-4">
+                <div class="d-flex gap-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 text-warning flex-shrink-0"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">
+                            HEC & University of Swat BS 4-Year Attendance Compliance Regulation (Clause 14.2)
+                        </h6>
+                        <p class="mb-1 small text-secondary">
+                            "A student shall be required to maintain a minimum of <strong>75% attendance</strong> of the lectures delivered in each course to be eligible to sit in the Final Term Examination. Students securing between <strong>65% and 74.9%</strong> may be condoned by the Principal / Academic Committee on medical/emergency grounds upon payment of the institutional condonation fine. Students securing <strong>less than 65%</strong> shall be strictly debarred and must repeat the course."
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar (Hidden in Print) -->
+            <div class="card bg-light border-0 p-3 mb-4 d-print-none shadow-sm rounded-3">
+                <form method="get" asp-action="ShortageList" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold text-secondary">Select Academic Program (BS 4-Year)</label>
+                        <select name="programId" class="form-select border-success">
+                            @foreach (var prog in Model.Programs)
+                            {
+                                <option value="@prog.Id" selected="@(prog.Id == Model.SelectedProgramId)">@prog.Title (@prog.Level)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-secondary">Semester</label>
+                        <select name="semester" class="form-select border-success">
+                            @for (int s = 1; s <= 8; s++)
+                            {
+                                <option value="@s" selected="@(s == Model.SelectedSemester)">Semester @s</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-success fw-bold flex-grow-1" style="background-color: #0B6623;">
+                            <i class="bi bi-funnel-fill me-1"></i> Filter Attendance Ledger
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- KPI Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 bg-light">
+                        <div class="card-body p-3">
+                            <div class="text-muted small fw-semibold text-uppercase">Total Evaluated</div>
+                            <div class="fs-3 fw-bold text-dark mt-1">@Model.TotalEvaluated</div>
+                            <div class="small text-muted">Enrollment subjects</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10 border-start border-success border-4">
+                        <div class="card-body p-3">
+                            <div class="text-success small fw-semibold text-uppercase">Eligible (&ge; 75%)</div>
+                            <div class="fs-3 fw-bold text-success mt-1">@Model.TotalEligible</div>
+                            <div class="small text-muted">Cleared for Final Exam</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 bg-warning bg-opacity-10 border-start border-warning border-4">
+                        <div class="card-body p-3">
+                            <div class="text-warning-emphasis small fw-semibold text-uppercase">Warning (65% - 74.9%)</div>
+                            <div class="fs-3 fw-bold text-warning-emphasis mt-1">@Model.TotalWarningCondonationZone</div>
+                            <div class="small text-muted">Condonation Zone</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 bg-danger bg-opacity-10 border-start border-danger border-4">
+                        <div class="card-body p-3">
+                            <div class="text-danger small fw-semibold text-uppercase">Debarred (&lt; 65%)</div>
+                            <div class="fs-3 fw-bold text-danger mt-1">@Model.TotalDebarred</div>
+                            <div class="small text-muted">Ineligible / Course Drop</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show d-print-none shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show d-print-none shadow-sm" role="alert">
+                    <i class="bi bi-x-circle-fill me-2"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Shortage Table -->
+            <div class="table-responsive shadow-sm rounded-3 border">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark small text-uppercase" style="background-color: #0F172A;">
+                        <tr>
+                            <th style="width: 40px;" class="text-center">#</th>
+                            <th style="min-width: 140px;">Roll Number</th>
+                            <th style="min-width: 200px;">Student & Father Name</th>
+                            <th style="min-width: 180px;">Course Details</th>
+                            <th class="text-center" style="width: 100px;">Held / Attended</th>
+                            <th class="text-center" style="width: 110px;">Attendance %</th>
+                            <th class="text-center" style="width: 150px;">Status</th>
+                            <th class="text-center" style="min-width: 140px;">Recovery Req.</th>
+                            <th class="text-center d-print-none" style="min-width: 180px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ShortageStudents.Any())
+                        {
+                            int idx = 1;
+                            foreach (var item in Model.ShortageStudents)
+                            {
+                                <tr class="@(item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.Debarred && !item.IsCondonedByPrincipal ? "table-danger bg-opacity-25" : "")">
+                                    <td class="text-center fw-semibold text-muted">@idx</td>
+                                    <td>
+                                        <div class="font-monospace fw-bold text-dark">@item.RollNumber</div>
+                                        <div class="small text-muted"><i class="bi bi-telephone-fill me-1 text-secondary"></i>@item.ContactNumber</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.FullName</div>
+                                        <div class="small text-muted">S/O @item.FatherName</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@item.CourseCode</div>
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;" title="@item.CourseTitle">@item.CourseTitle</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border">
+                                            <strong>@(item.TotalPresent + item.TotalLeave)</strong> / @item.TotalConducted
+                                        </span>
+                                        <div class="small text-muted" style="font-size: 0.72rem;">(@item.TotalAbsent absent)</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fs-6 fw-bold @(item.AttendancePercentage < 65.0m ? "text-danger" : "text-warning")">
+                                            @item.AttendancePercentage.ToString("0.0")%
+                                        </span>
+                                        <div class="progress mt-1" style="height: 5px;">
+                                            <div class="progress-bar @(item.AttendancePercentage < 65.0m ? "bg-danger" : "bg-warning")" 
+                                                 role="progressbar" 
+                                                 style="width: @Math.Min(100, item.AttendancePercentage)%;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.IsCondonedByPrincipal)
+                                        {
+                                            <span class="badge bg-success text-white py-1 px-2">
+                                                <i class="bi bi-patch-check-fill me-1"></i> CONDONED
+                                            </span>
+                                            <div class="small text-success mt-1" style="font-size: 0.7rem;">Challan: @item.CondonationChallan</div>
+                                        }
+                                        else if (item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.CondonationZone)
+                                        {
+                                            <span class="badge bg-warning text-dark py-1 px-2 fw-bold">
+                                                <i class="bi bi-exclamation-circle-fill me-1"></i> CONDONATION ZONE
+                                            </span>
+                                            <div class="small text-muted mt-1" style="font-size: 0.7rem;">Eligible for Principal Waiver</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger text-white py-1 px-2 fw-bold">
+                                                <i class="bi bi-x-circle-fill me-1"></i> STRICTLY DEBARRED
+                                            </span>
+                                            <div class="small text-danger mt-1" style="font-size: 0.7rem;">Repeat Course</div>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.ClassesNeededToReach75 > 0)
+                                        {
+                                            <span class="badge bg-secondary text-white font-monospace">
+                                                +@item.ClassesNeededToReach75 classes
+                                            </span>
+                                            <div class="small text-muted" style="font-size: 0.7rem;">Consecutive to 75%</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success small fw-semibold"><i class="bi bi-check-all"></i> Target Met</span>
+                                        }
+                                    </td>
+                                    <td class="text-center d-print-none">
+                                        <div class="btn-group btn-group-sm">
+                                            <!-- WhatsApp Alert Button -->
+                                            <a href="@item.WhatsAppUrl" target="_blank" class="btn btn-outline-success" title="Send WhatsApp Warning to Parent/Student">
+                                                <i class="bi bi-whatsapp"></i> Warning
+                                            </a>
+
+                                            <!-- Principal Condonation Waiver Button -->
+                                            @if (!item.IsCondonedByPrincipal && item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.CondonationZone)
+                                            {
+                                                <button type="button" 
+                                                        class="btn btn-outline-warning text-dark fw-semibold" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#condonationModal"
+                                                        data-student-id="@item.StudentId"
+                                                        data-student-name="@item.FullName"
+                                                        data-student-roll="@item.RollNumber"
+                                                        data-course-id="@item.CourseId"
+                                                        data-course-title="@item.CourseCode - @item.CourseTitle"
+                                                        data-percentage="@item.AttendancePercentage.ToString("0.0")"
+                                                        title="Grant Principal Condonation Waiver">
+                                                    <i class="bi bi-award-fill"></i> Condone
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                idx++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    <i class="bi bi-check-circle text-success fs-1 d-block mb-2"></i>
+                                    <h6 class="fw-bold text-dark">No Attendance Shortages Detected</h6>
+                                    <p class="small text-muted mb-0">All enrolled BS students in @Model.ProgramTitle (Semester @Model.SelectedSemester) satisfy the mandatory 75% HEC attendance threshold.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Official Signatures Block (Visible in Print & Gazette Copy) -->
+            <div class="row mt-5 pt-4 text-center border-top">
+                <div class="col-3">
+                    <div class="border-bottom mx-auto mb-2" style="width: 140px; height: 40px;"></div>
+                    <div class="fw-bold small text-dark">Subject Instructor</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Department of Computer Science</div>
+                </div>
+                <div class="col-3">
+                    <div class="border-bottom mx-auto mb-2" style="width: 140px; height: 40px;"></div>
+                    <div class="fw-bold small text-dark">Head of Department</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Academic Scrutiny</div>
+                </div>
+                <div class="col-3">
+                    <div class="border-bottom mx-auto mb-2" style="width: 140px; height: 40px;"></div>
+                    <div class="fw-bold small text-dark">Controller of Examinations</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">GDC Madyan Swat</div>
+                </div>
+                <div class="col-3">
+                    <div class="border-bottom mx-auto mb-2" style="width: 140px; height: 40px;"></div>
+                    <div class="fw-bold small text-dark">Principal / Head of Institution</div>
+                    <div class="text-muted" style="font-size: 0.72rem;">Govt. Degree College Madyan Swat</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Principal Attendance Condonation Approval -->
+<div class="modal fade" id="condonationModal" tabindex="-1" aria-labelledby="condonationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <form asp-action="ApproveCondonation" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="programId" value="@Model.SelectedProgramId" />
+                <input type="hidden" name="semester" value="@Model.SelectedSemester" />
+                <input type="hidden" id="modalStudentId" name="studentId" />
+                <input type="hidden" id="modalCourseId" name="courseId" />
+
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold" id="condonationModalLabel">
+                        <i class="bi bi-shield-check me-2"></i> Grant Principal Condonation Waiver
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-light border small mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Student:</span>
+                            <span class="fw-bold text-dark" id="modalStudentName"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Roll Number:</span>
+                            <span class="font-monospace fw-bold text-dark" id="modalStudentRoll"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Course:</span>
+                            <span class="fw-semibold text-dark" id="modalCourseTitle"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Current Attendance:</span>
+                            <span class="badge bg-warning text-dark fw-bold" id="modalPercentage"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Bank of Khyber (BoK) Condonation Challan Number <span class="text-danger">*</span></label>
+                        <input type="text" name="challanNo" class="form-control" placeholder="e.g. BOK-COND-2026-042" required />
+                        <div class="form-text small">Condonation fee must be verified from the college account ledger.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Grounds & Medical / Emergency Documentation Reference <span class="text-danger">*</span></label>
+                        <textarea name="reason" class="form-control" rows="3" placeholder="e.g., Severe typhoid hospitalization from DHQ Hospital Swat with attached medical certificate. Approved by Academic Council." required></textarea>
+                    </div>
+
+                    <div class="form-check small bg-light p-2 rounded">
+                        <input class="form-check-input ms-1" type="checkbox" id="confirmWaiver" required>
+                        <label class="form-check-label ms-2 text-dark" for="confirmWaiver">
+                            I certify that the student falls within the 65%–74.9% permissible waiver zone and satisfies HEC condonation criteria.
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning btn-sm fw-bold px-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> Approve & Issue Waiver
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var condonationModal = document.getElementById('condonationModal');
+        if (condonationModal) {
+            condonationModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var studentId = button.getAttribute('data-student-id');
+                var studentName = button.getAttribute('data-student-name');
+                var studentRoll = button.getAttribute('data-student-roll');
+                var courseId = button.getAttribute('data-course-id');
+                var courseTitle = button.getAttribute('data-course-title');
+                var percentage = button.getAttribute('data-percentage');
+
+                document.getElementById('modalStudentId').value = studentId;
+                document.getElementById('modalCourseId').value = courseId;
+                document.getElementById('modalStudentName').textContent = studentName;
+                document.getElementById('modalStudentRoll').textContent = studentRoll;
+                document.getElementById('modalCourseTitle').textContent = courseTitle;
+                document.getElementById('modalPercentage').textContent = percentage + '%';
+            });
+        }
+    </script>
+}

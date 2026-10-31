@@ -1,0 +1,257 @@
+@model College_Web_Application.Models.ViewModels.StudentRollNoSlipViewModel
+@{
+    ViewData["Title"] = $"Roll No Slip - {Model.Student.RollNumber}";
+    Layout = "_Layout";
+}
+
+<div class="container py-4">
+    <!-- Non-printable top action bar -->
+    <div class="d-print-none d-flex justify-content-between align-items-center mb-3">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Student Dashboard
+        </a>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="window.print()" class="btn btn-warning btn-sm fw-bold px-4 shadow-sm">
+                <i class="bi bi-printer-fill me-1"></i> Print Roll Number Slip (A4)
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Official Examination Admit Card -->
+    <div class="card shadow-sm border border-2 border-dark rounded-0 p-4 bg-white printable-slip">
+        <!-- Institutional Header -->
+        <div class="row align-items-center pb-3 border-bottom border-2 border-dark mb-3">
+            <div class="col-2 text-center">
+                <img src="~/images/gdc-madyan-logo.png" alt="GDC Madyan Crest" style="width: 80px; height: 80px;" class="img-fluid" onerror="this.src='/images/crest-placeholder.png'" />
+            </div>
+            <div class="col-8 text-center">
+                <h4 class="fw-bold mb-0 text-dark letter-spacing-1">GOVERNMENT DEGREE COLLEGE MADYAN SWAT</h4>
+                <div class="fw-semibold text-uppercase small text-dark">Office of the Controller of Examinations</div>
+                <div class="small text-muted">Affiliated with University of Swat &bull; Higher Education Department KP</div>
+                <div class="badge bg-dark text-white px-3 py-1.5 mt-2 text-uppercase fs-6">
+                    FINAL TERM EXAMINATION ADMIT CARD &bull; @Model.AcademicSession.ToUpper()
+                </div>
+            </div>
+            <div class="col-2 text-center">
+                <div class="border border-dark p-2 bg-light">
+                    <div class="font-monospace small fw-bold text-dark">SEMESTER</div>
+                    <div class="fs-3 fw-bold text-dark">@Model.Semester</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serial and Verification Banner -->
+        <div class="d-flex justify-content-between align-items-center bg-light border border-secondary p-2 mb-3 small">
+            <div>
+                <strong>Admit Slip No:</strong> <span class="font-monospace fw-bold text-dark">@Model.SlipNumber</span>
+            </div>
+            <div>
+                <strong>Issuance Date:</strong> <span>@DateTime.UtcNow.ToString("dd-MMM-yyyy")</span>
+            </div>
+            <div>
+                <strong>Center Code:</strong> <span class="font-monospace fw-bold text-dark">GDCM-HALL-01</span>
+            </div>
+        </div>
+
+        <!-- Student Demographic Profile -->
+        <div class="row g-3 mb-4">
+            <div class="col-9">
+                <table class="table table-bordered table-sm mb-0 align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="bg-light text-muted" style="width: 25%;">College Roll No:</th>
+                            <td class="font-monospace fw-bold fs-6 text-dark" style="width: 25%;">@Model.Student.RollNumber</td>
+                            <th class="bg-light text-muted" style="width: 25%;">University Reg No:</th>
+                            <td class="font-monospace fw-bold text-dark" style="width: 25%;">@Model.Student.RegistrationNo</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-muted">Candidate Name:</th>
+                            <td class="fw-bold text-dark text-uppercase">@Model.Student.FullName</td>
+                            <th class="bg-light text-muted">Father's Name:</th>
+                            <td class="fw-bold text-dark text-uppercase">@Model.Student.FatherName</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-muted">Academic Program:</th>
+                            <td class="fw-semibold text-dark">@Model.Student.Program?.Title</td>
+                            <th class="bg-light text-muted">Section & Session:</th>
+                            <td class="text-dark">Section @Model.Student.Section (@Model.AcademicSession)</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light text-muted">Examination Center:</th>
+                            <td colspan="3" class="fw-bold text-dark">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @Model.ExaminationCenter
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-3 text-center">
+                <div class="border border-dark p-1 mx-auto bg-light" style="width: 120px; height: 140px;">
+                    <img src="@(string.IsNullOrEmpty(Model.Student.PhotoUrl) ? "/images/student-avatar.png" : Model.Student.PhotoUrl)" 
+                         alt="@Model.Student.FullName" 
+                         style="width: 100%; height: 100%; object-fit: cover;" 
+                         onerror="this.src='/images/crest-placeholder.png'" />
+                </div>
+                <div class="text-muted" style="font-size: 0.68rem; margin-top: 4px;">Candidate Photograph</div>
+            </div>
+        </div>
+
+        <!-- Examination Schedule & Subject-Wise Attendance Clearance Table -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-dark text-uppercase mb-0">
+                    <i class="bi bi-table me-1"></i> Prescribed Courses & HEC Attendance Clearance Status
+                </h6>
+                <span class="small text-muted font-monospace">Mandatory Attendance: 75.0%</span>
+            </div>
+
+            <table class="table table-bordered table-sm align-middle text-center mb-0">
+                <thead class="table-dark small text-uppercase">
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th style="width: 110px;">Course Code</th>
+                        <th class="text-start" style="min-width: 200px;">Course Title</th>
+                        <th style="width: 60px;">Cr. Hr</th>
+                        <th style="width: 100px;">Attendance %</th>
+                        <th style="width: 140px;">Exam Eligibility</th>
+                        <th style="min-width: 150px;">Exam Date & Day</th>
+                        <th style="width: 130px;">Timing</th>
+                        <th style="width: 100px;">Invigilator Sign</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    @if (Model.Courses.Any())
+                    {
+                        int cIdx = 1;
+                        foreach (var c in Model.Courses)
+                        {
+                            <tr class="@(!c.IsEligible ? "table-danger" : "")">
+                                <td class="fw-semibold text-muted">@cIdx</td>
+                                <td class="font-monospace fw-bold text-dark">@c.CourseCode</td>
+                                <td class="text-start fw-semibold text-dark">@c.CourseTitle</td>
+                                <td>@c.CreditHours</td>
+                                <td>
+                                    <strong class="@(c.AttendancePercentage >= 75 ? "text-success" : (c.AttendancePercentage >= 65 ? "text-warning" : "text-danger"))">
+                                        @c.AttendancePercentage.ToString("0.0")%
+                                    </strong>
+                                </td>
+                                <td>
+                                    @if (c.IsEligible)
+                                    {
+                                        if (c.IsCondoned)
+                                        {
+                                            <span class="badge bg-success text-white px-2 py-1">
+                                                <i class="bi bi-check-circle me-1"></i> CONDONED
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success text-white px-2 py-1">
+                                                <i class="bi bi-check-circle me-1"></i> ELIGIBLE
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger text-white px-2 py-1 fw-bold">
+                                            <i class="bi bi-slash-circle me-1"></i> DEBARRED
+                                        </span>
+                                    }
+                                </td>
+                                <td class="font-monospace text-dark">
+                                    @(c.IsEligible ? c.ExamDate : "—")
+                                </td>
+                                <td class="text-dark">
+                                    @(c.IsEligible ? c.ExamTime : "—")
+                                </td>
+                                <td style="height: 35px;">
+                                    @if (!c.IsEligible)
+                                    {
+                                        <span class="text-danger fw-bold" style="font-size: 0.65rem;">BARRED</span>
+                                    }
+                                </td>
+                            </tr>
+                            cIdx++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="py-3 text-muted">No course exam schedule available.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Examination Statutory Directives & Code of Conduct -->
+        <div class="border border-secondary p-3 mb-4 bg-light small">
+            <h6 class="fw-bold text-dark text-uppercase mb-2" style="font-size: 0.8rem;">
+                <i class="bi bi-shield-exclamation me-1 text-danger"></i> Mandatory Examination Rules & Code of Conduct (University of Swat & HEC)
+            </h6>
+            <ol class="mb-0 ps-3 text-secondary" style="font-size: 0.76rem; line-height: 1.4;">
+                <li>The candidate MUST present this original Roll Number Slip along with original CNIC or College Photo ID Card upon entry into the Examination Hall.</li>
+                <li><strong>75% Attendance Debarment:</strong> Candidates marked as <strong>DEBARRED</strong> above are strictly barred from receiving question papers or answer scripts for that course per University of Swat Semester Regulations.</li>
+                <li>Possession of mobile phones, smartwatches, programmable calculators, notes, or unauthorized electronic gadgets inside the hall constitutes an unfair means case (UMC).</li>
+                <li>Candidates must be seated 15 minutes before the commencement of the examination. No candidate will be admitted after 30 minutes from the exam start time.</li>
+                <li>This document is a computer-verified institutional record. Any tampering, overwriting, or unauthorized alteration shall lead to immediate rustication and legal action.</li>
+            </ol>
+        </div>
+
+        <!-- Signatures & Verification Block -->
+        <div class="row pt-4 text-center align-items-end">
+            <div class="col-3">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Candidate's Signature</div>
+                <div class="text-muted" style="font-size: 0.68rem;">(To be signed in presence of Invigilator)</div>
+            </div>
+            <div class="col-3">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Center Superintendent</div>
+                <div class="text-muted" style="font-size: 0.68rem;">Hall Examination Staff</div>
+            </div>
+            <div class="col-3">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Controller of Examinations</div>
+                <div class="text-muted" style="font-size: 0.68rem;">GDC Madyan Swat</div>
+            </div>
+            <div class="col-3">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Principal / Head of Institution</div>
+                <div class="text-muted" style="font-size: 0.68rem;">Govt. Degree College Madyan Swat</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        body {
+            background-color: #fff !important;
+            color: #000 !important;
+            font-size: 11pt !important;
+        }
+        .navbar, .institutional-topbar, .site-footer, .d-print-none, .portal-header, .portal-sidebar {
+            display: none !important;
+        }
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .printable-slip {
+            border: 2px solid #000 !important;
+            box-shadow: none !important;
+            padding: 15px !important;
+        }
+        .table {
+            border-color: #000 !important;
+        }
+        .badge {
+            border: 1px solid #000 !important;
+            color: #000 !important;
+            background: transparent !important;
+        }
+    }
+</style>
