@@ -104,12 +104,21 @@ else
     <input type="hidden" asp-for="AcademicSession" />
 
     <div class="card card-portal shadow-sm mb-4">
-        <div class="card-header-portal">
+        <div class="card-header-portal d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-table text-success fs-5"></i>
-                <span>Official Award List Grid (Max 100 Marks)</span>
+                <span class="fw-bold">Official Award List Grid (Max 100 Marks)</span>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex align-items-center gap-2">
+                @if (!Model.IsLocked)
+                {
+                    <button type="button" class="btn btn-outline-primary btn-sm fw-semibold shadow-xs" data-bs-toggle="modal" data-bs-target="#csvImportModal">
+                        <i class="bi bi-filetype-csv me-1"></i> Import CSV Marks
+                    </button>
+                }
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" onclick="document.getElementById('analyticsSection').scrollIntoView({behavior:'smooth'})">
+                    <i class="bi bi-bar-chart-fill me-1"></i> Class Analytics
+                </button>
                 <span class="badge bg-light text-secondary border">Mid: 30 Max</span>
                 <span class="badge bg-light text-secondary border">Sessional: 20 Max</span>
                 <span class="badge bg-light text-secondary border">Final: 50 Max</span>
@@ -281,6 +290,106 @@ else
     </div>
 </form>
 
+<!-- CLASS ANALYTICS & GRADE DISTRIBUTION -->
+<div class="card card-portal shadow-sm mb-4" id="analyticsSection">
+    <div class="card-header-portal d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-graph-up text-primary fs-5"></i>
+            <span class="fw-bold">Class Analytics & Grade Distribution</span>
+        </div>
+        <span class="badge bg-light text-secondary border">Live Computed Metrics</span>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center border">
+                    <div class="text-muted small fw-semibold text-uppercase">Class Average</div>
+                    <div class="h3 fw-bold text-dark mb-0" id="classAvgStat">0.0</div>
+                    <div class="small text-muted" style="font-size: 0.72rem;">Out of 100 Marks</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center border">
+                    <div class="text-muted small fw-semibold text-uppercase">Highest Score</div>
+                    <div class="h3 fw-bold text-success mb-0" id="highestScoreStat">0.0</div>
+                    <div class="small text-muted" style="font-size: 0.72rem;">Class Topper</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center border">
+                    <div class="text-muted small fw-semibold text-uppercase">Pass Rate</div>
+                    <div class="h3 fw-bold text-primary mb-0" id="passRateStat">0%</div>
+                    <div class="small text-muted" style="font-size: 0.72rem;">Passing &ge; 50 Marks</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center border">
+                    <div class="text-muted small fw-semibold text-uppercase">Attendance Debarred</div>
+                    <div class="h3 fw-bold text-danger mb-0" id="debarredCountStat">
+                        @Model.StudentMarks.Count(s => s.IsDebarredForShortAttendance)
+                    </div>
+                    <div class="small text-danger fw-semibold" style="font-size: 0.72rem;">&lt; 75% Attendance</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border rounded-3 p-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-dark mb-0 small text-uppercase">
+                    <i class="bi bi-bar-chart-steps me-1 text-success"></i> Grade Frequency Bell Curve
+                </h6>
+                <span class="small text-muted">A (85+) &bull; B (70+) &bull; C (55+) &bull; D (50+) &bull; F (&lt;50)</span>
+            </div>
+            <div style="height: 240px; position: relative;">
+                <canvas id="gradeDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSV Import Modal -->
+<div class="modal fade" id="csvImportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-filetype-csv me-2 text-warning"></i>Import Marks from Spreadsheet / CSV
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">
+                    Paste your Excel or CSV data below or choose a .csv file. The parser matches each line by <strong>Roll Number</strong> and automatically sets Mid-Term, Sessional, and Final-Term marks.
+                </p>
+
+                <div class="alert alert-secondary small p-2.5 mb-3 font-monospace">
+                    <strong>Expected CSV Header / Format:</strong><br />
+                    <code>RollNumber,MidTerm,Sessional,FinalTerm</code><br />
+                    <em>Example: GDCM-BSCS-26-001,25.5,18.0,42.5</em>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Upload CSV File:</label>
+                    <input type="file" id="csvFileInput" accept=".csv,text/csv" class="form-control form-control-sm" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">Or Paste CSV / Tab-Delimited Data Here:</label>
+                    <textarea id="csvPasteArea" class="form-control font-monospace small" rows="6" placeholder="RollNumber,MidTerm,Sessional,FinalTerm&#10;GDCM-BSCS-26-001,24.5,17.0,43.0&#10;GDCM-BSCS-26-002,28.0,19.0,46.5"></textarea>
+                </div>
+
+                <div id="csvFeedback" class="small text-muted"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success fw-bold px-4" onclick="applyCsvMarks()">
+                    <i class="bi bi-check2-circle me-1"></i> Apply Marks to Grid
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Confirmation Modal -->
 <div class="modal fade" id="submitConfirmModal" tabindex="-1">
     <div class="modal-dialog">
@@ -325,7 +434,10 @@ else
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        var gradeChart = null;
+
         function confirmSubmit() {
             var modal = new bootstrap.Modal(document.getElementById('submitConfirmModal'));
             modal.show();
@@ -341,27 +453,193 @@ else
             form.submit();
         }
 
+        function recalculateRow(row) {
+            var midInput = row.querySelector('.mid-marks');
+            var sessionalInput = row.querySelector('.sessional-marks');
+            var finalInput = row.querySelector('.final-marks');
+
+            var mid = parseFloat(midInput ? midInput.value : 0) || 0;
+            var sessional = parseFloat(sessionalInput ? sessionalInput.value : 0) || 0;
+            var final = parseFloat(finalInput ? finalInput.value : 0) || 0;
+
+            if (mid > 30) { if (midInput) midInput.value = 30; mid = 30; }
+            if (sessional > 20) { if (sessionalInput) sessionalInput.value = 20; sessional = 20; }
+            if (final > 50) { if (finalInput) finalInput.value = 50; final = 50; }
+
+            var total = mid + sessional + final;
+            var totalCell = row.querySelector('.total-marks-cell');
+            if (totalCell) totalCell.textContent = total.toFixed(1);
+
+            var gradeData = getGradeAndGp(total);
+            var badge = row.querySelector('.grade-badge');
+            if (badge) {
+                badge.textContent = gradeData.grade;
+                badge.className = 'badge grade-badge ' + gradeData.badgeClass;
+            }
+            var gpCell = row.querySelector('.gp-cell');
+            if (gpCell) gpCell.textContent = gradeData.gp.toFixed(2);
+        }
+
+        function updateAnalyticsAndChart() {
+            var rows = Array.from(document.querySelectorAll('#marksTable tbody tr'));
+            var totals = [];
+            var gradeCounts = { 'A': 0, 'A-': 0, 'B+': 0, 'B': 0, 'B-': 0, 'C+': 0, 'C': 0, 'D': 0, 'F': 0 };
+
+            rows.forEach(function (r) {
+                var totalCell = r.querySelector('.total-marks-cell');
+                var badge = r.querySelector('.grade-badge');
+                if (totalCell && badge) {
+                    var tot = parseFloat(totalCell.textContent) || 0;
+                    totals.push(tot);
+                    var g = badge.textContent.trim();
+                    if (g.startsWith('SA')) g = 'F';
+                    if (gradeCounts.hasOwnProperty(g)) {
+                        gradeCounts[g]++;
+                    } else {
+                        gradeCounts['F']++;
+                    }
+                }
+            });
+
+            if (totals.length > 0) {
+                var sum = totals.reduce((a, b) => a + b, 0);
+                var avg = sum / totals.length;
+                var max = Math.max(...totals);
+                var passCount = totals.filter(t => t >= 50).length;
+                var passRate = (passCount / totals.length) * 100;
+
+                var avgEl = document.getElementById('classAvgStat');
+                var maxEl = document.getElementById('highestScoreStat');
+                var passEl = document.getElementById('passRateStat');
+
+                if (avgEl) avgEl.textContent = avg.toFixed(1);
+                if (maxEl) maxEl.textContent = max.toFixed(1);
+                if (passEl) passEl.textContent = passRate.toFixed(0) + '%';
+            }
+
+            // Update Chart.js
+            var ctx = document.getElementById('gradeDistributionChart');
+            if (ctx) {
+                var labels = ['A (85+)', 'A- (80+)', 'B+ (75+)', 'B (70+)', 'B- (65+)', 'C+ (60+)', 'C (55+)', 'D (50+)', 'F (<50)'];
+                var data = [
+                    gradeCounts['A'], gradeCounts['A-'], gradeCounts['B+'],
+                    gradeCounts['B'], gradeCounts['B-'], gradeCounts['C+'],
+                    gradeCounts['C'], gradeCounts['D'], gradeCounts['F']
+                ];
+
+                if (gradeChart) {
+                    gradeChart.data.datasets[0].data = data;
+                    gradeChart.update();
+                } else {
+                    gradeChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Student Count',
+                                data: data,
+                                backgroundColor: [
+                                    '#0B6623', '#16A34A', '#2563EB', '#3B82F6', '#60A5FA',
+                                    '#D97706', '#F59E0B', '#64748B', '#DC2626'
+                                ],
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { stepSize: 1 }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // CSV Import Handler
+        function applyCsvMarks() {
+            var text = document.getElementById('csvPasteArea').value;
+            if (!text.trim()) {
+                var feedback = document.getElementById('csvFeedback');
+                if (feedback) feedback.innerHTML = '<span class="text-danger">Please paste CSV content or choose a file first.</span>';
+                return;
+            }
+
+            var lines = text.split(/\r?\n/);
+            var updatedCount = 0;
+            var rows = Array.from(document.querySelectorAll('#marksTable tbody tr'));
+
+            lines.forEach(function (line) {
+                line = line.trim();
+                if (!line) return;
+
+                // Split by comma or tab
+                var parts = line.split(/[,\t]/).map(p => p.trim());
+                if (parts.length < 4) return;
+
+                var rollNo = parts[0];
+                var mid = parseFloat(parts[1]);
+                var sessional = parseFloat(parts[2]);
+                var final = parseFloat(parts[3]);
+
+                if (isNaN(mid)) return; // Header row skipped
+
+                // Find matching row
+                var matchRow = rows.find(function (r) {
+                    var rText = r.querySelector('.font-monospace')?.textContent.trim();
+                    return rText && rText.toLowerCase() === rollNo.toLowerCase();
+                });
+
+                if (matchRow) {
+                    var midInput = matchRow.querySelector('.mid-marks');
+                    var sessionalInput = matchRow.querySelector('.sessional-marks');
+                    var finalInput = matchRow.querySelector('.final-marks');
+
+                    if (midInput && !midInput.readOnly) midInput.value = isNaN(mid) ? 0 : mid;
+                    if (sessionalInput && !sessionalInput.readOnly) sessionalInput.value = isNaN(sessional) ? 0 : sessional;
+                    if (finalInput && !finalInput.readOnly) finalInput.value = isNaN(final) ? 0 : final;
+
+                    recalculateRow(matchRow);
+                    updatedCount++;
+                }
+            });
+
+            updateAnalyticsAndChart();
+
+            var modalEl = document.getElementById('csvImportModal');
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            alert('Successfully populated marks for ' + updatedCount + ' student(s) from CSV!');
+        }
+
+        // File upload reader
+        var fileInput = document.getElementById('csvFileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', function (e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        document.getElementById('csvPasteArea').value = evt.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+
         // Live calculation of Total Marks, Grade, and GP
         document.querySelectorAll('.mark-input').forEach(function (input) {
             input.addEventListener('input', function () {
-                var row = this.closest('tr');
-                var mid = parseFloat(row.querySelector('.mid-marks').value) || 0;
-                var sessional = parseFloat(row.querySelector('.sessional-marks').value) || 0;
-                var final = parseFloat(row.querySelector('.final-marks').value) || 0;
-
-                // Clamp values
-                if (mid > 30) { row.querySelector('.mid-marks').value = 30; mid = 30; }
-                if (sessional > 20) { row.querySelector('.sessional-marks').value = 20; sessional = 20; }
-                if (final > 50) { row.querySelector('.final-marks').value = 50; final = 50; }
-
-                var total = mid + sessional + final;
-                row.querySelector('.total-marks-cell').textContent = total.toFixed(1);
-
-                var gradeData = getGradeAndGp(total);
-                var badge = row.querySelector('.grade-badge');
-                badge.textContent = gradeData.grade;
-                badge.className = 'badge grade-badge ' + gradeData.badgeClass;
-                row.querySelector('.gp-cell').textContent = gradeData.gp.toFixed(2);
+                recalculateRow(this.closest('tr'));
+                updateAnalyticsAndChart();
             });
         });
 
@@ -376,5 +654,9 @@ else
             if (total >= 50) return { grade: "D", gp: 1.00, badgeClass: "bg-secondary text-white" };
             return { grade: "F", gp: 0.00, badgeClass: "bg-danger text-white" };
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateAnalyticsAndChart();
+        });
     </script>
 }

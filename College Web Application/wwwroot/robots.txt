@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /Account/
+Disallow: /Admin/
+Disallow: /Faculty/
+Disallow: /Student/
+
+Sitemap: https://gdcmadyan.edu.pk/sitemap.xml

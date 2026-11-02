@@ -17,14 +17,14 @@
 
     <style>
         :root {
-            --gdc-green-primary: #0B6623;
-            --gdc-green-dark: #084C1A;
+            --gdc-navy-primary: #0B1B3D;
+            --gdc-navy-dark: #070D1B;
             --gdc-gold-primary: #D4AF37;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #063B13 0%, #0B6623 50%, #084C1A 100%);
+            background: linear-gradient(135deg, #070D1B 0%, #0B1B3D 50%, #163678 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -35,7 +35,8 @@
         .login-card {
             background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             max-width: 440px;
             width: 100%;
             overflow: hidden;
@@ -56,21 +57,21 @@
             align-items: center;
             justify-content: center;
             font-size: 1.85rem;
-            color: var(--gdc-green-primary);
+            color: var(--gdc-navy-primary);
             margin: 0 auto 12px auto;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .btn-gdc {
-            background-color: var(--gdc-green-primary);
-            border-color: var(--gdc-green-primary);
+            background-color: var(--gdc-navy-primary);
+            border-color: var(--gdc-navy-primary);
             color: #ffffff;
             font-weight: 600;
         }
 
         .btn-gdc:hover {
-            background-color: var(--gdc-green-dark);
-            border-color: var(--gdc-green-dark);
+            background-color: var(--gdc-navy-dark);
+            border-color: var(--gdc-navy-dark);
             color: #ffffff;
         }
     </style>
@@ -83,12 +84,12 @@
             <div class="brand-crest">
                 <i class="bi bi-mortarboard-fill"></i>
             </div>
-            <div class="arabic-motto text-success fw-bold fs-5">رَبِّ زِدْنِي عِلْماً</div>
+            <div class="arabic-motto text-warning fw-bold fs-5">رَبِّ زِدْنِي عِلْماً</div>
             <h5 class="fw-bold text-dark mb-0 mt-1" style="font-size: 1.05rem;">
                 GOVT. DEGREE COLLEGE MADYAN SWAT
             </h5>
             <div class="text-muted small">Higher Education Department KP | Est. 2006</div>
-            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 mt-2">
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 mt-2">
                 Campus Management Portal (CMS & ERP)
             </span>
         </div>
@@ -138,15 +139,39 @@
             </form>
         </div>
 
-        <!-- Role Helper Footnote -->
+        <!-- Quick-Fill Role Selector for Desktop Evaluation -->
         <div class="bg-light p-3 border-top text-center" style="font-size: 0.78rem;">
-            <div class="text-muted fw-semibold mb-1">Pre-configured Demo Accounts:</div>
-            <div class="text-muted">
-                Admin: <code>admin@gdcmadyan.edu.pk</code> | Pass: <code>Swat@2026</code><br />
-                Student: <code>GDCM-BSCS-2026-001</code> | Pass: <code>1560212345671</code>
+            <div class="text-muted fw-bold mb-2 text-uppercase" style="letter-spacing: 0.5px;">
+                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick-Fill Demo Roles (1-Click)
+            </div>
+            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                <button type="button" class="btn btn-xs btn-outline-dark py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('admin@gdcmadyan.edu.pk', 'Admin@123')">
+                    Principal / Admin
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('faculty.cs@gdcmadyan.edu.pk', 'Faculty@123')">
+                    Faculty / HOD
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-dark py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('controller.exams@gdcmadyan.edu.pk', 'Controller@123')">
+                    Controller Exams
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('clerk@gdcmadyan.edu.pk', 'Clerk@123')">
+                    Clerk / Accounts
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-info py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('GDCM-BSCS-26-001', 'Student@123')">
+                    BSCS Student
+                </button>
+                <button type="button" class="btn btn-xs btn-outline-warning py-1 px-2" style="font-size: 0.72rem;" onclick="fillLogin('GDCM-PM-26-001', 'Student@123')">
+                    HSSC Student
+                </button>
             </div>
         </div>
     </div>
 
+    <script>
+        function fillLogin(u, p) {
+            document.querySelector('input[name="Username"]').value = u;
+            document.querySelector('input[name="Password"]').value = p;
+        }
+    </script>
 </body>
 </html>

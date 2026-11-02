@@ -42,27 +42,30 @@ namespace College_Web_Application.Data
                     var departments = new List<Department>
                     {
                         new() { Id = 1, Name = "Computer Science", Code = "CS", HODName = "Prof. Dr. Muhammad Tariq Khan", Description = "Theoretical and applied computer science, software engineering, algorithms, web technologies, and AI." },
-                        new() { Id = 2, Name = "Political Science", Code = "POL", HODName = "Assoc. Prof. Fazal Rehman", Description = "Constitutional law, public administration, international politics, and regional diplomacy." },
-                        new() { Id = 3, Name = "English", Code = "ENG", HODName = "Asst. Prof. Zahir Shah", Description = "English literature, linguistics, global communication, and critical discourse." },
-                        new() { Id = 4, Name = "Islamic Studies", Code = "ISL", HODName = "Prof. Maulana Abdul Haq", Description = "Quranic sciences, Hadith literature, Islamic jurisprudence (Fiqh), and moral philosophy." },
-                        new() { Id = 5, Name = "Biological Sciences (Pre-Medical)", Code = "BIO", HODName = "Assoc. Prof. Dr. Shaukat Khan", Description = "Botany, Zoology, cellular biology, genetics, and biodiversity of the upper Swat ecosystem." },
-                        new() { Id = 6, Name = "Physical Sciences (Pre-Engineering)", Code = "PHY-CHEM", HODName = "Prof. Noor Muhammad", Description = "Experimental Physics, organic and inorganic chemistry, applied mathematics, and mechanics." }
+                        new() { Id = 2, Name = "Microbiology", Code = "MCB", HODName = "Assoc. Prof. Dr. Shaukat Khan", Description = "Diagnostic microbiology, bacteriology, virology, immunology, and microbial biotechnology." },
+                        new() { Id = 3, Name = "English", Code = "ENG", HODName = "Asst. Prof. Zahir Shah", Description = "English literature, linguistics, global communication, and critical academic discourse." },
+                        new() { Id = 4, Name = "Urdu", Code = "URD", HODName = "Assoc. Prof. Dr. Ahmad Ali", Description = "Classical and contemporary Urdu literature, prose, poetry, and linguistic heritage." },
+                        new() { Id = 5, Name = "Chemistry", Code = "CHEM", HODName = "Prof. Noor Muhammad", Description = "Organic, inorganic, analytical, physical chemistry, and environmental biochemistry." },
+                        new() { Id = 6, Name = "Botany", Code = "BOT", HODName = "Asst. Prof. Dr. Fazal Wadood", Description = "Plant biodiversity of Swat Valley, medicinal flora, plant physiology, and cellular genetics." }
                     };
                     await context.Departments.AddRangeAsync(departments);
                     await context.SaveChangesAsync();
                 }
 
-                // 4. Seed 6 Academic Programs if not existing
+                // 4. Seed Academic Programs (BS 4-Year University of Swat + HSSC BISE Swat)
                 if (!await context.AcademicPrograms.AnyAsync())
                 {
                     var programs = new List<AcademicProgram>
                     {
-                        new() { Id = 1, Title = "F.Sc Pre-Medical", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 5, FeePerSemester = 3500.00m },
-                        new() { Id = 2, Title = "F.Sc Pre-Engineering", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 6, FeePerSemester = 3500.00m },
+                        new() { Id = 1, Title = "F.Sc Pre-Medical", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 6, FeePerSemester = 3500.00m },
+                        new() { Id = 2, Title = "F.Sc Pre-Engineering", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 5, FeePerSemester = 3500.00m },
                         new() { Id = 3, Title = "FCS / ICS (Computer Science)", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 1, FeePerSemester = 4000.00m },
                         new() { Id = 4, Title = "BS Computer Science (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 1, FeePerSemester = 6500.00m },
-                        new() { Id = 5, Title = "BS Political Science (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 2, FeePerSemester = 5000.00m },
-                        new() { Id = 6, Title = "BS English (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 3, FeePerSemester = 5500.00m }
+                        new() { Id = 5, Title = "BS Microbiology (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 2, FeePerSemester = 6000.00m },
+                        new() { Id = 6, Title = "BS English (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 3, FeePerSemester = 5500.00m },
+                        new() { Id = 7, Title = "BS Urdu (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 4, FeePerSemester = 4500.00m },
+                        new() { Id = 8, Title = "BS Chemistry (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 5, FeePerSemester = 6000.00m },
+                        new() { Id = 9, Title = "BS Botany (4-Year)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 6, FeePerSemester = 5500.00m }
                     };
                     await context.AcademicPrograms.AddRangeAsync(programs);
                     await context.SaveChangesAsync();
@@ -100,7 +103,7 @@ namespace College_Web_Application.Data
                             Id = 1,
                             Title = "Online Admissions Open for BS 4-Year Programs (Fall 2026 Session)",
                             Category = "Admission",
-                            Description = "Government Degree College Madyan Swat invites online admission applications for BS Computer Science, Political Science, and English. Applicants can submit their forms online with SSC/HSSC records.",
+                            Description = "Government Degree College Madyan Swat invites online admission applications for BS Computer Science, Microbiology, English, Urdu, Chemistry, and Botany. Applicants can submit their forms online with SSC/HSSC records.",
                             AttachmentPdfUrl = "/downloads/admissions-fall-2026.pdf",
                             PublishedDate = DateTime.UtcNow.AddDays(-15),
                             IsPinned = true

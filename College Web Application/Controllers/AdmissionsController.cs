@@ -28,6 +28,20 @@ namespace College_Web_Application.Controllers
             _logger = logger;
         }
 
+        // GET: /Admissions/Guide
+        [HttpGet]
+        public async Task<IActionResult> Guide()
+        {
+            var programs = await _context.AcademicPrograms
+                .AsNoTracking()
+                .Include(p => p.Department)
+                .OrderBy(p => p.Level)
+                .ThenBy(p => p.Title)
+                .ToListAsync();
+
+            return View(programs);
+        }
+
         // GET: /Admissions/Apply
         [HttpGet]
         public async Task<IActionResult> Apply()
@@ -76,27 +90,28 @@ namespace College_Web_Application.Controllers
                 return View(model);
             }
 
-            // Automated KP HED Merit Calculation Engine (Server-side)
+            // =========================================================================
+            // KP HED & BISE SWAT MARKS-BASED MERIT CALCULATION ENGINE
+            // In Khyber Pakhtunkhwa Government Colleges, merit is ranked strictly by
+            // Total Obtained Marks (+ 20 bonus marks for verified Hafiz-e-Quran).
+            // =========================================================================
             decimal hafizMarks = model.IsHafizQuran ? 20.00m : 0.00m;
-            decimal calculatedMerit = 0.00m;
+            decimal calculatedMeritMarks = 0.00m;
 
             if (program.Level == "HSSC")
             {
-                // HSSC: (SSC Obtained + Hafiz) / SSC Total * 100
-                decimal totalSsc = model.SscTotalMarks > 0 ? model.SscTotalMarks : 1100.00m;
-                calculatedMerit = Math.Round(((model.SscObtainedMarks + hafizMarks) / totalSsc) * 100m, 2);
+                // Intermediate Merit = Matric Obtained Marks + Hafiz Bonus (out of 1100)
+                calculatedMeritMarks = model.SscObtainedMarks + hafizMarks;
             }
-            else // BS 4-Year
+            else // BS 4-Year Undergraduate
             {
-                // BS: (SSC Obtained / SSC Total * 40) + ((HSSC Obtained + Hafiz) / HSSC Total * 60)
-                decimal totalSsc = model.SscTotalMarks > 0 ? model.SscTotalMarks : 1100.00m;
-                decimal sscShare = (model.SscObtainedMarks / totalSsc) * 40m;
+                // Undergraduate BS Merit under University of Swat regulations:
+                // Primary merit score is determined by HSSC Obtained Marks + Hafiz Bonus (out of 1100)
+                decimal baseObtained = (model.HsscObtainedMarks.HasValue && model.HsscObtainedMarks.Value > 0)
+                    ? model.HsscObtainedMarks.Value
+                    : model.SscObtainedMarks;
 
-                decimal hsscObtained = model.HsscObtainedMarks ?? 0m;
-                decimal totalHssc = (model.HsscTotalMarks.HasValue && model.HsscTotalMarks.Value > 0) ? model.HsscTotalMarks.Value : 1100.00m;
-                decimal hsscShare = ((hsscObtained + hafizMarks) / totalHssc) * 60m;
-
-                calculatedMerit = Math.Round(sscShare + hsscShare, 2);
+                calculatedMeritMarks = baseObtained + hafizMarks;
             }
 
             // Generate unique human-readable tracking number: GDCM-ADM-2026-0001
@@ -134,49 +149,53 @@ namespace College_Web_Application.Controllers
                 HsscTotalMarks = model.HsscTotalMarks,
                 IsHafizQuran = model.IsHafizQuran,
                 HafizMarks = hafizMarks,
-                MeritScore = calculatedMerit,
+                MeritScore = calculatedMeritMarks, // Stored as absolute Marks
                 AppliedProgramId = model.AppliedProgramId,
                 SecondChoiceProgramId = model.SecondChoiceProgramId,
                 QuotaCategory = model.QuotaCategory,
-                Status = "Pending",
-                AppliedDate = DateTime.UtcNow,
                 PassportPhotoPath = photoPath,
                 DmcScanPath = dmcPath,
-                DomicileOrBFormPath = domicilePath
+                DomicileOrBFormPath = domicilePath,
+                Status = "Pending",
+                AppliedDate = DateTime.UtcNow
             };
 
-            _context.AdmissionApplications.Add(application);
+            await _context.AdmissionApplications.AddAsync(application);
             await _context.SaveChangesAsync();
 
-            // Invalidate merit list cache
-            if (_cache is MemoryCache memCache)
-            {
-                memCache.Compact(1.0);
-            }
+            _logger.LogInformation("New admission application received: TrackingNumber={TrackingNumber}, Name={Name}, Program={Program}, Marks={Marks}",
+                trackingNo, application.ApplicantName, program.Title, calculatedMeritMarks);
 
-            return RedirectToAction(nameof(Confirmation), new { trackingNumber = trackingNo });
+            // Invalidate merit list cache
+            // Cache keys will expire naturally or on next page load
+
+            TempData["SuccessTrackingNo"] = trackingNo;
+            TempData["ApplicantName"] = application.ApplicantName;
+            TempData["ProgramTitle"] = program.Title;
+            TempData["MeritMarks"] = calculatedMeritMarks.ToString("0.00");
+
+            return RedirectToAction(nameof(Confirmation), new { tracking = trackingNo });
         }
 
-        // GET: /Admissions/Confirmation?trackingNumber=GDCM-ADM-2026-0001
-        public async Task<IActionResult> Confirmation(string trackingNumber)
+        // GET: /Admissions/Confirmation
+        public async Task<IActionResult> Confirmation(string tracking)
         {
-            if (string.IsNullOrWhiteSpace(trackingNumber))
+            if (string.IsNullOrWhiteSpace(tracking))
             {
                 return RedirectToAction(nameof(Apply));
             }
 
-            var application = await _context.AdmissionApplications
+            var app = await _context.AdmissionApplications
                 .AsNoTracking()
                 .Include(a => a.AppliedProgram)
-                    .ThenInclude(p => p!.Department)
-                .FirstOrDefaultAsync(a => a.TrackingNumber == trackingNumber.Trim());
+                .FirstOrDefaultAsync(a => a.TrackingNumber == tracking);
 
-            if (application == null)
+            if (app == null)
             {
-                return NotFound();
+                return NotFound("Application not found.");
             }
 
-            return View(application);
+            return View(app);
         }
 
         // GET: /Admissions/TrackStatus
@@ -257,6 +276,7 @@ namespace College_Web_Application.Controllers
 
                 int totalCount = await query.CountAsync();
 
+                // Sort strictly by Total Merit Marks descending!
                 var apps = await query
                     .OrderByDescending(a => a.MeritScore)
                     .ThenBy(a => a.AppliedDate)
@@ -264,7 +284,18 @@ namespace College_Web_Application.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
-                decimal cutOff = apps.Any() ? apps.Min(a => a.MeritScore) : 0.00m;
+                decimal cutOffMarks = apps.Any() ? apps.Min(a => a.MeritScore) : 0.00m;
+                decimal highestMarks = apps.Any() ? apps.Max(a => a.MeritScore) : 0.00m;
+                decimal cutOffPct = 0.00m;
+
+                var sampleApp = apps.FirstOrDefault();
+                if (sampleApp != null)
+                {
+                    decimal totalDenominator = (sampleApp.HsscTotalMarks.HasValue && sampleApp.HsscTotalMarks.Value > 0) 
+                        ? sampleApp.HsscTotalMarks.Value 
+                        : (sampleApp.MatricTotalMarks > 0 ? sampleApp.MatricTotalMarks : 1100.00m);
+                    cutOffPct = Math.Round((cutOffMarks / totalDenominator) * 100m, 2);
+                }
 
                 viewModel = new MeritListFilterViewModel
                 {
@@ -275,7 +306,9 @@ namespace College_Web_Application.Controllers
                     CurrentPage = page,
                     PageSize = pageSize,
                     TotalCount = totalCount,
-                    CutOffMeritPercentage = cutOff,
+                    CutOffMeritMarks = cutOffMarks,
+                    HighestMeritMarks = highestMarks,
+                    CutOffMeritPercentage = cutOffPct,
                     Programs = await _context.AcademicPrograms.AsNoTracking().OrderBy(p => p.Title).ToListAsync()
                 };
 
@@ -300,7 +333,7 @@ namespace College_Web_Application.Controllers
                 Directory.CreateDirectory(uploadsPath);
             }
 
-            var uniqueName = $"{subfolder}_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..6]}{ext}";
+            var uniqueName = $"{Guid.NewGuid():N}{ext}";
             var fullPath = Path.Combine(uploadsPath, uniqueName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))

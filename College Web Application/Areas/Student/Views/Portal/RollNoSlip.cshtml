@@ -200,25 +200,34 @@
 
         <!-- Signatures & Verification Block -->
         <div class="row pt-4 text-center align-items-end">
-            <div class="col-3">
-                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
-                <div class="fw-bold small text-dark">Candidate's Signature</div>
-                <div class="text-muted" style="font-size: 0.68rem;">(To be signed in presence of Invigilator)</div>
+            <div class="col-2 text-start">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="@Model.VerificationQrUrl" alt="Verification QR" style="width: 70px; height: 70px; border: 1px solid #000; padding: 2px;" onerror="this.style.display='none'" />
+                    <div style="font-size: 0.65rem;" class="text-muted">
+                        <div><strong>VERIFIED</strong></div>
+                        <div class="font-monospace">Scan to authenticate Admit Card</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-3">
-                <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
-                <div class="fw-bold small text-dark">Center Superintendent</div>
-                <div class="text-muted" style="font-size: 0.68rem;">Hall Examination Staff</div>
+            <div class="col-2">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 120px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Candidate</div>
+                <div class="text-muted" style="font-size: 0.65rem;">(In Exam Hall)</div>
+            </div>
+            <div class="col-2">
+                <div class="border-bottom border-dark mx-auto mb-1" style="width: 120px; height: 35px;"></div>
+                <div class="fw-bold small text-dark">Invigilator</div>
+                <div class="text-muted" style="font-size: 0.65rem;">Hall Staff</div>
             </div>
             <div class="col-3">
                 <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
                 <div class="fw-bold small text-dark">Controller of Examinations</div>
-                <div class="text-muted" style="font-size: 0.68rem;">GDC Madyan Swat</div>
+                <div class="text-muted" style="font-size: 0.65rem;">GDC Madyan Swat</div>
             </div>
             <div class="col-3">
                 <div class="border-bottom border-dark mx-auto mb-1" style="width: 140px; height: 35px;"></div>
-                <div class="fw-bold small text-dark">Principal / Head of Institution</div>
-                <div class="text-muted" style="font-size: 0.68rem;">Govt. Degree College Madyan Swat</div>
+                <div class="fw-bold small text-dark">Principal</div>
+                <div class="text-muted" style="font-size: 0.65rem;">Govt Degree College Madyan</div>
             </div>
         </div>
     </div>

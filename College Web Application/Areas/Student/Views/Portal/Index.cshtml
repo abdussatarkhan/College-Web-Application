@@ -3,8 +3,100 @@
     ViewData["Title"] = "Student Portal - Attendance & Exam Eligibility";
 }
 
+<!-- Custom Inline Styles for Attendance Gauge Rings & Bottom Navigation -->
+<style>
+    /* SVG Circular Gauge Rings */
+    .gauge-ring-wrap {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+    .gauge-ring-svg {
+        transform: rotate(-90deg);
+        width: 100px;
+        height: 100px;
+    }
+    .gauge-bg {
+        fill: none;
+        stroke: #E2E8F0;
+        stroke-width: 8;
+    }
+    .gauge-progress {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 251.2;
+        transition: stroke-dashoffset 1s ease-in-out;
+    }
+    .gauge-val-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.15rem;
+        font-weight: 800;
+        line-height: 1;
+        text-align: center;
+    }
+
+    /* Mobile Bottom Navigation Bar */
+    .mobile-bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 62px;
+        background: #FFFFFF;
+        border-top: 1px solid #E2E8F0;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+        z-index: 1050;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .mobile-nav-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #64748B;
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        transition: color 0.2s ease;
+    }
+    .mobile-nav-btn i {
+        font-size: 1.3rem;
+        margin-bottom: 2px;
+    }
+    .mobile-nav-btn.active, .mobile-nav-btn:hover {
+        color: var(--gdc-emerald-500);
+    }
+    [data-theme="dark"] .mobile-bottom-nav {
+        background: #111827;
+        border-top-color: #334155;
+    }
+    [data-theme="dark"] .mobile-nav-btn {
+        color: #94A3B8;
+    }
+    [data-theme="dark"] .mobile-nav-btn.active {
+        color: #4FB86C;
+    }
+
+    @@media (max-width: 991.98px) {
+        .mobile-bottom-nav {
+            display: flex;
+        }
+        body {
+            padding-bottom: 70px;
+        }
+    }
+</style>
+
 <div class="container-fluid px-0">
-    <!-- STUDENT PROFILE HERO BANNER -->
+    <!-- 1. STUDENT PROFILE HERO BANNER -->
     <div class="card card-portal shadow-sm border-0 mb-4 overflow-hidden">
         <div class="card-body p-4 text-white" style="background: linear-gradient(135deg, #063B13 0%, #0F172A 100%);">
             <div class="row align-items-center g-3">
@@ -13,7 +105,7 @@
                         <img src="@(string.IsNullOrEmpty(Model.Student.PhotoUrl) ? "/images/student-avatar.png" : Model.Student.PhotoUrl)" 
                              alt="@Model.Student.FullName" 
                              class="rounded-circle border border-3 border-warning shadow" 
-                             style="width: 80px; height: 80px; object-fit: cover; background: #fff;" 
+                             style="width: 82px; height: 82px; object-fit: cover; background: #fff;" 
                              onerror="this.src='/images/crest-placeholder.png'" />
                         <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-success border border-white p-1">
                             <span class="visually-hidden">Active</span>
@@ -23,7 +115,7 @@
                 <div class="col">
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                         <h4 class="fw-bold mb-0 text-white">@Model.Student.FullName</h4>
-                        <span class="badge badge-gold font-monospace">@Model.Student.RollNumber</span>
+                        <span class="badge bg-warning text-dark font-monospace fw-bold">@Model.Student.RollNumber</span>
                         <span class="badge bg-light text-dark font-monospace">Reg: @Model.Student.RegistrationNo</span>
                     </div>
                     <div class="text-light opacity-80 small mb-2">
@@ -33,8 +125,11 @@
                         <span class="badge bg-white text-success fw-bold px-3 py-1.5 shadow-sm">
                             <i class="bi bi-mortarboard-fill me-1"></i> CGPA: @Model.Student.CGPA.ToString("0.00")
                         </span>
+                        <span class="badge bg-white text-primary fw-bold px-3 py-1.5 shadow-sm">
+                            <i class="bi bi-award-fill me-1"></i> Current SGPA: @Model.CurrentSgpa.ToString("0.00")
+                        </span>
                         <span class="badge bg-dark text-warning border border-warning px-3 py-1.5">
-                            <i class="bi bi-clock-history me-1"></i> Session: Fall 2026
+                            <i class="bi bi-calendar3 me-1"></i> Session: Fall 2026
                         </span>
                         @if (Model.Student.AcademicStatus == College_Web_Application.Models.AcademicStatus.Rusticated_ParentRequired)
                         {
@@ -50,17 +145,20 @@
                         }
                     </div>
                 </div>
-                <div class="col-12 col-md-auto text-md-end mt-3 mt-md-0">
+                <div class="col-12 col-md-auto text-md-end mt-3 mt-md-0 d-flex flex-wrap gap-2">
+                    <a asp-action="Transcript" class="btn btn-outline-light fw-semibold px-3 py-2 shadow-sm">
+                        <i class="bi bi-file-earmark-text me-1"></i> Unofficial DMC
+                    </a>
                     @if (Model.CanDownloadRollNoSlip)
                     {
-                        <a asp-action="RollNoSlip" class="btn btn-warning fw-bold px-4 py-2 shadow">
-                            <i class="bi bi-card-checklist me-1"></i> Examination Roll No Slip
+                        <a asp-action="RollNoSlip" class="btn btn-warning fw-bold px-3 py-2 shadow">
+                            <i class="bi bi-card-checklist me-1"></i> Roll No Slip
                         </a>
                     }
                     else
                     {
-                        <button class="btn btn-secondary px-4 py-2" disabled title="Debarred in all courses due to attendance shortage">
-                            <i class="bi bi-lock-fill me-1"></i> Roll No Slip Locked
+                        <button class="btn btn-secondary px-3 py-2" disabled title="Debarred in all courses due to attendance shortage">
+                            <i class="bi bi-lock-fill me-1"></i> Slip Locked
                         </button>
                     }
                 </div>
@@ -68,292 +166,482 @@
         </div>
     </div>
 
-    <!-- ELIGIBILITY ALERT BANNER -->
+    <!-- 2. ELIGIBILITY ALERT BANNER -->
     @if (!Model.IsAnyCourseDebarred)
     {
-        <div class="alert alert-success border-success border-start border-4 shadow-sm p-3 mb-4 rounded-3 d-flex align-items-center gap-3">
+        <div class="alert alert-success border-success border-start border-4 shadow-sm p-3 mb-4 rounded-4 d-flex align-items-center gap-3">
             <i class="bi bi-patch-check-fill fs-2 text-success flex-shrink-0"></i>
             <div class="flex-grow-1">
                 <h6 class="fw-bold mb-1 text-dark">HEC 75% Attendance Requirement Satisfied</h6>
                 <div class="small text-secondary">
-                    Congratulations! Your attendance meets or exceeds the mandatory 75% threshold in all enrolled courses for Semester @Model.Student.CurrentSemester. Your Final Term Examination Roll Number Slip is fully validated.
+                    Your attendance meets or exceeds the mandatory 75% threshold in all enrolled courses for Semester @Model.Student.CurrentSemester. Your Final Term Examination Roll Number Slip is fully validated.
                 </div>
             </div>
             <a asp-action="RollNoSlip" class="btn btn-outline-success btn-sm fw-bold flex-shrink-0">
-                <i class="bi bi-printer me-1"></i> View Slip
+                <i class="bi bi-printer me-1"></i> Print Entry Slip
             </a>
         </div>
     }
     else
     {
-        <div class="alert alert-warning border-warning border-start border-4 shadow-sm p-3 mb-4 rounded-3 d-flex align-items-center gap-3">
+        <div class="alert alert-warning border-warning border-start border-4 shadow-sm p-3 mb-4 rounded-4 d-flex align-items-center gap-3">
             <i class="bi bi-exclamation-triangle-fill fs-2 text-warning flex-shrink-0"></i>
             <div class="flex-grow-1">
                 <h6 class="fw-bold mb-1 text-dark">Attention Required: Attendance Shortage Detected</h6>
                 <div class="small text-secondary">
                     You have attendance shortages in <strong>@(Model.WarningCoursesCount + Model.DebarredCoursesCount) course(s)</strong>.
-                    Per HEC and University of Swat policy, you must attain 75% to sit in the Final Term Exam. Review the smart recovery guidance below or contact the Principal Office for medical condonation waiver.
+                    Per HEC and University of Swat regulations, you must attain 75% to sit in the Final Term Exam. Use the recovery calculator below or contact the Principal Office for condonation review.
                 </div>
             </div>
-            <a href="#recoverySection" class="btn btn-outline-warning text-dark btn-sm fw-bold flex-shrink-0">
-                <i class="bi bi-arrow-down-circle me-1"></i> View Action Plan
+            <a href="#recoveryCalculator" class="btn btn-outline-warning text-dark btn-sm fw-bold flex-shrink-0">
+                <i class="bi bi-calculator me-1"></i> Open Recovery Calculator
             </a>
         </div>
     }
 
-    <!-- METRIC CARDS ROW -->
+    <!-- 3. TOP KPI CARDS (Attendance, Eligible, Warning, Debarred) -->
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-portal shadow-sm h-100">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small fw-semibold text-uppercase">Overall Attendance</span>
-                        <i class="bi bi-pie-chart-fill text-success fs-5"></i>
-                    </div>
-                    <div class="fs-3 fw-bold @(Model.OverallAttendancePercentage >= 75 ? "text-success" : (Model.OverallAttendancePercentage >= 65 ? "text-warning" : "text-danger"))">
-                        @Model.OverallAttendancePercentage.ToString("0.0")%
-                    </div>
-                    <div class="progress mt-2" style="height: 6px;">
-                        <div class="progress-bar @(Model.OverallAttendancePercentage >= 75 ? "bg-success" : (Model.OverallAttendancePercentage >= 65 ? "bg-warning" : "bg-danger"))" 
-                             style="width: @Math.Min(100, Model.OverallAttendancePercentage)%;"></div>
-                    </div>
-                    <div class="small text-muted mt-2">Across all semester courses</div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted small fw-semibold text-uppercase">Overall Attendance</span>
+                    <i class="bi bi-speedometer2 text-success fs-5"></i>
                 </div>
+                <div class="h2 fw-bold text-dark mt-2 mb-0">@Model.OverallAttendancePercentage.ToString("0.0")%</div>
+                <small class="@(Model.OverallAttendancePercentage >= 75 ? "text-success" : "text-danger") mt-auto pt-2">
+                    <i class="bi @(Model.OverallAttendancePercentage >= 75 ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-1"></i>
+                    Threshold: 75.0%
+                </small>
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-portal shadow-sm h-100">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small fw-semibold text-uppercase">Eligible Courses</span>
-                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                    </div>
-                    <div class="fs-3 fw-bold text-success">@Model.EligibleCoursesCount</div>
-                    <div class="small text-muted mt-2">&ge; 75% lectures attended</div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted small fw-semibold text-uppercase">Eligible Subjects</span>
+                    <i class="bi bi-check2-all text-success fs-5"></i>
                 </div>
+                <div class="h2 fw-bold text-success mt-2 mb-0">@Model.EligibleCoursesCount <small class="text-muted fs-6">/ @Model.AttendanceEvaluations.Count</small></div>
+                <small class="text-muted mt-auto pt-2">Permitted for Final Exam</small>
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-portal shadow-sm h-100">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small fw-semibold text-uppercase">Condonation Zone</span>
-                        <i class="bi bi-exclamation-circle-fill text-warning fs-5"></i>
-                    </div>
-                    <div class="fs-3 fw-bold text-warning-emphasis">@Model.WarningCoursesCount</div>
-                    <div class="small text-muted mt-2">65.0% to 74.9% (Waiver eligible)</div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted small fw-semibold text-uppercase">Condonation Zone</span>
+                    <i class="bi bi-exclamation-circle text-warning fs-5"></i>
                 </div>
+                <div class="h2 fw-bold text-warning mt-2 mb-0">@Model.WarningCoursesCount</div>
+                <small class="text-muted mt-auto pt-2">65% – 74.9% (Principal Waiver)</small>
             </div>
         </div>
 
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-portal shadow-sm h-100">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="text-muted small fw-semibold text-uppercase">Debarred Courses</span>
-                        <i class="bi bi-x-circle-fill text-danger fs-5"></i>
-                    </div>
-                    <div class="fs-3 fw-bold text-danger">@Model.DebarredCoursesCount</div>
-                    <div class="small text-muted mt-2">&lt; 65% (Repeat required)</div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-muted small fw-semibold text-uppercase">Debarred Subjects</span>
+                    <i class="bi bi-slash-circle text-danger fs-5"></i>
                 </div>
+                <div class="h2 fw-bold text-danger mt-2 mb-0">@Model.DebarredCoursesCount</div>
+                <small class="text-danger mt-auto pt-2">&lt;65% (Strict Ineligibility)</small>
             </div>
         </div>
     </div>
 
-    <!-- COURSE ATTENDANCE MATRIX & SMART RECOVERY CALCULATOR -->
-    <div class="card card-portal shadow-sm mb-4" id="recoverySection">
-        <div class="card-header-portal d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-mortarboard text-success fs-5"></i>
-                <span>Semester @Model.Student.CurrentSemester Course Attendance & Exam Clearance Matrix</span>
+    <!-- 4. ATTENDANCE GAUGE RINGS PER SUBJECT -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-pie-chart-fill text-success me-2"></i>Subject-Wise Attendance Rings
+                </h5>
+                <p class="text-muted small mb-0">Visual attendance gauges and lecture tallies for Semester @Model.Student.CurrentSemester</p>
             </div>
-            <span class="badge bg-light text-dark border">
-                Statutory Benchmark: 75.0%
-            </span>
+            <div class="d-flex gap-2">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Eligible (&ge;75%)</span>
+                <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2 py-1">Warning (65-74%)</span>
+                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1">Debarred (&lt;65%)</span>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light small text-uppercase text-muted">
-                        <tr>
-                            <th style="width: 40px;" class="text-center">#</th>
-                            <th style="min-width: 220px;">Course Title & Code</th>
-                            <th class="text-center" style="width: 80px;">Cr. Hrs</th>
-                            <th class="text-center" style="width: 140px;">Lectures Held</th>
-                            <th class="text-center" style="min-width: 150px;">Attendance %</th>
-                            <th class="text-center" style="width: 150px;">Exam Eligibility</th>
-                            <th style="min-width: 280px;">Smart Recovery Formula & Guidance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.AttendanceEvaluations.Any())
-                        {
-                            int idx = 1;
-                            foreach (var item in Model.AttendanceEvaluations)
+
+        <div class="row g-4">
+            @foreach (var eval in Model.AttendanceEvaluations)
+            {
+                // Gauge stroke calculation (Circumference = 2 * PI * 40 = 251.2)
+                decimal pctClamped = Math.Max(0, Math.Min(100, eval.AttendancePercentage));
+                double offset = 251.2 - (251.2 * (double)pctClamped / 100.0);
+                string strokeColor = eval.AttendancePercentage >= 75 ? "#0B6623" : (eval.AttendancePercentage >= 65 ? "#D4AF37" : "#DC2626");
+                string textColor = eval.AttendancePercentage >= 75 ? "text-success" : (eval.AttendancePercentage >= 65 ? "text-warning" : "text-danger");
+
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="p-3 border rounded-4 bg-light h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-white text-dark font-monospace border">@eval.CourseCode</span>
+                            <span class="badge @eval.StatusBadgeClass">@eval.StatusText</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-3" style="min-height: 42px;">@eval.CourseTitle</h6>
+
+                        <!-- Circular Gauge Ring -->
+                        <div class="gauge-ring-wrap mb-3">
+                            <svg class="gauge-ring-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="40" />
+                                <circle class="gauge-progress" cx="50" cy="50" r="40" 
+                                        style="stroke: @strokeColor; stroke-dashoffset: @offset.ToString("0.#");" />
+                            </svg>
+                            <div class="gauge-val-text @textColor">
+                                @eval.AttendancePercentage.ToString("0.#")%
+                            </div>
+                        </div>
+
+                        <!-- Lecture Statistics Breakdown -->
+                        <div class="row g-2 text-center small mb-3">
+                            <div class="col-4">
+                                <div class="bg-white p-2 rounded border">
+                                    <div class="fw-bold text-dark">@eval.TotalLecturesConducted</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Held</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-white p-2 rounded border">
+                                    <div class="fw-bold text-success">@eval.TotalPresent</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Present</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-white p-2 rounded border">
+                                    <div class="fw-bold text-danger">@eval.TotalAbsent</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">Absent</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recovery or Eligibility Note -->
+                        <div class="mt-auto">
+                            @if (eval.ClassesNeededToReach75 > 0)
                             {
-                                <tr class="@(item.IsDebarredFromFinalExam ? "table-danger bg-opacity-10" : "")">
-                                    <td class="text-center fw-semibold text-muted">@idx</td>
-                                    <td>
-                                        <div class="fw-bold text-dark">@item.CourseCode</div>
-                                        <div class="small text-secondary">@item.CourseTitle</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-light text-dark border">@item.CreditHours</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="fw-bold text-dark">
-                                            @(item.TotalPresent + item.TotalLeave) / @item.TotalLecturesConducted
-                                        </div>
-                                        <div class="small text-muted" style="font-size: 0.72rem;">
-                                            (@item.TotalPresent P, @item.TotalLeave L, @item.TotalAbsent A)
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-                                            <span class="fs-6 fw-bold @(item.AttendancePercentage >= 75 ? "text-success" : (item.AttendancePercentage >= 65 ? "text-warning" : "text-danger"))">
-                                                @item.AttendancePercentage.ToString("0.0")%
-                                            </span>
-                                        </div>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar @(item.AttendancePercentage >= 75 ? "bg-success" : (item.AttendancePercentage >= 65 ? "bg-warning" : "bg-danger"))" 
-                                                 style="width: @Math.Min(100, item.AttendancePercentage)%;"></div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        @if (item.IsCondonedByPrincipal)
-                                        {
-                                            <span class="badge bg-success text-white px-2 py-1.5 shadow-sm">
-                                                <i class="bi bi-patch-check-fill me-1"></i> CONDONED
-                                            </span>
-                                            <div class="small text-success mt-1" style="font-size: 0.7rem;">Waiver Approved</div>
-                                        }
-                                        else if (item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.Eligible)
-                                        {
-                                            <span class="badge bg-success text-white px-2 py-1.5 shadow-sm">
-                                                <i class="bi bi-check-circle-fill me-1"></i> ELIGIBLE
-                                            </span>
-                                            <div class="small text-muted mt-1" style="font-size: 0.7rem;">Roll No Slip Valid</div>
-                                        }
-                                        else if (item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.NotEnoughData)
-                                        {
-                                            <span class="badge bg-info text-dark px-2 py-1.5">
-                                                <i class="bi bi-info-circle me-1"></i> IN PROGRESS
-                                            </span>
-                                            <div class="small text-muted mt-1" style="font-size: 0.7rem;">&lt; 10 Lectures Held</div>
-                                        }
-                                        else if (item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.CondonationZone)
-                                        {
-                                            <span class="badge bg-warning text-dark px-2 py-1.5 fw-bold shadow-sm">
-                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> WARNING
-                                            </span>
-                                            <div class="small text-danger mt-1" style="font-size: 0.7rem;">Debarred unless condoned</div>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger text-white px-2 py-1.5 shadow-sm">
-                                                <i class="bi bi-slash-circle-fill me-1"></i> DEBARRED
-                                            </span>
-                                            <div class="small text-danger mt-1" style="font-size: 0.7rem;">Ineligible for Final</div>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (item.ClassesNeededToReach75 > 0 && !item.IsCondonedByPrincipal)
-                                        {
-                                            <div class="p-2 rounded bg-light border border-warning border-opacity-50">
-                                                <div class="d-flex align-items-center gap-1 text-danger fw-bold small mb-1">
-                                                    <i class="bi bi-lightning-charge-fill text-warning"></i>
-                                                    <span>Action Required: Attend next @item.ClassesNeededToReach75 classes</span>
-                                                </div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">
-                                                    Mathematical recovery formula \(x = 3C - 4P\): By attending the next <strong>@item.ClassesNeededToReach75 consecutive lecture(s)</strong> without any absence, your attendance will recover to exactly <strong>75.0%</strong>.
-                                                </div>
-                                                @if (item.Status == College_Web_Application.Services.AttendanceEligibilityStatus.CondonationZone)
-                                                {
-                                                    <div class="mt-1 small text-dark fw-semibold" style="font-size: 0.72rem;">
-                                                        <i class="bi bi-info-circle me-1 text-primary"></i> Or submit Bank of Khyber condonation fee challan + medical proof to Principal Office for waiver.
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                        else if (item.IsCondonedByPrincipal)
-                                        {
-                                            <div class="p-2 rounded bg-success bg-opacity-10 border border-success border-opacity-25 small text-success">
-                                                <i class="bi bi-shield-check me-1"></i> Principal Condonation active. You have been permitted to sit in the Final Examination for this course.
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="small text-success">
-                                                <i class="bi bi-check-all fs-6 me-1"></i> Satisfactory standing. Maintain your current attendance routine through semester end.
-                                            </div>
-                                        }
-                                    </td>
-                                </tr>
-                                idx++;
+                                <div class="p-2 bg-warning bg-opacity-10 border border-warning rounded-3 text-dark small">
+                                    <i class="bi bi-arrow-up-circle-fill text-warning me-1"></i>
+                                    Attend next <strong>@eval.ClassesNeededToReach75 consecutive class(es)</strong> to reach 75%.
+                                </div>
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    No course attendance records registered for this semester.
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                            else
+                            {
+                                <div class="p-2 bg-success bg-opacity-10 border border-success rounded-3 text-success small">
+                                    <i class="bi bi-shield-check text-success me-1"></i>
+                                    Satisfies HEC final exam eligibility.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 5. INTERACTIVE ATTENDANCE RECOVERY SLIDER -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4" id="recoveryCalculator">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">Formula Engine</span>
+            <h5 class="fw-bold text-dark mb-0">Interactive Shortage Recovery Simulator (x = 3C - 4P)</h5>
+        </div>
+        <p class="text-muted small mb-4">
+            Test how attending future consecutive lectures will elevate your percentage above the 75% requirement. Select a subject below and drag the slider:
+        </p>
+
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-5">
+                <label class="form-label small fw-semibold">Select Subject for Simulation:</label>
+                <select id="simCourseSelect" class="form-select mb-3" onchange="updateSimulator()">
+                    @foreach (var eval in Model.AttendanceEvaluations)
+                    {
+                        <option value="@eval.CourseId" 
+                                data-c="@eval.TotalLecturesConducted" 
+                                data-p="@(eval.TotalPresent + eval.TotalLeave)" 
+                                data-title="@eval.CourseTitle" 
+                                data-needed="@eval.ClassesNeededToReach75"
+                                selected="@(eval.ClassesNeededToReach75 > 0)">
+                            @eval.CourseCode - @eval.CourseTitle (@eval.AttendancePercentage:0.#%)
+                        </option>
+                    }
+                </select>
+
+                <label class="form-label small fw-semibold">Simulate Future Consecutive Classes Attended (x):</label>
+                <input type="range" class="form-range" id="simSlider" min="0" max="25" value="4" oninput="updateSimulator()" />
+                <div class="d-flex justify-content-between small text-muted">
+                    <span>0 Classes</span>
+                    <span id="sliderValDisplay" class="fw-bold text-success">+4 Classes</span>
+                    <span>25 Classes</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-7">
+                <div class="p-4 rounded-4 bg-light border">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-6 text-center border-end">
+                            <span class="text-muted small fw-semibold text-uppercase">Simulated Percentage</span>
+                            <div class="display-6 fw-bold mt-1 mb-0" id="simPercentageDisplay">--%</div>
+                            <span id="simStatusBadge" class="badge bg-success mt-2">Eligible</span>
+                        </div>
+                        <div class="col-6">
+                            <div class="small text-secondary mb-1">
+                                Statutory Threshold: <strong>75.0%</strong>
+                            </div>
+                            <div class="small text-secondary mb-1">
+                                Minimum Classes Required: <strong id="simMinRequiredDisplay" class="text-danger">0</strong>
+                            </div>
+                            <div class="small text-muted mt-2 pt-2 border-top">
+                                Formula: <code class="text-dark">P' = (P + x) / (C + x) &times; 100</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- STATUTORY HEC & UNIVERSITY OF SWAT POLICY REFERENCE -->
-    <div class="card card-portal shadow-sm mb-4">
-        <div class="card-header-portal">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-book-half text-success fs-5"></i>
-                <span>Official Attendance Rules & Examination Regulations (HEC / University of Swat)</span>
+    <!-- 6. ATTENDANCE TREND & SGPA ANALYTICS (Chart.js) -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-line-fill text-success me-2"></i>Subject Attendance vs 75% Statutory Line</h5>
+                    <span class="badge bg-light text-muted border">Fall 2026</span>
+                </div>
+                <div style="height: 270px;">
+                    <canvas id="studentAttendanceChart"></canvas>
+                </div>
             </div>
         </div>
-        <div class="card-body p-4">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                        <div class="d-flex align-items-center gap-2 text-success fw-bold mb-2">
-                            <i class="bi bi-check2-circle fs-5"></i>
-                            <span>Tier 1: 75% and Above (Eligible)</span>
-                        </div>
-                        <p class="small text-muted mb-0">
-                            Students who attend 75% or more of total conducted lectures are unconditionally eligible to sit in the Final Term Examinations and receive official grades and GPAs.
-                        </p>
-                    </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                        <div class="d-flex align-items-center gap-2 text-warning fw-bold mb-2">
-                            <i class="bi bi-exclamation-triangle fs-5"></i>
-                            <span>Tier 2: 65% to 74.9% (Condonation)</span>
-                        </div>
-                        <p class="small text-muted mb-0">
-                            Students falling in this zone are debarred by default, but may apply to the <strong>Principal / Academic Committee</strong> for a medical or official emergency condonation waiver upon paying the Bank of Khyber condonation fee.
-                        </p>
-                    </div>
+        <div class="col-12 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Notice Board Alerts</h5>
+                <div class="list-group list-group-flush">
+                    @if (Model.CollegeAnnouncements.Any())
+                    {
+                        foreach (var n in Model.CollegeAnnouncements)
+                        {
+                            <a asp-controller="Notices" asp-action="Index" class="list-group-item list-group-item-action px-0 py-2 border-0">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span class="badge bg-warning bg-opacity-25 text-dark font-monospace" style="font-size: 0.68rem;">@n.Category</span>
+                                    <small class="text-muted" style="font-size: 0.72rem;">@n.PublishedDate.ToString("dd MMM")</small>
+                                </div>
+                                <div class="fw-semibold text-dark small mt-1">@n.Title</div>
+                            </a>
+                        }
+                    }
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-md-4">
-                    <div class="border rounded-3 p-3 h-100 bg-light">
-                        <div class="d-flex align-items-center gap-2 text-danger fw-bold mb-2">
-                            <i class="bi bi-x-octagon fs-5"></i>
-                            <span>Tier 3: Below 65% (Strictly Debarred)</span>
-                        </div>
-                        <p class="small text-muted mb-0">
-                            Students with less than 65% attendance cannot be condoned under University of Swat statutes. The course is marked as <strong>"SA (F)"</strong> and the student must re-register and repeat the course in a subsequent semester.
-                        </p>
-                    </div>
+    <!-- 7. TIMETABLE & FEE PAYMENT SUMMARY -->
+    <div class="row g-4 mb-4">
+        <!-- Timetable Stream -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-calendar3 text-success me-2"></i>Weekly Class Timetable</h5>
+                    <a asp-action="Timetable" class="btn btn-sm btn-outline-success rounded-pill fw-semibold">View All</a>
                 </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Day</th>
+                                <th>Course</th>
+                                <th>Timing</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.WeeklySchedule.Take(4))
+                            {
+                                <tr>
+                                    <td class="fw-bold text-dark">@t.DayOfWeek</td>
+                                    <td><span class="badge bg-light text-dark font-monospace border">@t.CourseCode</span> @t.CourseTitle</td>
+                                    <td class="text-muted">@t.TimeSlot</td>
+                                    <td><span class="badge bg-success bg-opacity-10 text-success">@t.Room</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Fee Challans -->
+        <div class="col-12 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-receipt text-success me-2"></i>Fee Payment Timeline</h5>
+                    <a asp-action="Fees" class="btn btn-sm btn-outline-success rounded-pill fw-semibold">Fee Portal</a>
+                </div>
+                @if (Model.RecentFeeChallans.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Challan #</th>
+                                    <th>Sem</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Voucher</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ch in Model.RecentFeeChallans)
+                                {
+                                    <tr>
+                                        <td class="font-monospace fw-semibold">@ch.ChallanNumber</td>
+                                        <td>Sem @ch.Semester</td>
+                                        <td class="fw-bold text-dark">Rs. @ch.TotalAmount.ToString("N0")</td>
+                                        <td>
+                                            @if (ch.IsPaid)
+                                            {
+                                                <span class="badge bg-success">PAID</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">UNPAID</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <a asp-action="PrintChallan" asp-route-id="@ch.Id" class="btn btn-xs btn-outline-primary" title="Print 3-Part BoK Voucher">
+                                                <i class="bi bi-printer"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted small">
+                        No outstanding fee challans for this session.
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
+
+<!-- 8. MOBILE-FIRST BOTTOM NAVIGATION BAR -->
+<nav class="mobile-bottom-nav">
+    <a asp-action="Index" class="mobile-nav-btn active">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+    <a asp-action="RollNoSlip" class="mobile-nav-btn">
+        <i class="bi bi-card-checklist"></i>
+        <span>Roll No Slip</span>
+    </a>
+    <a asp-action="Transcript" class="mobile-nav-btn">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>DMC</span>
+    </a>
+    <a asp-action="Fees" class="mobile-nav-btn">
+        <i class="bi bi-cash-coin"></i>
+        <span>Fees</span>
+    </a>
+    <a asp-action="Timetable" class="mobile-nav-btn">
+        <i class="bi bi-calendar3"></i>
+        <span>Schedule</span>
+    </a>
+</nav>
+
+@section Scripts {
+    <script>
+        // Interactive Shortage Recovery Simulator
+        function updateSimulator() {
+            const select = document.getElementById('simCourseSelect');
+            const slider = document.getElementById('simSlider');
+            const opt = select.options[select.selectedIndex];
+
+            const C = parseFloat(opt.getAttribute('data-c')) || 0;
+            const P = parseFloat(opt.getAttribute('data-p')) || 0;
+            const x = parseFloat(slider.value) || 0;
+            const needed = parseInt(opt.getAttribute('data-needed'), 10) || 0;
+
+            document.getElementById('sliderValDisplay').textContent = '+' + x + ' Classes';
+            document.getElementById('simMinRequiredDisplay').textContent = needed + ' consecutive class(es)';
+
+            let newPct = 100.0;
+            if (C + x > 0) {
+                newPct = ((P + x) / (C + x)) * 100.0;
+            }
+
+            const pctDisplay = document.getElementById('simPercentageDisplay');
+            const badge = document.getElementById('simStatusBadge');
+
+            pctDisplay.textContent = newPct.toFixed(1) + '%';
+
+            if (newPct >= 75.0) {
+                pctDisplay.style.color = '#0B6623';
+                badge.className = 'badge bg-success mt-2';
+                badge.textContent = 'Eligible for Final Exam';
+            } else if (newPct >= 65.0) {
+                pctDisplay.style.color = '#D4AF37';
+                badge.className = 'badge bg-warning text-dark mt-2';
+                badge.textContent = 'Condonation Zone';
+            } else {
+                pctDisplay.style.color = '#DC2626';
+                badge.className = 'badge bg-danger mt-2';
+                badge.textContent = 'Debarred (Short Attendance)';
+            }
+        }
+
+        // Initialize Chart.js Attendance Chart
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSimulator();
+
+            const ctx = document.getElementById('studentAttendanceChart');
+            if (ctx) {
+                const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AttendanceEvaluations.Select(e => e.CourseCode)));
+                const dataValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AttendanceEvaluations.Select(e => e.AttendancePercentage)));
+                
+                const backgroundColors = dataValues.map(v => v >= 75 ? 'rgba(11, 102, 35, 0.85)' : (v >= 65 ? 'rgba(212, 175, 55, 0.85)' : 'rgba(220, 38, 38, 0.85)'));
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Student Attendance %',
+                                data: dataValues,
+                                backgroundColor: backgroundColors,
+                                borderRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(val) { return val + '%'; }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) { return 'Attendance: ' + ctx.raw + '%'; }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

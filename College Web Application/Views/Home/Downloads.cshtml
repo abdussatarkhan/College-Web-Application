@@ -1,0 +1,65 @@
+@model List<College_Web_Application.Models.ViewModels.DownloadableDocumentItem>
+@{
+    ViewData["Title"] = "Downloads & Official Institutional Forms";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-success text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Downloads Center</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #063B13 0%, #0B6623 50%, #084C1A 100%);">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Public Document Repository
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Institutional Downloads & Forms</h1>
+                <p class="text-white-50 mb-0">
+                    Download verified admission forms, college prospectus, stamp paper affidavits, examination proformas, and fee schedules for Government Degree College Madyan Swat.
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-controller="Admissions" asp-action="Apply" class="btn btn-warning fw-bold shadow">
+                    <i class="bi bi-pencil-square me-1"></i> Online Admission Portal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="row g-4">
+        @foreach (var doc in Model)
+        {
+            <div class="col-12 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 position-relative">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 text-center" style="min-width: 60px;">
+                            <i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem;"></i>
+                            <div class="font-monospace fw-bold small mt-1">@doc.FileType</div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-0.5 mb-2" style="font-size: 0.72rem;">
+                                @doc.Category
+                            </span>
+                            <h5 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">@doc.Title</h5>
+                            <p class="text-muted small mb-3">@doc.Description</p>
+                            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                <span class="text-muted small"><i class="bi bi-hdd me-1"></i>@doc.FileSize &bull; @doc.LastUpdated.ToString("MMM yyyy")</span>
+                                <a href="@doc.DownloadUrl" class="btn btn-sm btn-outline-success rounded-pill fw-semibold px-3" download>
+                                    <i class="bi bi-download me-1"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

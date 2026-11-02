@@ -1,0 +1,164 @@
+@model College_Web_Application.Models.ViewModels.ContactInquiryViewModel
+@{
+    ViewData["Title"] = "Contact Us & Campus Location";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-success text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contact & Location</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #063B13 0%, #0B6623 50%, #084C1A 100%);">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-geo-alt-fill me-1"></i> Swat Valley Campus
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Contact Us & Campus Location</h1>
+                <p class="text-white-50 mb-0">
+                    Get in touch with the Principal Office, Admissions Committee, Examination Office, or Academic Departments of Government Degree College Madyan Swat.
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="tel:+92946881234" class="btn btn-warning fw-bold shadow">
+                    <i class="bi bi-telephone-fill me-1"></i> Call Office Directory
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 p-3 shadow-sm mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <strong>Inquiry Received!</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Contact Directory & Info -->
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h4 class="fw-bold text-dark mb-3">Institutional Directory</h4>
+                
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+                        <i class="bi bi-geo-alt-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Campus Address</div>
+                        <div class="text-muted small">Madyan, Tehsil Bahrain, District Swat, Khyber Pakhtunkhwa, Pakistan (Postal Code: 19120)</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+                        <i class="bi bi-telephone-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Telephone & Exchange</div>
+                        <div class="text-muted small">Main Office: +92 946 881234</div>
+                        <div class="text-muted small">Admissions Desk: +92 946 881235</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+                        <i class="bi bi-envelope-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Email Inquiries</div>
+                        <div class="text-muted small">General: info@gdcmadyan.edu.pk</div>
+                        <div class="text-muted small">Principal: principal@gdcmadyan.edu.pk</div>
+                        <div class="text-muted small">Exams: controller.exams@gdcmadyan.edu.pk</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+                        <i class="bi bi-clock-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Administrative Office Hours</div>
+                        <div class="text-muted small">Monday – Friday: 08:00 AM – 02:00 PM</div>
+                        <div class="text-muted small text-danger">Saturday – Sunday: Closed</div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="p-3 rounded-3 bg-light border">
+                    <div class="small fw-bold text-dark mb-1"><i class="bi bi-shield-check text-success me-1"></i> Public Institution Accreditation</div>
+                    <div class="text-muted small">Regulated by Higher Education Department (HED) KP &bull; Affiliated with BISE Swat &amp; University of Swat.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inquiry Form & Interactive Map -->
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <h4 class="fw-bold text-dark mb-2">Send an Official Inquiry</h4>
+                <p class="text-muted small mb-4">Have questions regarding admissions, verification, or transcript issuance? Complete the proforma below.</p>
+
+                <form asp-action="Contact" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="FullName" class="form-label small fw-semibold">Your Full Name</label>
+                            <input asp-for="FullName" class="form-control" placeholder="e.g. Muhammad Aslam" required />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Email" class="form-label small fw-semibold">Email Address</label>
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" required />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Phone" class="form-label small fw-semibold">Contact Mobile No</label>
+                            <input asp-for="Phone" class="form-control" placeholder="0345-1234567" required />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label asp-for="Subject" class="form-label small fw-semibold">Inquiry Department / Subject</label>
+                            <select asp-for="Subject" class="form-select" required>
+                                <option value="Admissions Inquiries">Admissions &amp; Merit Lists</option>
+                                <option value="Controller Examinations">Controller of Examinations (DMC / Degree)</option>
+                                <option value="Fee & Accounts">Fee Verification &amp; Bank Challans</option>
+                                <option value="Student Affairs & Character Certificate">Student Affairs &amp; Character Certificate</option>
+                                <option value="Principal Office">Principal Office Appointment</option>
+                            </select>
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Message" class="form-label small fw-semibold">Your Message / Query</label>
+                            <textarea asp-for="Message" rows="4" class="form-control" placeholder="Provide details of your inquiry..." required></textarea>
+                            <span asp-validation-for="Message" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success fw-bold px-4 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-send-fill me-1"></i> Submit Inquiry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Campus Map Embed -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-white border-0 py-3 px-4">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-map-fill text-success me-2"></i>Campus Location Map</h5>
+                </div>
+                <div class="ratio ratio-21x9" style="min-height: 250px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13145.429390234522!2d72.528430!3d35.134540!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dc2c5f1a304895%3A0xb697b0a7c4dd62ef!2sMadyan%2C%20Swat%2C%20Khyber%20Pakhtunkhwa!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s" 
+                            style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -16,7 +16,8 @@
   <a href="#database-architecture"><img src="https://img.shields.io/badge/ORM-EF%20Core%20Code--First-68217A?logo=csharp" alt="EF Core" /></a>
   <a href="#frontend-experience"><img src="https://img.shields.io/badge/UI-Bootstrap%205.3%20%7C%20Chart.js-7952B3?logo=bootstrap" alt="Bootstrap 5" /></a>
   <a href="#cloud-deployment"><img src="https://img.shields.io/badge/Deploy-Docker%20%7C%20Google%20Cloud%20Run-4285F4?logo=googlecloud" alt="Google Cloud" /></a>
-  <a href="#institutional-leadership"><img src="https://img.shields.io/badge/Principal-Mr.%20Rasheed%20Ahmad-0B6623" alt="Principal Mr. Rasheed Ahmad" /></a>
+  <a href="#institutional-leadership"><img src="https://img.shields.io/badge/Principal-Mr.%20Rasheed%20Ahmad-0B1B3D?logo=academia" alt="Principal Mr. Rasheed Ahmad" /></a>
+  <a href="#palette"><img src="https://img.shields.io/badge/Palette-Royal%20Navy%20%26%20Gold-D4AF37" alt="Royal Navy and Gold" /></a>
 </p>
 
 ---
@@ -25,7 +26,7 @@
 
 **Government Degree College Madyan Swat** is a premier public-sector higher education institution serving 5,000+ students and 100+ teaching and administrative faculty members across Upper Swat. 
 
-This enterprise web application delivers a modern institutional public website modeled after top-tier engineering universities (**GIKI design system**), seamlessly unified with a mission-critical **Campus Management ERP** that enforces Khyber Pakhtunkhwa Higher Education Department (HED) disciplinary mandates and University of Swat / HEC academic regulations.
+This enterprise web application delivers a modern institutional public website benchmarked against prestigious university standards (**University of Swat & GIKI**), seamlessly unified with a mission-critical **Campus Management ERP** that enforces Khyber Pakhtunkhwa Higher Education Department (HED) disciplinary mandates and University of Swat / HEC academic regulations.
 
 ---
 
@@ -41,14 +42,21 @@ This enterprise web application delivers a modern institutional public website m
 
 ## 🚀 Key Features & Modules
 
-### 1. 🎓 GIKI-Inspired Flagship Public Website
-- **Two-Tier Sticky Header:** Top institutional utility bar with Arabic motto (`رَبِّ زِدْنِي عِلْماً`), official affiliations, digital library quick-links, and gold CMS portal login pill.
-- **Cinematic Campus Drone Background Video:** Web-optimized 720p aerial drone loop (`campus-drone.mp4`) with smooth gradient overlay for crystal-clear typography.
-- **Unobstructed Live Updates Ticker:** Real-time scrolling notification bar for merit lists, admission deadlines, and official HED circulars.
-- **4 Floating Institutional Action Cards:** Quick-access gateways to Admissions, Programs, HED/HEC Scholarships, and Results.
-- **Academic Programs Showcase:** Interactive catalog spanning F.Sc Pre-Medical, Pre-Engineering, FCS/ICS, FA, and BS 4-Year degrees in Computer Science, Political Science, and English.
-- **Campus Life Tabbed Gallery:** 7 high-resolution aerial stills covering academic blocks, botanical gardens, science laboratories, and student walkways with a lightbox modal.
-- **Principal's Desk:** Executive vision statement and official portrait of Principal **Mr. Rasheed Ahmad**.
+### 1. 🎓 Flagship Public Institutional Website (University of Swat Benchmark)
+- **Royal Navy & Gold Design System:** Prestigious academic palette built on University of Swat tokens (`#0B1B3D` Royal Navy, `#D4AF37` Gold, crisp white surfaces, full Dark Mode support).
+- **Executive Principal Desk:** Professional rectangular framed portrait showcase of Principal **Mr. Rasheed Ahmad** with formal HED KP credential plate and welcome address.
+- **Two-Tier Sticky Header:** Top institutional utility bar with Arabic motto (`رَبِّ زِدْنِي عِلْماً`), official affiliations, theme/RTL toggle, and gold CMS portal login pill.
+- **Cinematic Campus Drone Background Video:** Web-optimized aerial drone loop (`campus-drone.mp4`) with smooth charcoal glass gradient overlay for crystal-clear typography.
+- **Unobstructed Live Updates Ticker:** Real-time scrolling marquee notification bar for marks-based merit lists, admission deadlines, and official HED circulars.
+- **6 Accredited BS Academic Departments:**
+  1. **Computer Science** (BSCS 4-Year & ICS)
+  2. **Microbiology** (BS Microbiology 4-Year)
+  3. **Chemistry** (BS Chemistry 4-Year & F.Sc)
+  4. **Botany** (BS Botany 4-Year & F.Sc)
+  5. **English** (BS English Literature & Linguistics 4-Year)
+  6. **Urdu** (BS Urdu Literature 4-Year)
+- **Transparent Marks-Based Merit Admissions:** Zero interview bias — 100% evaluated on Total Obtained Marks with live KP HED merit formula preview.
+- **Campus Life Tabbed Gallery:** High-resolution aerial stills covering academic blocks, botanical gardens, science laboratories, and student walkways with lightbox modal.
 
 ### 2. ⚡ Dual Attendance & Disciplinary Compliance Engine
 - **BS 4-Year HEC / University of Swat 75% Rule:**

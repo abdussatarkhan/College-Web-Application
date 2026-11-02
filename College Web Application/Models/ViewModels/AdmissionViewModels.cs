@@ -131,7 +131,8 @@ namespace College_Web_Application.Models.ViewModels
         public string CNIC { get; set; } = string.Empty;
         public string AppliedProgramTitle { get; set; } = string.Empty;
         public string QuotaCategory { get; set; } = string.Empty;
-        public decimal MeritScore { get; set; }
+        public decimal MeritScore { get; set; } // Stored as Total Merit Marks
+        public decimal MeritPercentage => MatricTotalMarks > 0 ? Math.Round((MeritScore / (HsscTotalMarks ?? MatricTotalMarks)) * 100m, 2) : 0m;
         public string Status { get; set; } = "Pending";
         public DateTime AppliedDate { get; set; }
         public decimal MatricObtainedMarks { get; set; }
@@ -151,6 +152,8 @@ namespace College_Web_Application.Models.ViewModels
         public int PageSize { get; set; } = 50;
         public int TotalCount { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+        public decimal CutOffMeritMarks { get; set; }
+        public decimal HighestMeritMarks { get; set; }
         public decimal CutOffMeritPercentage { get; set; }
         public List<AcademicProgram> Programs { get; set; } = new();
     }

@@ -8,19 +8,19 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 small">
-                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-success">Home</a></li>
-                <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="MeritLists" class="text-decoration-none text-success">Admissions</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-primary">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="MeritLists" class="text-decoration-none text-primary">Admissions</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Online Application Form</li>
             </ol>
         </nav>
-        <div class="text-success fw-bold arabic-motto" style="font-size: 1.1rem;">
+        <div class="text-warning fw-bold arabic-motto" style="font-size: 1.1rem;">
             رَبِّ زِدْنِي عِلْماً
         </div>
     </div>
 
-    <!-- Header Banner -->
-    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
-         style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 50%, #145A32 100%);">
+    <!-- Header Banner (University of Swat Royal Navy & Gold) -->
+    <div class="bg-primary text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #0B1B3D 0%, #163678 60%, #0F275A 100%); border-bottom: 3px solid #D4AF37;">
         <div class="row align-items-center">
             <div class="col-12 col-md-8">
                 <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
@@ -28,7 +28,7 @@
                 </span>
                 <h1 class="h2 fw-bold text-white mb-2">Online Admission Application Form</h1>
                 <p class="text-white-50 mb-0">
-                    Apply online for Intermediate (F.Sc, ICS, FA - BISE Swat) and BS 4-Year Semester Programs (University of Swat).
+                    Apply online for Intermediate (F.Sc, ICS - BISE Swat) and BS 4-Year Semester Programs (University of Swat).
                 </p>
             </div>
             <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
@@ -273,7 +273,7 @@
 
                 <!-- Submit Button -->
                 <div class="d-grid mb-5">
-                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow py-3">
+                    <button type="submit" class="btn btn-warning btn-lg fw-bold shadow py-3 text-dark">
                         <i class="bi bi-send-check-fill me-2"></i> Submit Online Admission Application
                     </button>
                 </div>
@@ -282,14 +282,14 @@
             <!-- Right 4 Columns: Live Estimated Merit Aggregate Box -->
             <div class="col-12 col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 85px;">
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill fw-semibold mb-2">
                         Automated KP HED Formula
                     </span>
                     <h5 class="fw-bold text-dark mb-1">Live Merit Preview</h5>
                     <p class="text-muted small mb-3">Calculated live according to official HED KP admission formulas.</p>
 
                     <!-- Large Aggregate Display -->
-                    <div class="p-4 rounded-3 text-center mb-3 text-white" style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 100%);">
+                    <div class="p-4 rounded-3 text-center mb-3 text-white" style="background: linear-gradient(135deg, #0B1B3D 0%, #163678 100%); border: 1px solid rgba(212, 175, 55, 0.4);">
                         <small class="text-white-50 text-uppercase letter-spacing-1">Estimated Aggregate</small>
                         <div class="display-4 fw-bold text-warning" id="liveMeritScore">0.00%</div>
                         <span class="badge bg-white bg-opacity-25 text-white mt-1" id="meritModeBadge">Select Program</span>

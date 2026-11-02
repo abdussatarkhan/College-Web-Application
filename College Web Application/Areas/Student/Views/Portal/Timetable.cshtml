@@ -1,0 +1,139 @@
+@model List<College_Web_Application.Models.ViewModels.StudentTimetableItem>
+@{
+    ViewData["Title"] = "Academic Timetable & Class Schedule";
+    Layout = "_Layout";
+    var student = ViewBag.Student as College_Web_Application.Models.StudentProfile;
+    var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a asp-action="Index">Student Portal</a></li>
+                    <li class="breadcrumb-item active">Weekly Schedule</li>
+                </ol>
+            </nav>
+            <h3 class="fw-bold text-dark mb-0">
+                <i class="bi bi-calendar3 text-success me-2"></i>Weekly Lecture Schedule
+            </h3>
+            <p class="text-muted small mb-0">
+                @(student?.Program?.Title ?? "BS Computer Science") &bull; Semester @(student?.CurrentSemester ?? 5) (Section @(student?.Section ?? "A")) &bull; Fall 2026 Session
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="window.print()" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-sm">
+                <i class="bi bi-printer me-1"></i> Print Timetable
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Day by Day Accordion / Cards -->
+    <div class="row g-4">
+        @foreach (var day in days)
+        {
+            var daySlots = Model.Where(m => m.DayOfWeek.Equals(day, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill fw-bold">
+                                @day.ToUpper()
+                            </span>
+                            <span class="text-muted small">(@daySlots.Count Lectures scheduled)</span>
+                        </div>
+                        <span class="small text-muted font-monospace">Campus Timings: 08:30 AM - 01:30 PM</span>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (daySlots.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light small text-uppercase text-muted">
+                                        <tr>
+                                            <th class="ps-3" style="width: 180px;">Time Slot</th>
+                                            <th style="width: 120px;">Course Code</th>
+                                            <th style="min-width: 200px;">Course Title</th>
+                                            <th style="min-width: 180px;">Classroom / Laboratory</th>
+                                            <th style="min-width: 200px;">Instructor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        @foreach (var slot in daySlots)
+                                        {
+                                            <tr>
+                                                <td class="ps-3">
+                                                    <span class="badge bg-light text-dark border px-2.5 py-1.5 font-monospace">
+                                                        <i class="bi bi-clock me-1 text-primary"></i> @slot.TimeSlot
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="font-monospace fw-bold text-dark">@slot.CourseCode</span>
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold text-dark">@slot.CourseTitle</div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-secondary">
+                                                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> @slot.Room
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold text-dark">
+                                                        <i class="bi bi-person-badge text-success me-1"></i> @slot.Instructor
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="p-3 text-center text-muted small">
+                                <i class="bi bi-calendar2-x me-1"></i> No lectures scheduled for @day. Library study & consultation hours.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Notes Block -->
+    <div class="card shadow-sm border-0 rounded-3 bg-light p-3 mt-4 small text-secondary">
+        <div class="d-flex align-items-center gap-2 mb-1 fw-bold text-dark">
+            <i class="bi bi-exclamation-circle-fill text-warning"></i> Campus Academic Regulations Notice
+        </div>
+        <div>
+            1. Lectures commence strictly on scheduled bell timings. Late entry beyond 10 minutes is recorded as Absent.<br />
+            2. Minimum 75% attendance in each scheduled course is required under University of Swat regulations for exam admit card issuance.<br />
+            3. For lab practical changes or clash resolution, contact your respective Departmental Head of Department (HOD).
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .navbar, .institutional-topbar, .site-footer, .d-print-none, .btn {
+            display: none !important;
+        }
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ccc !important;
+            page-break-inside: avoid;
+        }
+    }
+</style>

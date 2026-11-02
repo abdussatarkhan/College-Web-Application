@@ -194,32 +194,30 @@ namespace College_Web_Application.Data
 
         private static void SeedData(ModelBuilder builder)
         {
-            // Seed Departments
+            // Seed Departments (Accredited by University of Swat & HED KP)
             builder.Entity<Department>().HasData(
-                new Department { Id = 1, Name = "Computer Science", Code = "CS", HODName = "Prof. Dr. Muhammad Tariq Khan", Description = "Modern computing, algorithmic thinking, software engineering, and AI." },
-                new Department { Id = 2, Name = "Political Science", Code = "POL", HODName = "Assoc. Prof. Fazal Rehman", Description = "Governance, public administration, constitutional studies, and international relations." },
-                new Department { Id = 3, Name = "English", Code = "ENG", HODName = "Asst. Prof. Zahir Shah", Description = "English literature, linguistics, communication skills, and global rhetoric." },
-                new Department { Id = 4, Name = "Islamic Studies", Code = "ISL", HODName = "Prof. Maulana Abdul Haq", Description = "Islamic jurisprudence, Quranic studies, Hadith sciences, and ethics." },
-                new Department { Id = 5, Name = "Urdu", Code = "URD", HODName = "Assoc. Prof. Dr. Ahmad Ali", Description = "Classical and modern Urdu prose, poetry, and linguistic heritage." },
-                new Department { Id = 6, Name = "Biological Sciences (Botany & Zoology)", Code = "BIO", HODName = "Assoc. Prof. Dr. Shaukat Khan", Description = "Biodiversity of Swat Valley, flora, fauna, molecular biology, and ecology." },
-                new Department { Id = 7, Name = "Physical Sciences (Physics & Chemistry)", Code = "PHY-CHEM", HODName = "Prof. Noor Muhammad", Description = "Experimental physics, analytical chemistry, and environmental science." }
+                new Department { Id = 1, Name = "Computer Science", Code = "CS", HODName = "Prof. Dr. Muhammad Tariq Khan", Description = "Theoretical and applied computer science, algorithms, software engineering, web technologies, and AI." },
+                new Department { Id = 2, Name = "Microbiology", Code = "MCB", HODName = "Assoc. Prof. Dr. Shaukat Khan", Description = "Bacteriology, virology, immunology, clinical microbiology, and diagnostic biotechnology." },
+                new Department { Id = 3, Name = "English", Code = "ENG", HODName = "Asst. Prof. Zahir Shah", Description = "English literature, linguistics, global communication, rhetoric, and literary discourse." },
+                new Department { Id = 4, Name = "Urdu", Code = "URD", HODName = "Assoc. Prof. Dr. Ahmad Ali", Description = "Classical and modern Urdu prose, poetry, linguistic history, and literary criticism." },
+                new Department { Id = 5, Name = "Chemistry", Code = "CHEM", HODName = "Prof. Noor Muhammad", Description = "Organic, inorganic, analytical, physical chemistry, and environmental biochemistry." },
+                new Department { Id = 6, Name = "Botany", Code = "BOT", HODName = "Asst. Prof. Dr. Fazal Wadood", Description = "Plant biodiversity of Swat Valley, medicinal flora, cellular genetics, and plant physiology." }
             );
 
-            // Seed Academic Programs
+            // Seed Academic Programs (BS 4-Year University of Swat + HSSC BISE Swat)
             builder.Entity<AcademicProgram>().HasData(
                 // Intermediate Programs (HSSC - BISE Swat)
                 new AcademicProgram { Id = 1, Title = "F.Sc Pre-Medical", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 6, FeePerSemester = 3500.00m },
-                new AcademicProgram { Id = 2, Title = "F.Sc Pre-Engineering", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 7, FeePerSemester = 3500.00m },
+                new AcademicProgram { Id = 2, Title = "F.Sc Pre-Engineering", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 5, FeePerSemester = 3500.00m },
                 new AcademicProgram { Id = 3, Title = "FCS / ICS (Computer Science)", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 1, FeePerSemester = 4000.00m },
-                new AcademicProgram { Id = 4, Title = "F.A (Humanities & Arts)", Level = "HSSC", DurationYears = 2, TotalSemesters = 4, DepartmentId = 2, FeePerSemester = 3000.00m },
 
-                // BS 4-Year Programs (University of Swat)
+                // BS 4-Year Degree Programs (Affiliated with University of Swat)
                 new AcademicProgram { Id = 5, Title = "BS Computer Science (BSCS)", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 1, FeePerSemester = 6500.00m },
-                new AcademicProgram { Id = 6, Title = "BS Political Science", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 2, FeePerSemester = 5000.00m },
+                new AcademicProgram { Id = 6, Title = "BS Microbiology", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 2, FeePerSemester = 6000.00m },
                 new AcademicProgram { Id = 7, Title = "BS English Literature & Linguistics", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 3, FeePerSemester = 5500.00m },
-                new AcademicProgram { Id = 8, Title = "BS Islamic Studies", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 4, FeePerSemester = 4500.00m },
-                new AcademicProgram { Id = 9, Title = "BS Urdu", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 5, FeePerSemester = 4500.00m },
-                new AcademicProgram { Id = 10, Title = "BS Zoology", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 6, FeePerSemester = 6000.00m }
+                new AcademicProgram { Id = 8, Title = "BS Urdu", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 4, FeePerSemester = 4500.00m },
+                new AcademicProgram { Id = 9, Title = "BS Chemistry", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 5, FeePerSemester = 6000.00m },
+                new AcademicProgram { Id = 10, Title = "BS Botany", Level = "BS", DurationYears = 4, TotalSemesters = 8, DepartmentId = 6, FeePerSemester = 5500.00m }
             );
 
             // Seed Sample Courses
@@ -229,9 +227,9 @@ namespace College_Web_Application.Data
                 new Course { Id = 3, CourseCode = "ENG-101", Title = "English Composition & Comprehension", CreditHours = 3, ProgramId = 5, Semester = 1 },
                 new Course { Id = 4, CourseCode = "CS-201", Title = "Data Structures & Algorithms", CreditHours = 4, ProgramId = 5, Semester = 3 },
                 new Course { Id = 5, CourseCode = "CS-301", Title = "Database Systems", CreditHours = 4, ProgramId = 5, Semester = 5 },
-                new Course { Id = 6, CourseCode = "POL-101", Title = "Introduction to Political Theory", CreditHours = 3, ProgramId = 6, Semester = 1 },
+                new Course { Id = 6, CourseCode = "MCB-101", Title = "Fundamentals of Microbiology", CreditHours = 4, ProgramId = 6, Semester = 1 },
                 new Course { Id = 7, CourseCode = "ENG-201", Title = "History of English Literature", CreditHours = 3, ProgramId = 7, Semester = 1 },
-                new Course { Id = 8, CourseCode = "BIO-101", Title = "Cell Biology & Genetics", CreditHours = 4, ProgramId = 1, Semester = 1 }
+                new Course { Id = 8, CourseCode = "CHEM-101", Title = "Inorganic & Physical Chemistry", CreditHours = 4, ProgramId = 9, Semester = 1 }
             );
 
             // Seed Notices
@@ -517,7 +515,7 @@ namespace College_Web_Application.Data
                     HsscTotalMarks = 1100.00m,
                     IsHafizQuran = true,
                     HafizMarks = 20.00m,
-                    MeritScore = 88.25m,
+                    MeritScore = 965.00m, // Marks-based merit: 945 HSSC obtained + 20 Hafiz
                     AppliedProgramId = 5, // BSCS
                     SecondChoiceProgramId = 6, // BS Pol Sci
                     QuotaCategory = "Open Merit",
@@ -551,7 +549,7 @@ namespace College_Web_Application.Data
                     HsscTotalMarks = 1100.00m,
                     IsHafizQuran = false,
                     HafizMarks = 0.00m,
-                    MeritScore = 81.64m,
+                    MeritScore = 890.00m, // Marks-based merit: 890 HSSC obtained
                     AppliedProgramId = 5, // BSCS
                     QuotaCategory = "Open Merit",
                     Status = "Pending",

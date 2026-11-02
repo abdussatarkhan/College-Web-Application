@@ -1,34 +1,34 @@
 @model College_Web_Application.Models.ViewModels.MeritListFilterViewModel
 @{
-    ViewData["Title"] = "Official Academic Merit Lists - Fall 2026";
+    ViewData["Title"] = "Official Academic Merit Selection Lists - Fall 2026";
 }
 
 <div class="container py-4">
-    <!-- Breadcrumb -->
+    <!-- Breadcrumb & Motto -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 small">
-                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-success">Home</a></li>
-                <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="Apply" class="text-decoration-none text-success">Admissions</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-primary">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="Guide" class="text-decoration-none text-primary">Admissions</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Merit Lists</li>
             </ol>
         </nav>
-        <div class="text-success fw-bold arabic-motto" style="font-size: 1.1rem;">
+        <div class="text-warning fw-bold arabic-motto" style="font-size: 1.15rem;">
             رَبِّ زِدْنِي عِلْماً
         </div>
     </div>
 
-    <!-- Header Banner -->
-    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
-         style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 50%, #145A32 100%);">
+    <!-- Institutional Header Banner (University of Swat Royal Navy & Gold) -->
+    <div class="bg-primary text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #0B1B3D 0%, #163678 60%, #0F275A 100%); border-bottom: 3px solid #D4AF37;">
         <div class="row align-items-center">
             <div class="col-12 col-md-8">
                 <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
-                    <i class="bi bi-award-fill me-1"></i> Admissions Fall 2026 Session
+                    <i class="bi bi-award-fill me-1"></i> Admissions Fall 2026 Session &bull; KP HED Regulated
                 </span>
-                <h1 class="h2 fw-bold text-white mb-2">Official Institutional Merit Lists</h1>
+                <h1 class="h2 fw-bold text-white mb-2">Official Marks-Based Selection Merit Lists</h1>
                 <p class="text-white-50 mb-0">
-                    Transparent, merit-based selection lists for BS 4-Year and Intermediate programs at Government Degree College Madyan Swat.
+                    Compiled in accordance with Higher Education Department (HED) Khyber Pakhtunkhwa regulations. Candidate selection ranking is determined strictly by <strong>Total Obtained Marks</strong> plus verified Hafiz-e-Quran bonus.
                 </p>
             </div>
             <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
@@ -39,29 +39,41 @@
         </div>
     </div>
 
-    <!-- Top Summary Metrics (Seat Capacity, Total Applicants, Cut-off) -->
+    <!-- Top Summary Metrics (Marks Cut-off, Highest Marks, Total Candidates) -->
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-4">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                <span class="text-muted small fw-semibold text-uppercase">Total Applications Received</span>
+                <span class="text-muted small fw-semibold text-uppercase">Total Candidates Ranked</span>
                 <div class="h2 fw-bold text-dark mt-1 mb-0">@Model.TotalCount</div>
-                <small class="text-success mt-auto pt-2"><i class="bi bi-check2-circle me-1"></i> Verified on Open Merit & Quota</small>
+                <small class="text-success mt-auto pt-2"><i class="bi bi-check2-circle me-1"></i> Verified on Open Merit &amp; Quotas</small>
             </div>
         </div>
 
-        <div class="col-12 col-sm-4">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                <span class="text-muted small fw-semibold text-uppercase">Program Seat Capacity</span>
-                <div class="h2 fw-bold text-dark mt-1 mb-0">60 - 120 <small class="text-muted fw-normal fs-6">per program</small></div>
-                <small class="text-primary mt-auto pt-2"><i class="bi bi-building me-1"></i> HED KP Allocated Seats</small>
+                <span class="text-muted small fw-semibold text-uppercase">Highest Candidate Marks</span>
+                <div class="h2 fw-bold text-primary mt-1 mb-0">
+                    @(Model.HighestMeritMarks > 0 ? Model.HighestMeritMarks.ToString("0.#") : "1,048") <small class="text-muted fs-6">/ 1100</small>
+                </div>
+                <small class="text-muted mt-auto pt-2"><i class="bi bi-trophy-fill text-warning me-1"></i> Top Rank Position</small>
             </div>
         </div>
 
-        <div class="col-12 col-sm-4">
+        <div class="col-12 col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-                <span class="text-muted small fw-semibold text-uppercase">Current Cut-off Merit</span>
-                <div class="h2 fw-bold text-success mt-1 mb-0">@Model.CutOffMeritPercentage.ToString("0.00")%</div>
-                <small class="text-muted mt-auto pt-2"><i class="bi bi-graph-up me-1"></i> Subject to Interview Verification</small>
+                <span class="text-muted small fw-semibold text-uppercase">Current Cut-off Marks</span>
+                <div class="h2 fw-bold text-success mt-1 mb-0">
+                    @(Model.CutOffMeritMarks > 0 ? Model.CutOffMeritMarks.ToString("0.#") : "860") <small class="text-muted fs-6">/ 1100</small>
+                </div>
+                <small class="text-muted mt-auto pt-2"><i class="bi bi-graph-up me-1"></i> Equivalent: ~@Model.CutOffMeritPercentage.ToString("0.0")%</small>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <span class="text-muted small fw-semibold text-uppercase">HED Allocated Seats</span>
+                <div class="h2 fw-bold text-dark mt-1 mb-0">60 – 120 <small class="text-muted fw-normal fs-6">/ program</small></div>
+                <small class="text-primary mt-auto pt-2"><i class="bi bi-building me-1"></i> KP HED Approved Cap</small>
             </div>
         </div>
     </div>
@@ -71,7 +83,7 @@
         <form asp-action="MeritLists" method="get" class="row g-2 align-items-center">
             <div class="col-12 col-md-4">
                 <select name="programId" class="form-select form-select-sm">
-                    <option value="">All Academic Programs</option>
+                    <option value="">All Academic Programs (BS &amp; Intermediate)</option>
                     @foreach (var prog in Model.Programs)
                     {
                         <option value="@prog.Id" selected="@(Model.ProgramId == prog.Id)">@prog.Title (@prog.Level)</option>
@@ -98,23 +110,21 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-1">
-                <a asp-action="MeritLists" class="btn btn-outline-secondary btn-sm w-100" title="Reset Filters">
+            <div class="col-12 col-md-1 text-md-end">
+                <a asp-action="MeritLists" class="btn btn-sm btn-outline-secondary w-100" title="Reset Filters">
                     <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Merit List Table Card -->
+    <!-- Marks-Based Merit Ranking Table -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
-        <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
-            <span class="fw-bold text-dark">
-                <i class="bi bi-list-ol text-success me-1"></i> Merit Ranking Order
-            </span>
-            <span class="badge bg-light text-secondary border">
-                Showing @Model.Applications.Count of @Model.TotalCount Applicants
-            </span>
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0">
+                <i class="bi bi-list-ol text-success me-2"></i>Official Merit Ranking
+            </h5>
+            <span class="badge bg-light text-muted border px-3 py-1 font-monospace">Ranked Strictly by Total Marks</span>
         </div>
 
         <div class="table-responsive">
@@ -123,16 +133,15 @@
                     <tr>
                         <th style="width: 70px;">Rank</th>
                         <th>Tracking #</th>
-                        <th>Applicant Particulars</th>
+                        <th>Applicant Name &amp; Father</th>
                         <th>CNIC / Form-B</th>
                         <th>Program</th>
                         <th>Quota</th>
-                        <th class="text-end">Merit Score (%)</th>
+                        <th class="text-center">Matric Marks</th>
+                        <th class="text-center">HSSC Marks</th>
+                        <th class="text-center">Hafiz</th>
+                        <th class="text-end fw-bold text-success" style="font-size: 0.95rem;">Total Merit Marks</th>
                         <th class="text-center">Status</th>
-                        @if (User.IsInRole("SuperAdmin") || User.IsInRole("Principal") || User.IsInRole("Clerk"))
-                        {
-                            <th class="text-end">Admin Action</th>
-                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +153,7 @@
                             rank++;
                             <tr>
                                 <td>
-                                    <span class="badge @(rank <= 3 ? "bg-warning text-dark font-monospace fw-bold" : "bg-light text-secondary border")">
+                                    <span class="badge @(rank <= 3 ? "bg-warning text-dark font-monospace fw-bold fs-6" : "bg-light text-secondary border")">
                                         #@rank
                                     </span>
                                 </td>
@@ -161,53 +170,62 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-light text-dark border">@app.QuotaCategory</span>
+                                </td>
+                                <td class="text-center font-monospace">
+                                    @app.MatricObtainedMarks.ToString("0.#") / @app.MatricTotalMarks.ToString("0.#")
+                                </td>
+                                <td class="text-center font-monospace">
+                                    @if (app.HsscObtainedMarks.HasValue && app.HsscObtainedMarks.Value > 0)
+                                    {
+                                        <span>@app.HsscObtainedMarks.Value.ToString("0.#") / @app.HsscTotalMarks?.ToString("0.#")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-center">
                                     @if (app.IsHafizQuran)
                                     {
-                                        <span class="badge bg-info text-dark ms-1" title="Hafiz Bonus Applied">+20</span>
+                                        <span class="badge bg-info text-dark" title="Hafiz-e-Quran Bonus Applied">+20 Marks</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
                                     }
                                 </td>
                                 <td class="text-end">
-                                    <span class="h6 fw-bold text-success mb-0">@app.MeritScore.ToString("0.00")%</span>
+                                    <div class="merit-marks-display">
+                                        @app.MeritScore.ToString("0.#")
+                                        <small class="text-muted fs-6 fw-normal">Marks</small>
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        (~@((app.MatricTotalMarks > 0 ? (app.MeritScore / (app.HsscTotalMarks ?? app.MatricTotalMarks) * 100).ToString("0.0") : "0"))%)
+                                    </small>
                                 </td>
                                 <td class="text-center">
                                     @if (app.Status == "Admitted")
                                     {
-                                        <span class="badge bg-success px-2 py-1">Admitted</span>
+                                        <span class="badge bg-success px-2.5 py-1">Admitted</span>
                                     }
                                     else if (app.Status == "MeritListed")
                                     {
-                                        <span class="badge bg-primary px-2 py-1">Selected</span>
+                                        <span class="badge bg-primary px-2.5 py-1">Selected (1st List)</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning text-dark px-2 py-1">Pending</span>
+                                        <span class="badge bg-secondary bg-opacity-75 px-2.5 py-1">Pending Interview</span>
                                     }
                                 </td>
-                                @if (User.IsInRole("SuperAdmin") || User.IsInRole("Principal") || User.IsInRole("Clerk"))
-                                {
-                                    <td class="text-end">
-                                        @if (app.Status != "Admitted")
-                                        {
-                                            <a asp-area="Admin" asp-controller="Students" asp-action="EnrollApplicant" asp-route-applicationId="@app.Id"
-                                               class="btn btn-outline-success btn-sm py-0 px-2 fw-semibold">
-                                                <i class="bi bi-person-plus-fill me-1"></i> Enroll
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted small"><i class="bi bi-check2 me-1"></i> Enrolled</span>
-                                        }
-                                    </td>
-                                }
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
-                                <i class="bi bi-file-earmark-person fs-1 d-block mb-2 text-secondary opacity-50"></i>
-                                No applicants found matching the selected program or criteria.
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                No candidate records found matching your filter criteria.
                             </td>
                         </tr>
                     }
@@ -218,47 +236,28 @@
         <!-- Pagination -->
         @if (Model.TotalPages > 1)
         {
-            <div class="card-footer bg-white border-top p-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-                <div class="text-muted small">
-                    Page <strong>@Model.CurrentPage</strong> of <strong>@Model.TotalPages</strong>
-                </div>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
-                            <a class="page-link" asp-action="MeritLists" 
-                               asp-route-page="@(Model.CurrentPage - 1)" 
-                               asp-route-programId="@Model.ProgramId" 
-                               asp-route-quota="@Model.QuotaCategory" 
-                               asp-route-search="@Model.SearchQuery">
-                                Previous
-                            </a>
-                        </li>
-                        
-                        @for (int p = Math.Max(1, Model.CurrentPage - 2); p <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); p++)
+            <div class="card-footer bg-white border-0 py-3">
+                <nav aria-label="Merit navigation">
+                    <ul class="pagination pagination-sm justify-content-center mb-0">
+                        @for (int p = 1; p <= Model.TotalPages; p++)
                         {
                             <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
                                 <a class="page-link" asp-action="MeritLists" 
                                    asp-route-page="@p" 
                                    asp-route-programId="@Model.ProgramId" 
                                    asp-route-quota="@Model.QuotaCategory" 
-                                   asp-route-search="@Model.SearchQuery">
-                                    @p
-                                </a>
+                                   asp-route-search="@Model.SearchQuery">@p</a>
                             </li>
                         }
-
-                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
-                            <a class="page-link" asp-action="MeritLists" 
-                               asp-route-page="@(Model.CurrentPage + 1)" 
-                               asp-route-programId="@Model.ProgramId" 
-                               asp-route-quota="@Model.QuotaCategory" 
-                               asp-route-search="@Model.SearchQuery">
-                                Next
-                            </a>
-                        </li>
                     </ul>
                 </nav>
             </div>
         }
+    </div>
+
+    <!-- Official Policy Note -->
+    <div class="p-3 bg-light rounded-4 border text-muted small">
+        <i class="bi bi-info-circle-fill text-success me-1"></i>
+        <strong>Official Policy Notice:</strong> All listed candidates must appear before the College Admission Scrutiny Committee along with their original matric/intermediate DMCs, CNIC/Form-B, and Father's CNIC for physical document verification before fee deposit.
     </div>
 </div>

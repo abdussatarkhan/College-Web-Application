@@ -1,0 +1,282 @@
+@model List<College_Web_Application.Models.AcademicProgram>
+@{
+    ViewData["Title"] = "Official Admissions Guide & Eligibility Regulations";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-primary text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admissions" asp-action="MeritLists" class="text-primary text-decoration-none">Admissions</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Admissions Guide</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner (University of Swat Royal Navy & Gold) -->
+    <div class="bg-primary text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #0B1B3D 0%, #163678 60%, #0F275A 100%); border-bottom: 3px solid #D4AF37;">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-mortarboard-fill me-1"></i> Admissions Session 2026-27 &bull; HED KP Policy
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Comprehensive Admissions Guide</h1>
+                <p class="text-white-50 mb-0">
+                    Detailed regulations, program eligibility, document submission checklists, seat allocation quotas, and transparent marks-based merit criteria for Government Degree College Madyan Swat.
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-action="Apply" class="btn btn-warning btn-lg fw-bold shadow text-dark">
+                    <i class="bi bi-pencil-square me-1"></i> Apply Online Now
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Anchor Cards -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <a href="#programs" class="text-decoration-none">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 hover-card">
+                    <i class="bi bi-journal-text fs-2 text-warning mb-2"></i>
+                    <div class="fw-bold text-dark">Programs Offered</div>
+                    <small class="text-muted">F.Sc, ICS &amp; BS 4-Year</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="#merit-formula" class="text-decoration-none">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 hover-card">
+                    <i class="bi bi-calculator fs-2 text-warning mb-2"></i>
+                    <div class="fw-bold text-dark">Marks Merit Formula</div>
+                    <small class="text-muted">Total Marks + Hafiz</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="#quotas" class="text-decoration-none">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 hover-card">
+                    <i class="bi bi-pie-chart-fill fs-2 text-primary mb-2"></i>
+                    <div class="fw-bold text-dark">Quota Seats</div>
+                    <small class="text-muted">Sports, Disabled, Hafiz</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="#documents" class="text-decoration-none">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center h-100 hover-card">
+                    <i class="bi bi-check2-square fs-2 text-danger mb-2"></i>
+                    <div class="fw-bold text-dark">Required Documents</div>
+                    <small class="text-muted">Verification Checklist</small>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. ACADEMIC PROGRAMS & ELIGIBILITY -->
+    <div id="programs" class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-success rounded-pill px-3 py-1">Step 1</span>
+            <h3 class="fw-bold text-dark mb-0">Academic Programs &amp; Minimum Eligibility</h3>
+        </div>
+
+        <div class="row g-4">
+            <!-- Intermediate Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-mortarboard text-success fs-3"></i>
+                        <h4 class="fw-bold text-dark mb-0">Intermediate (HSSC 2-Year)</h4>
+                    </div>
+                    <p class="text-muted small">Affiliated with Board of Intermediate and Secondary Education (BISE) Swat.</p>
+                    
+                    <ul class="list-group list-group-flush mb-3 small">
+                        <li class="list-group-item px-0 py-2">
+                            <strong>F.Sc Pre-Medical:</strong> SSC Science with minimum 60% marks (Biology, Chemistry, Physics).
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>F.Sc Pre-Engineering:</strong> SSC Science with minimum 60% marks (Mathematics, Physics, Chemistry).
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>FCS / ICS Computer Science:</strong> SSC with minimum 50% marks with Mathematics or Computer Science.
+                        </li>
+                    </ul>
+
+                    <div class="bg-light p-3 rounded-3 mt-auto">
+                        <div class="fw-bold text-dark small"><i class="bi bi-clock-history text-success me-1"></i> Class Timings</div>
+                        <div class="text-muted small">Morning Shift: 08:30 AM – 01:30 PM (Mon – Fri)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Undergraduate BS Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-award text-primary fs-3"></i>
+                        <h4 class="fw-bold text-dark mb-0">Undergraduate BS (4-Year Degree)</h4>
+                    </div>
+                    <p class="text-muted small">Affiliated with University of Swat, approved by Higher Education Commission (HEC).</p>
+
+                    <ul class="list-group list-group-flush mb-3 small">
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS Computer Science (BSCS):</strong> HSSC (Pre-Eng, Pre-Med with additional Math, or ICS) with minimum 50% marks.
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS Microbiology:</strong> HSSC (F.Sc Pre-Medical) with minimum 50% marks.
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS Chemistry:</strong> HSSC (F.Sc Pre-Medical or Pre-Engineering) with minimum 45% marks.
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS Botany:</strong> HSSC (F.Sc Pre-Medical) with minimum 45% marks.
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS English Literature &amp; Linguistics:</strong> HSSC with minimum 45% marks.
+                        </li>
+                        <li class="list-group-item px-0 py-2">
+                            <strong>BS Urdu:</strong> HSSC with minimum 45% marks.
+                        </li>
+                    </ul>
+
+                    <div class="bg-light p-3 rounded-3 mt-auto">
+                        <div class="fw-bold text-dark small"><i class="bi bi-cash-stack text-success me-1"></i> Standard Fee Structure</div>
+                        <div class="text-muted small">Rs. 5,000 – 6,500 per semester (Subsidized by KP Government)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MARKS-BASED MERIT COMPILATION FORMULA -->
+    <div id="merit-formula" class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fw-bold">KP Regulation</span>
+            <h3 class="fw-bold text-dark mb-0">Transparent Marks-Based Merit Compilation</h3>
+        </div>
+        <p class="text-muted">
+            In compliance with KP Higher Education Department rules, selections for Government Degree College Madyan Swat are compiled based on <strong>Total Obtained Marks</strong>, ensuring 100% merit without subjective interviews:
+        </p>
+
+        <div class="row g-4 mt-2">
+            <div class="col-12 col-md-6">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h5 class="fw-bold text-success mb-2"><i class="bi bi-check2-circle me-1"></i> For Intermediate (F.Sc / ICS)</h5>
+                    <div class="font-monospace fw-bold p-2 bg-white rounded border text-dark mb-2">
+                        Total Merit Marks = SSC Obtained Marks + 20 (if Hafiz-e-Quran)
+                    </div>
+                    <small class="text-muted">
+                        Candidates are arranged in descending order from highest marks to lowest. Tie-breaking rule: Older applicant gets preference.
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="p-3 border rounded-3 bg-light">
+                    <h5 class="fw-bold text-primary mb-2"><i class="bi bi-check2-circle me-1"></i> For Undergraduate BS 4-Year</h5>
+                    <div class="font-monospace fw-bold p-2 bg-white rounded border text-dark mb-2">
+                        Total Merit Marks = HSSC Obtained Marks + 20 (if Hafiz-e-Quran)
+                    </div>
+                    <small class="text-muted">
+                        Evaluated out of 1100 total marks. If intermediate marks are equal, higher SSC marks determine the merit position.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. QUOTA SEAT ALLOCATIONS -->
+    <div id="quotas" class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-5">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart text-success me-2"></i>Quota Seat Allocations</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Quota Category</th>
+                        <th>Seats Percentage</th>
+                        <th>Verification Authority</th>
+                        <th>Eligibility &amp; Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold">Open Merit (Local / Swat)</td>
+                        <td>85%</td>
+                        <td>College Admission Committee</td>
+                        <td>Based strictly on marks obtained in SSC or HSSC examinations.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Sports Quota</td>
+                        <td>5%</td>
+                        <td>College Sports Board</td>
+                        <td>District, provincial or board level certificate required with physical trials.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Disabled Persons Quota</td>
+                        <td>2%</td>
+                        <td>Standing Medical Board Swat</td>
+                        <td>Official disability certificate issued by Social Welfare Department.</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Hafiz-e-Quran Bonus</td>
+                        <td>20 Additional Marks</td>
+                        <td>College Hafiz Committee</td>
+                        <td>Oral Quran recitation test administered prior to final merit compilation.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. REQUIRED DOCUMENTS CHECKLIST -->
+    <div id="documents" class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-clipboard-check text-success me-2"></i>Mandatory Verification Documents</h4>
+        <p class="text-muted small">Keep the following documents ready for scrutiny during interview and admission confirmation:</p>
+
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>Original SSC / Matric DMC with 3 verified photocopies</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>Original HSSC DMC with 3 verified photocopies (for BS)</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>Original School / College Character Certificate</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>Candidate CNIC / Form-B and Father's CNIC photocopy</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>Original Domicile Certificate (District Swat)</span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-2 p-2 border rounded-3">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span>4 Passport size photographs with blue background</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-action="Apply" class="btn btn-success btn-lg fw-bold px-5 rounded-pill shadow">
+                <i class="bi bi-pencil-square me-2"></i> Proceed to Online Application Form
+            </a>
+        </div>
+    </div>
+</div>

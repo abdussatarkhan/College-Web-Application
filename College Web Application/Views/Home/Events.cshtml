@@ -1,0 +1,72 @@
+@model List<College_Web_Application.Models.ViewModels.CampusEventItem>
+@{
+    ViewData["Title"] = "Campus Events & Academic Calendar";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-success text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Events & Calendar</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="bg-success text-white p-4 p-md-5 rounded-4 shadow-sm mb-4" 
+         style="background: linear-gradient(135deg, #063B13 0%, #0B6623 50%, #084C1A 100%);">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-8">
+                <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold text-uppercase mb-2">
+                    <i class="bi bi-calendar-event me-1"></i> Academic Session 2026-2027
+                </span>
+                <h1 class="h2 fw-bold text-white mb-2">Campus Events & Examination Calendar</h1>
+                <p class="text-white-50 mb-0">
+                    Stay updated with BISE Swat board examinations, University of Swat semester evaluations, co-curricular sports galas, and admission timelines.
+                </p>
+            </div>
+            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+                <a asp-controller="Notices" asp-action="Index" class="btn btn-warning fw-bold shadow">
+                    <i class="bi bi-bell-fill me-1"></i> View Official Notices
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Events List -->
+    <div class="row g-4">
+        @if (Model.Any())
+        {
+            foreach (var ev in Model)
+            {
+                <div class="col-12 col-md-6">
+                    <div class="event-item-card shadow-sm h-100">
+                        <div class="event-date-badge">
+                            <span class="event-date-day">@ev.EventDate.ToString("dd")</span>
+                            <span class="event-date-month">@ev.EventDate.ToString("MMM")</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="badge @ev.BadgeColor rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">@ev.Category</span>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i>@ev.Time</small>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1" style="font-size: 1.05rem;">@ev.Title</h5>
+                            <p class="text-muted small mb-2">@ev.Description</p>
+                            <div class="d-flex align-items-center text-secondary small">
+                                <i class="bi bi-geo-alt-fill text-success me-1"></i>
+                                <span>@ev.Venue</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-3">No upcoming events scheduled at this moment.</h5>
+            </div>
+        }
+    </div>
+</div>

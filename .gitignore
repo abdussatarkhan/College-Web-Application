@@ -34,3 +34,6 @@ appsettings.Production.local.json
 temp_assets/
 *.tmp
 *.log
+*.db
+*.db-shm
+*.db-wal

@@ -33,10 +33,10 @@
             <i class="bi bi-arrow-left me-1"></i> Apply for Another Program
         </a>
         <div class="d-flex gap-2">
-            <a asp-action="TrackStatus" asp-route-query="@Model.TrackingNumber" class="btn btn-outline-success btn-sm">
+            <a asp-action="TrackStatus" asp-route-query="@Model.TrackingNumber" class="btn btn-outline-primary btn-sm">
                 <i class="bi bi-search me-1"></i> Track Status
             </a>
-            <button onclick="window.print()" class="btn btn-success btn-sm shadow-sm fw-semibold">
+            <button onclick="window.print()" class="btn btn-primary btn-sm shadow-sm fw-semibold">
                 <i class="bi bi-printer-fill me-1"></i> Print Admission Slip / Save as PDF
             </button>
         </div>
@@ -48,12 +48,12 @@
         <div class="text-center border-bottom pb-4 mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div class="text-start">
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 rounded-pill">
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill">
                         HED Khyber Pakhtunkhwa
                     </span>
                     <div class="text-muted small mt-1">Est. 2006 | Affiliated: BISE & UOS</div>
                 </div>
-                <div class="arabic-motto text-success fw-bold fs-4">رَبِّ زِدْنِي عِلْماً</div>
+                <div class="arabic-motto text-warning fw-bold fs-4">رَبِّ زِدْنِي عِلْماً</div>
                 <div class="text-end">
                     <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2.5 py-1 rounded-pill">
                         Fall 2026 Session
@@ -115,17 +115,17 @@
             <div class="col-12 col-md-6">
                 <div class="bg-light p-3 rounded-3 border">
                     <span class="text-muted small d-block">Applied Academic Program</span>
-                    <h5 class="fw-bold text-success mb-1">@Model.AppliedProgram?.Title</h5>
+                    <h5 class="fw-bold text-primary mb-1">@Model.AppliedProgram?.Title</h5>
                     <span class="badge bg-secondary">Quota: @Model.QuotaCategory</span>
                     @if (Model.IsHafizQuran)
                     {
-                        <span class="badge bg-success ms-1">Hafiz-e-Quran (+20)</span>
+                        <span class="badge bg-primary ms-1">Hafiz-e-Quran (+20)</span>
                     }
                 </div>
             </div>
 
             <div class="col-12 col-md-6">
-                <div class="p-3 rounded-3 text-white text-center" style="background: linear-gradient(135deg, #084C1A 0%, #0B6623 100%);">
+                <div class="p-3 rounded-3 text-white text-center" style="background: linear-gradient(135deg, #0B1B3D 0%, #163678 100%); border: 1px solid rgba(212, 175, 55, 0.4);">
                     <small class="text-white-50 text-uppercase">Official Merit Aggregate</small>
                     <div class="display-6 fw-bold text-warning">@Model.MeritScore.ToString("0.00")%</div>
                     <small class="text-white-50">Calculated as per HED KP Admission Policy</small>

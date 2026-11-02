@@ -83,18 +83,42 @@
     <input type="hidden" asp-for="AcademicSession" />
 
     <div class="card card-portal shadow-sm">
-        <div class="card-header-portal">
+        <div class="card-header-portal d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-person-lines-fill text-success fs-5"></i>
-                <span>@Model.CourseCode - @Model.CourseTitle (Sec @Model.Section)</span>
-                <span class="badge @(Model.ProgramLevel == "HSSC" ? "bg-info bg-opacity-20 text-info" : "bg-primary bg-opacity-20 text-primary") ms-2">
+                <span class="fw-bold">@Model.CourseCode - @Model.CourseTitle (Sec @Model.Section)</span>
+                <span class="badge @(Model.ProgramLevel == "HSSC" ? "bg-info bg-opacity-20 text-info" : "bg-primary bg-opacity-20 text-primary") ms-1">
                     @Model.ProgramLevel
                 </span>
             </div>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-outline-success btn-sm fw-semibold" onclick="markAllPresent()">
-                    <i class="bi bi-check-all me-1"></i> Mark Eligible as Present
+            <!-- Live Roll Call Summary Counters -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border px-2.5 py-1.5" id="totalCountBadge">
+                    Total: <strong>@Model.Students.Count</strong>
+                </span>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5" id="presentCountBadge">
+                    Present: <strong id="presentCount">0</strong>
+                </span>
+                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5" id="absentCountBadge">
+                    Absent: <strong id="absentCount">0</strong>
+                </span>
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1.5" id="leaveCountBadge">
+                    Leave: <strong id="leaveCount">0</strong>
+                </span>
+                <button type="button" class="btn btn-outline-success btn-sm fw-semibold ms-2" onclick="markAllPresent()">
+                    <i class="bi bi-check-all me-1"></i> Mark All Eligible Present
                 </button>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcut Helper Banner -->
+        <div class="bg-light border-bottom px-3 py-1.5 d-flex justify-content-between align-items-center text-muted small" style="font-size: 0.76rem;">
+            <div>
+                <i class="bi bi-keyboard me-1 text-primary"></i>
+                <strong>Roll Call Hotkeys:</strong> Click any row, then press <kbd>P</kbd> for Present, <kbd>A</kbd> for Absent, <kbd>L</kbd> for Leave (auto-advances to next row). Use <kbd>&uarr;</kbd> and <kbd>&darr;</kbd> to navigate.
+            </div>
+            <div class="text-secondary">
+                Auto-counts update instantly
             </div>
         </div>
 
@@ -231,10 +255,99 @@
 
 @section Scripts {
     <script>
+        function updateSummaryCounters() {
+            var present = document.querySelectorAll('.status-radio[value="Present"]:checked').length;
+            var absent = document.querySelectorAll('.status-radio[value="Absent"]:checked').length;
+            var leave = document.querySelectorAll('.status-radio[value="Leave"]:checked').length;
+
+            var elP = document.getElementById('presentCount');
+            var elA = document.getElementById('absentCount');
+            var elL = document.getElementById('leaveCount');
+
+            if (elP) elP.textContent = present;
+            if (elA) elA.textContent = absent;
+            if (elL) elL.textContent = leave;
+        }
+
         function markAllPresent() {
             document.querySelectorAll('tr:not(.table-danger) .status-present').forEach(function (radio) {
                 radio.checked = true;
             });
+            updateSummaryCounters();
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateSummaryCounters();
+
+            // Listen for any status radio change
+            document.querySelectorAll('.status-radio').forEach(function (radio) {
+                radio.addEventListener('change', updateSummaryCounters);
+            });
+
+            // Active row highlighting and Keyboard Shortcuts (P, A, L, Up, Down)
+            var rows = Array.from(document.querySelectorAll('#attendanceTable tbody tr:not(.table-danger)'));
+            var activeIndex = -1;
+
+            rows.forEach(function (row, idx) {
+                row.setAttribute('tabindex', '0');
+                row.addEventListener('focus', function () {
+                    rows.forEach(r => r.classList.remove('table-active'));
+                    row.classList.add('table-active');
+                    activeIndex = idx;
+                });
+                row.addEventListener('click', function () {
+                    row.focus();
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                // Ignore hotkeys if user is focused inside a text input or modal
+                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName) && 
+                    document.activeElement.type !== 'radio') {
+                    return;
+                }
+
+                if (activeIndex < 0 && rows.length > 0) {
+                    activeIndex = 0;
+                    rows[0].focus();
+                }
+
+                var key = e.key.toUpperCase();
+                var currentRow = rows[activeIndex];
+                if (!currentRow) return;
+
+                if (key === 'P') {
+                    var r = currentRow.querySelector('.status-present');
+                    if (r) { r.checked = true; updateSummaryCounters(); }
+                    advanceRow(1);
+                    e.preventDefault();
+                } else if (key === 'A') {
+                    var r = currentRow.querySelector('.status-absent');
+                    if (r) { r.checked = true; updateSummaryCounters(); }
+                    advanceRow(1);
+                    e.preventDefault();
+                } else if (key === 'L') {
+                    var r = currentRow.querySelector('.status-radio[value="Leave"]');
+                    if (r) { r.checked = true; updateSummaryCounters(); }
+                    advanceRow(1);
+                    e.preventDefault();
+                } else if (e.key === 'ArrowDown') {
+                    advanceRow(1);
+                    e.preventDefault();
+                } else if (e.key === 'ArrowUp') {
+                    advanceRow(-1);
+                    e.preventDefault();
+                }
+            });
+
+            function advanceRow(direction) {
+                var nextIndex = activeIndex + direction;
+                if (nextIndex >= 0 && nextIndex < rows.length) {
+                    activeIndex = nextIndex;
+                    rows[activeIndex].focus();
+                    rows[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        });
     </script>
 }

@@ -1,0 +1,49 @@
+{
+  "name": "Government Degree College Madyan Swat",
+  "short_name": "GDC Madyan",
+  "description": "Flagship Public Higher Education Institution in Swat Valley, Khyber Pakhtunkhwa. BISE Swat & University of Swat Affiliated.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#063B13",
+  "theme_color": "#0B6623",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/images/gdc-madyan-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/gdc-madyan-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Admissions & Merit Lists",
+      "short_name": "Merit Lists",
+      "description": "View official marks-based merit selection lists",
+      "url": "/Admissions/MeritLists",
+      "icons": [{ "src": "/images/gdc-madyan-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Campus Notices & News",
+      "short_name": "Notices",
+      "description": "Official college circulars and exam schedules",
+      "url": "/Notices",
+      "icons": [{ "src": "/images/gdc-madyan-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Faculty Directory",
+      "short_name": "Faculty",
+      "description": "Directory of professors and teaching departments",
+      "url": "/FacultyDirectory",
+      "icons": [{ "src": "/images/gdc-madyan-logo.png", "sizes": "96x96" }]
+    }
+  ]
+}
