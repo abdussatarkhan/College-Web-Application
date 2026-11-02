@@ -84,7 +84,7 @@
 
     <!-- 1. TOP INSTITUTIONAL UTILITY BAR (GIKI-STYLE) -->
     <header class="top-gov-bar d-none d-lg-block">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container-fluid px-3 px-xl-4 px-xxl-5 d-flex justify-content-between align-items-center">
             <!-- Left Info -->
             <div class="d-flex align-items-center gap-3">
                 <span class="d-flex align-items-center gap-1.5">
@@ -171,9 +171,9 @@
 
     <!-- 2. MAIN STICKY NAVBAR WITH GIKI MEGA-MENUS -->
     <nav class="navbar navbar-expand-xl main-navbar-sticky" aria-label="Main Navigation">
-        <div class="container position-relative">
+        <div class="container-fluid px-3 px-xl-4 px-xxl-5 position-relative">
             <!-- Brand Logo & Title -->
-            <a class="navbar-brand navbar-brand-wrapper" asp-controller="Home" asp-action="Index">
+            <a class="navbar-brand navbar-brand-wrapper me-2 me-xxl-4" asp-controller="Home" asp-action="Index">
                 <img src="~/images/gdc-madyan-logo.png" alt="GDC Madyan Swat Crest" class="brand-crest-img" onerror="this.src='/images/crest-placeholder.png'" />
                 <div class="d-flex flex-column">
                     <span class="brand-title-main">GOVERNMENT DEGREE COLLEGE</span>
@@ -193,7 +193,7 @@
 
             <!-- Navbar Links -->
             <div class="collapse navbar-collapse" id="mainGdcNavbar">
-                <ul class="navbar-nav ms-auto align-items-xl-center mb-2 mb-xl-0">
+                <ul class="navbar-nav ms-auto align-items-xl-center mb-2 mb-xl-0 flex-xl-nowrap">
                     
                     <!-- 1. HOME -->
                     <li class="nav-item">
@@ -295,7 +295,7 @@
                     </li>
 
                     <!-- 9. GOLD APPLY CTA BUTTON -->
-                    <li class="nav-item ms-xl-2 mt-2 mt-xl-0">
+                    <li class="nav-item ms-xl-2 mt-2 mt-xl-0 flex-shrink-0">
                         <a asp-controller="Admissions" asp-action="Apply" class="btn nav-cta-apply">
                             <i class="bi bi-pencil-square me-1"></i> Apply Online
                         </a>

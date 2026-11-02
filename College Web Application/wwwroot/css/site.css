@@ -311,8 +311,8 @@ body {
 }
 
 .brand-crest-img {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
     transition: transform var(--transition-fast);
@@ -324,7 +324,7 @@ body {
 
 .brand-title-main {
     font-weight: 800;
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     color: #0B1B3D;
     letter-spacing: -0.3px;
     line-height: 1.15;
@@ -335,7 +335,7 @@ body {
 }
 
 .brand-subtitle {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     color: var(--gdc-text-secondary);
     font-weight: 600;
 }
@@ -343,10 +343,11 @@ body {
 .nav-link-custom {
     color: var(--gdc-text-primary) !important;
     font-weight: 600;
-    font-size: 0.92rem;
-    padding: 10px 14px !important;
+    font-size: 0.86rem;
+    padding: 8px 10px !important;
     border-radius: 6px;
     transition: all var(--transition-fast);
+    white-space: nowrap;
 }
 
 .nav-link-custom:hover {
@@ -360,21 +361,45 @@ body {
 }
 
 .nav-cta-apply {
-    background: linear-gradient(135deg, #0B1B3D 0%, #1E3A8A 100%);
-    color: #FFFFFF !important;
-    font-weight: 700;
-    font-size: 0.88rem;
-    padding: 8px 18px !important;
+    background: linear-gradient(135deg, #D4AF37 0%, #C59B27 100%);
+    color: #070D1B !important;
+    font-weight: 800;
+    font-size: 0.84rem;
+    padding: 7px 15px !important;
     border-radius: 50px;
-    border: 1px solid rgba(212, 175, 55, 0.4);
-    box-shadow: 0 3px 10px rgba(11, 27, 61, 0.25);
+    border: 1px solid rgba(212, 175, 55, 0.7);
+    box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
     transition: all var(--transition-base);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .nav-cta-apply:hover {
-    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(11, 27, 61, 0.4);
+    background: #FFFFFF;
+    color: #070D1B !important;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(212, 175, 55, 0.5);
+}
+
+/* Compact layout for 1200px - 1399px desktop screens to prevent overflow */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .brand-title-main {
+        font-size: 0.95rem;
+    }
+    .brand-subtitle {
+        font-size: 0.68rem;
+    }
+    .nav-link-custom {
+        padding: 6px 7px !important;
+        font-size: 0.81rem;
+    }
+    .nav-cta-apply {
+        padding: 5px 11px !important;
+        font-size: 0.78rem;
+    }
 }
 
 /* Mega-Menu Styling */

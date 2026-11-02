@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Access Denied - Restricted Institutional Area";
+}
+
+<div class="container py-5" style="max-width: 650px;">
+    <div class="card border-0 shadow rounded-4 p-4 p-md-5 bg-white text-center">
+        <div class="p-3 rounded-circle bg-danger bg-opacity-10 text-danger mx-auto mb-3" style="width: 72px; height: 72px; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-shield-lock-fill fs-1"></i>
+        </div>
+        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-1.5 rounded-pill fw-bold text-uppercase mx-auto mb-2">
+            Restricted Institutional Access
+        </span>
+        <h2 class="h3 fw-bold text-dark mb-2">Access Denied</h2>
+        <p class="text-secondary small mb-4">
+            Your current account credentials do not have authorization to view this protected administrative area. Please ensure you are signed in with the correct institutional role.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary fw-semibold px-4 rounded-pill">
+                <i class="bi bi-house-door-fill me-1"></i> Return to Homepage
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-dark fw-semibold px-4 rounded-pill">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Switch Account
+            </a>
+        </div>
+    </div>
+</div>
