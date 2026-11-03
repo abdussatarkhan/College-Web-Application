@@ -36,15 +36,15 @@
                 </p>
 
                 <!-- Call to Action Buttons (Balanced University Palette) -->
-                <div class="d-flex flex-wrap gap-3">
-                    <a asp-controller="Admissions" asp-action="Apply" class="btn btn-warning btn-lg fw-bold px-4 py-2.5 shadow rounded-pill text-dark">
-                        <i class="bi bi-pencil-square me-2"></i> Apply for F.Sc / BS Admission
+                <div class="d-flex flex-wrap gap-2 gap-sm-3">
+                    <a asp-controller="Admissions" asp-action="Apply" class="btn btn-warning fw-bold px-3 px-sm-4 py-2 py-sm-2.5 shadow rounded-pill text-dark">
+                        <i class="bi bi-pencil-square me-1 me-sm-2"></i> Apply for F.Sc / BS Admission
                     </a>
-                    <a asp-controller="Admissions" asp-action="MeritLists" class="btn btn-outline-light btn-lg fw-semibold px-4 py-2.5 rounded-pill">
-                        <i class="bi bi-card-checklist me-2"></i> Check Marks-Based Merit Lists
+                    <a asp-controller="Admissions" asp-action="MeritLists" class="btn btn-outline-light fw-semibold px-3 px-sm-4 py-2 py-sm-2.5 rounded-pill">
+                        <i class="bi bi-card-checklist me-1 me-sm-2"></i> Check Marks-Based Merit Lists
                     </a>
-                    <a asp-controller="Admissions" asp-action="Guide" class="btn btn-light btn-lg fw-semibold px-4 py-2.5 rounded-pill shadow-sm text-dark">
-                        <i class="bi bi-book me-2"></i> Admissions Guide
+                    <a asp-controller="Admissions" asp-action="Guide" class="btn btn-light fw-semibold px-3 px-sm-4 py-2 py-sm-2.5 rounded-pill shadow-sm text-dark">
+                        <i class="bi bi-book me-1 me-sm-2"></i> Admissions Guide
                     </a>
                 </div>
             </div>
@@ -87,24 +87,26 @@
 <!-- ==========================================================================
      SECTION 2: ANIMATED STAT COUNTERS (5,000+ Students, 110+ Faculty, 20+ Years)
      ========================================================================== -->
-<div class="container position-relative mb-5">
-    <div class="stat-counter-grid reveal-fade-up">
-        <div class="row g-0">
-            <div class="col-6 col-lg-3 stat-counter-item">
-                <div class="stat-number" data-counter-target="@Model.TotalStudents" data-counter-suffix="+">0</div>
-                <div class="stat-label">Enrolled Scholars</div>
-            </div>
-            <div class="col-6 col-lg-3 stat-counter-item">
-                <div class="stat-number" data-counter-target="@Model.TotalFaculty" data-counter-suffix="+">0</div>
-                <div class="stat-label">Distinguished Professors</div>
-            </div>
-            <div class="col-6 col-lg-3 stat-counter-item">
-                <div class="stat-number" data-counter-target="@Model.YearsOfExcellence" data-counter-suffix="+">0</div>
-                <div class="stat-label">Years of Academic Rigor</div>
-            </div>
-            <div class="col-6 col-lg-3 stat-counter-item">
-                <div class="stat-number" data-counter-target="100" data-counter-suffix="%">0</div>
-                <div class="stat-label">Marks Merit Transparency</div>
+<div class="stat-counter-section">
+    <div class="container position-relative">
+        <div class="stat-counter-grid reveal-fade-up">
+            <div class="row g-0">
+                <div class="col-6 col-lg-3 stat-counter-item">
+                    <div class="stat-number" data-counter-target="@Model.TotalStudents" data-counter-suffix="+">0</div>
+                    <div class="stat-label">Enrolled Scholars</div>
+                </div>
+                <div class="col-6 col-lg-3 stat-counter-item">
+                    <div class="stat-number" data-counter-target="@Model.TotalFaculty" data-counter-suffix="+">0</div>
+                    <div class="stat-label">Distinguished Professors</div>
+                </div>
+                <div class="col-6 col-lg-3 stat-counter-item">
+                    <div class="stat-number" data-counter-target="@Model.YearsOfExcellence" data-counter-suffix="+">0</div>
+                    <div class="stat-label">Years of Academic Rigor</div>
+                </div>
+                <div class="col-6 col-lg-3 stat-counter-item">
+                    <div class="stat-number" data-counter-target="100" data-counter-suffix="%">0</div>
+                    <div class="stat-label">Marks Merit Transparency</div>
+                </div>
             </div>
         </div>
     </div>
@@ -287,8 +289,19 @@
 <!-- ==========================================================================
      SECTION 6: PRINCIPAL'S MESSAGE (BENCHMARKED WITH UNIVERSITY OF SWAT)
      ========================================================================== -->
-<section class="py-5 bg-white position-relative overflow-hidden" id="principal-message" style="border-top: 1px solid rgba(0,0,0,0.06); border-bottom: 1px solid rgba(0,0,0,0.06);">
+<section class="py-5 bg-white position-relative overflow-hidden" id="principal-message" style="border-top: 1px solid rgba(0,0,0,0.06); border-bottom: 1px solid rgba(0,0,0,0.06); scroll-margin-top: 110px;">
     <div class="container py-lg-4">
+        <!-- Section Title Header (Always visible & never clipped under sticky navbar) -->
+        <div class="section-title-wrap reveal-fade-up mb-4">
+            <span class="section-badge-pill">
+                <i class="bi bi-mortarboard-fill me-1"></i> Leadership &amp; Institutional Vision
+            </span>
+            <h2 class="section-heading-main">Message from the Principal</h2>
+            <p class="section-subheading-lead">
+                Empowering the youth of Swat Valley through academic rigor, moral character, and digital innovation.
+            </p>
+        </div>
+
         <div class="row align-items-center g-5">
             <!-- Left: Rectangular Framed Portrait (University of Swat Style - Not Circle) -->
             <div class="col-12 col-lg-5 col-xl-4 text-center text-lg-start reveal-fade-up">
@@ -334,26 +347,26 @@
             <div class="col-12 col-lg-7 col-xl-8 reveal-fade-up">
                 <div class="ps-lg-3">
                     <div class="d-inline-flex flex-wrap align-items-center gap-2 mb-2">
-                        <span class="badge bg-dark text-warning border border-warning border-opacity-25 px-3 py-1.5 rounded-pill fw-bold text-uppercase" style="letter-spacing: 0.8px; font-size: 0.76rem;">
-                            <i class="bi bi-mortarboard-fill me-1"></i> Message from the Principal
-                        </span>
                         <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.76rem;">
-                            Affiliated with University of Swat
+                            <i class="bi bi-award-fill text-warning me-1"></i> Affiliated with University of Swat
+                        </span>
+                        <span class="badge bg-dark bg-opacity-10 text-dark border border-secondary border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold" style="font-size: 0.76rem;">
+                            BS 4-Year &bull; Intermediate
                         </span>
                     </div>
 
-                    <h2 class="fw-bold text-dark display-6 mb-3" style="font-size: calc(1.4rem + 1vw); line-height: 1.25;">
-                        Empowering the Youth of Swat Valley through Academic Rigor & Character
-                    </h2>
+                    <h3 class="fw-bold text-dark mb-3" style="font-size: calc(1.2rem + 0.6vw); line-height: 1.3;">
+                        Empowering the Youth of Swat Valley through Academic Rigor &amp; Character
+                    </h3>
 
                     <!-- Accent Underline Divider -->
-                    <div class="d-flex align-items-center gap-2 mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
                         <div style="height: 3px; width: 60px; background-color: #0B1B3D; border-radius: 2px;"></div>
                         <div style="height: 3px; width: 25px; background-color: #D4AF37; border-radius: 2px;"></div>
                     </div>
 
                     <!-- Clean University Address Block (No awkward double quote) -->
-                    <div class="border-start border-3 border-warning ps-3 py-1 mb-4">
+                    <div class="border-start border-3 border-warning ps-3 ps-md-4 py-1 mb-4">
                         <p class="text-secondary fs-6 mb-3" style="line-height: 1.85; text-align: justify;">
                             It is an immense honor and privilege to welcome you to <strong>Government Degree College Madyan Swat</strong>, a premier seat of higher learning nestled amidst the breathtaking landscape of Upper Swat. Since our establishment in 2006, our unwavering mission has been to provide accessible, high-caliber education that blends intellectual inquiry with character formation, civic responsibility, and moral discipline.
                         </p>

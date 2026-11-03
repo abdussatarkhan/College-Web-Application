@@ -166,7 +166,12 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 110px;
     text-size-adjust: 100%;
+}
+
+section[id], div[id] {
+    scroll-margin-top: 110px;
 }
 
 body {
@@ -562,13 +567,19 @@ body {
 /* --------------------------------------------------------------------------
    8. ANIMATED STAT COUNTERS & SCROLL REVEALS
    -------------------------------------------------------------------------- */
+.stat-counter-section {
+    padding: 36px 0 20px 0;
+    position: relative;
+    z-index: 5;
+}
+
 .stat-counter-grid {
     background: var(--gdc-bg-surface);
     border: 1px solid var(--gdc-border-subtle);
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     padding: 28px 20px;
-    margin-top: -45px;
+    margin-top: 0;
     position: relative;
     z-index: 10;
 }
