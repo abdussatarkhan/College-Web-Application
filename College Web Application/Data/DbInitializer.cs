@@ -839,6 +839,89 @@ namespace College_Web_Application.Data
                     await context.SaveChangesAsync();
                 }
 
+                // 15. Seed Default Admission Settings
+                if (!await context.AdmissionSettings.AnyAsync())
+                {
+                    await context.AdmissionSettings.AddAsync(new AdmissionSettings
+                    {
+                        Id = 1,
+                        IsBsAdmissionsOpen = true,
+                        IsFscAdmissionsOpen = true,
+                        AdmissionSession = "Academic Session 2026-2027",
+                        ClosureNotice = "Online admissions for this session are currently closed by order of the Principal's Office. Stay tuned for future merit lists.",
+                        LastUpdated = DateTime.UtcNow,
+                        UpdatedBy = "Principal Office"
+                    });
+                    await context.SaveChangesAsync();
+                }
+
+                // 16. Seed Department Gallery Items
+                if (!await context.DepartmentGalleryItems.AnyAsync())
+                {
+                    var galleryItems = new List<DepartmentGalleryItem>
+                    {
+                        // CS Department (1)
+                        new() { DepartmentId = 1, Title = "High-Performance Computing & AI Lab Session", Caption = "Undergraduate BSCS scholars working on machine learning algorithms in the specialized campus lab.", ImageUrl = "/images/gallery/4-science-bs-blocks.jpg", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+                        new() { DepartmentId = 1, Title = "Final Year Project Exhibition & Code Fest 2026", Caption = "Students showcasing enterprise web portals, mobile apps, and network security projects.", ImageUrl = "/images/gallery/6-classroom-corridors.jpg", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+                        new() { DepartmentId = 1, Title = "Software Development & Networking Workshop", Caption = "Hands-on server deployment and database clustering training session.", ImageUrl = "/images/gallery/2-main-academic-block.jpg", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+
+                        // English Department (3)
+                        new() { DepartmentId = 3, Title = "Inter-Collegiate Bilingual Declamation & Debate Contest", Caption = "College debating society presenting research papers and speeches on world literature.", ImageUrl = "/images/gallery/5-student-life-walkway.jpg", UploadedBy = "Asst. Prof. Zahir Shah" },
+                        new() { DepartmentId = 3, Title = "Modern Rhetoric & Creative Academic Writing Circle", Caption = "Seminar on contemporary literary criticism, linguistic discourse, and prose analysis.", ImageUrl = "/images/gallery/6-classroom-corridors.jpg", UploadedBy = "Asst. Prof. Zahir Shah" },
+
+                        // Microbiology Department (2)
+                        new() { DepartmentId = 2, Title = "Clinical Diagnostics & Bacteriological Culturing Lab", Caption = "BS Microbiology students conducting antimicrobial sensitivity assays in the research laboratory.", ImageUrl = "/images/gallery/4-science-bs-blocks.jpg", UploadedBy = "Assoc. Prof. Dr. Shaukat Khan" },
+
+                        // Chemistry Department (5)
+                        new() { DepartmentId = 5, Title = "Organic Synthesis & Analytical Titration Lab Practice", Caption = "Senior scholars performing qualitative chemical synthesis and spectrophotometric assays.", ImageUrl = "/images/gallery/4-science-bs-blocks.jpg", UploadedBy = "Prof. Noor Muhammad" },
+
+                        // Botany Department (6)
+                        new() { DepartmentId = 6, Title = "Swat Valley Alpine Flora & Herbarium Field Tour", Caption = "Field taxonomy documentation of endangered alpine and medicinal plant species of Upper Swat.", ImageUrl = "/images/gallery/3-campus-gardens.jpg", UploadedBy = "Asst. Prof. Dr. Fazal Wadood" },
+
+                        // Urdu Department (4)
+                        new() { DepartmentId = 4, Title = "All Swat Annual Mushaira & Classical Poetry Recitation", Caption = "Preserving regional cultural heritage and literary craftsmanship through Urdu poetry seminars.", ImageUrl = "/images/gallery/5-student-life-walkway.jpg", UploadedBy = "Assoc. Prof. Dr. Ahmad Ali" }
+                    };
+
+                    await context.DepartmentGalleryItems.AddRangeAsync(galleryItems);
+                    await context.SaveChangesAsync();
+                }
+
+                // 17. Seed Department Resources (Syllabus & Books in PDF)
+                if (!await context.DepartmentResources.AnyAsync())
+                {
+                    var resources = new List<DepartmentResource>
+                    {
+                        // Computer Science (1)
+                        new() { DepartmentId = 1, Title = "BS Computer Science (4-Year) Curriculum & Scheme of Studies", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 2450000, AuthorOrPublisher = "University of Swat Academic Council", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+                        new() { DepartmentId = 1, Title = "Introduction to Computing & C++ Programming (Deitel & Deitel 10th Ed)", Category = "Book", TargetSemester = 1, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 5800000, AuthorOrPublisher = "Pearson Higher Education", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+                        new() { DepartmentId = 1, Title = "Database System Concepts - Silberschatz & Korth (7th Edition)", Category = "Book", TargetSemester = 5, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 8200000, AuthorOrPublisher = "McGraw-Hill", UploadedBy = "Prof. Dr. Muhammad Tariq Khan" },
+
+                        // English (3)
+                        new() { DepartmentId = 3, Title = "BS English 4-Year Unified Scheme of Studies & Course Outlines", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 1850000, AuthorOrPublisher = "HEC & University of Swat", UploadedBy = "Asst. Prof. Zahir Shah" },
+                        new() { DepartmentId = 3, Title = "A History of English Literature by Arthur Compton-Rickett", Category = "Book", TargetSemester = 1, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 4200000, AuthorOrPublisher = "Thomas Nelson & Sons", UploadedBy = "Asst. Prof. Zahir Shah" },
+                        new() { DepartmentId = 3, Title = "Practical English Usage (Michael Swan 4th Edition)", Category = "Book", TargetSemester = 2, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 6100000, AuthorOrPublisher = "Oxford University Press", UploadedBy = "Asst. Prof. Zahir Shah" },
+
+                        // Microbiology (2)
+                        new() { DepartmentId = 2, Title = "BS Microbiology 4-Year Scheme of Studies & Practical Lab Guides", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 2100000, AuthorOrPublisher = "University of Swat", UploadedBy = "Assoc. Prof. Dr. Shaukat Khan" },
+                        new() { DepartmentId = 2, Title = "Prescott's Microbiology (11th Edition)", Category = "Book", TargetSemester = 1, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 9500000, AuthorOrPublisher = "McGraw-Hill Education", UploadedBy = "Assoc. Prof. Dr. Shaukat Khan" },
+
+                        // Chemistry (5)
+                        new() { DepartmentId = 5, Title = "BS Chemistry 4-Year Unified Curriculum (University of Swat)", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 1950000, AuthorOrPublisher = "University of Swat", UploadedBy = "Prof. Noor Muhammad" },
+                        new() { DepartmentId = 5, Title = "Organic Chemistry by Jonathan Clayden & Nick Greeves (2nd Ed)", Category = "Book", TargetSemester = 3, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 11200000, AuthorOrPublisher = "Oxford University Press", UploadedBy = "Prof. Noor Muhammad" },
+
+                        // Botany (6)
+                        new() { DepartmentId = 6, Title = "BS Botany 4-Year Semester-Wise Syllabus & Lab Manuals", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 1750000, AuthorOrPublisher = "University of Swat", UploadedBy = "Asst. Prof. Dr. Fazal Wadood" },
+                        new() { DepartmentId = 6, Title = "Raven Biology of Plants (Ray F. Evert, Susan E. Eichhorn)", Category = "Book", TargetSemester = 1, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 8900000, AuthorOrPublisher = "W. H. Freeman", UploadedBy = "Asst. Prof. Dr. Fazal Wadood" },
+
+                        // Urdu (4)
+                        new() { DepartmentId = 4, Title = "BS Urdu 4-Year HEC Curriculum & Literary Syllabus", Category = "Syllabus", TargetSemester = null, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 1600000, AuthorOrPublisher = "HEC & University of Swat", UploadedBy = "Assoc. Prof. Dr. Ahmad Ali" },
+                        new() { DepartmentId = 4, Title = "Aab-e-Hayat by Muhammad Husain Azad (Classical Urdu Prose)", Category = "Book", TargetSemester = 1, FileUrl = "/downloads/admissions-fall-2026.pdf", FileSizeBytes = 3400000, AuthorOrPublisher = "Majlis Taraqqi-e-Adab", UploadedBy = "Assoc. Prof. Dr. Ahmad Ali" }
+                    };
+
+                    await context.DepartmentResources.AddRangeAsync(resources);
+                    await context.SaveChangesAsync();
+                }
+
                 logger.LogInformation("GDC Madyan Swat institutional database and Identity roles seeded successfully.");
             }
             catch (Exception ex)

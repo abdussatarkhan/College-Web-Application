@@ -91,6 +91,7 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 builder.Services.AddScoped<College_Web_Application.Services.IAttendanceCalculatorService, College_Web_Application.Services.AttendanceCalculatorService>();
 builder.Services.AddScoped<College_Web_Application.Services.IParentNotificationService, College_Web_Application.Services.ParentNotificationService>();
 builder.Services.AddScoped<College_Web_Application.Services.IAttendanceComplianceService, College_Web_Application.Services.AttendanceComplianceService>();
+builder.Services.AddScoped<College_Web_Application.Services.IAdmissionSettingsService, College_Web_Application.Services.AdmissionSettingsService>();
 
 // 7. MVC Controllers and Views
 builder.Services.AddControllersWithViews();

@@ -1,6 +1,7 @@
 using College_Web_Application.Data;
 using College_Web_Application.Models;
 using College_Web_Application.Models.ViewModels;
+using College_Web_Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,6 +13,7 @@ namespace College_Web_Application.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
         private readonly IMemoryCache _cache;
+        private readonly IAdmissionSettingsService _settingsService;
         private readonly ILogger<AdmissionsController> _logger;
 
         private const string MeritCachePrefix = "GDC_MeritList_";
@@ -20,11 +22,13 @@ namespace College_Web_Application.Controllers
             ApplicationDbContext context,
             IWebHostEnvironment environment,
             IMemoryCache cache,
+            IAdmissionSettingsService settingsService,
             ILogger<AdmissionsController> logger)
         {
             _context = context;
             _environment = environment;
             _cache = cache;
+            _settingsService = settingsService;
             _logger = logger;
         }
 
@@ -32,6 +36,9 @@ namespace College_Web_Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Guide()
         {
+            var settings = await _settingsService.GetSettingsAsync();
+            ViewBag.AdmissionSettings = settings;
+
             var programs = await _context.AcademicPrograms
                 .AsNoTracking()
                 .Include(p => p.Department)
@@ -46,8 +53,25 @@ namespace College_Web_Application.Controllers
         [HttpGet]
         public async Task<IActionResult> Apply()
         {
-            var programs = await _context.AcademicPrograms
-                .AsNoTracking()
+            var settings = await _settingsService.GetSettingsAsync();
+            if (!settings.IsBsAdmissionsOpen && !settings.IsFscAdmissionsOpen)
+            {
+                return View("Closed", settings);
+            }
+
+            var programsQuery = _context.AcademicPrograms.AsNoTracking().AsQueryable();
+
+            if (!settings.IsBsAdmissionsOpen)
+            {
+                programsQuery = programsQuery.Where(p => p.Level == "HSSC" || p.ProgramLevel == ProgramLevel.HSSC_FSc);
+            }
+
+            if (!settings.IsFscAdmissionsOpen)
+            {
+                programsQuery = programsQuery.Where(p => p.Level != "HSSC" && p.ProgramLevel != ProgramLevel.HSSC_FSc);
+            }
+
+            var programs = await programsQuery
                 .OrderBy(p => p.Level)
                 .ThenBy(p => p.Title)
                 .ToListAsync();
@@ -57,6 +81,7 @@ namespace College_Web_Application.Controllers
                 Programs = programs
             };
 
+            ViewBag.AdmissionSettings = settings;
             return View(viewModel);
         }
 
@@ -65,9 +90,17 @@ namespace College_Web_Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Apply(AdmissionApplyViewModel model)
         {
+            var settings = await _settingsService.GetSettingsAsync();
+            ViewBag.AdmissionSettings = settings;
+
+            if (!settings.IsBsAdmissionsOpen && !settings.IsFscAdmissionsOpen)
+            {
+                return View("Closed", settings);
+            }
+
             if (!ModelState.IsValid)
             {
-                model.Programs = await _context.AcademicPrograms.AsNoTracking().ToListAsync();
+                model.Programs = await GetOpenProgramsAsync(settings);
                 return View(model);
             }
 
@@ -75,7 +108,24 @@ namespace College_Web_Application.Controllers
             if (program == null)
             {
                 ModelState.AddModelError(nameof(model.AppliedProgramId), "Invalid program selected.");
-                model.Programs = await _context.AcademicPrograms.AsNoTracking().ToListAsync();
+                model.Programs = await GetOpenProgramsAsync(settings);
+                return View(model);
+            }
+
+            bool isProgramBs = program.Level == "BS" || program.ProgramLevel == ProgramLevel.Undergraduate_BS;
+            bool isProgramFsc = program.Level == "HSSC" || program.ProgramLevel == ProgramLevel.HSSC_FSc;
+
+            if (isProgramBs && !settings.IsBsAdmissionsOpen)
+            {
+                ModelState.AddModelError(string.Empty, "Online admissions for BS 4-Year degree programs are currently closed by order of the Principal's Office.");
+                model.Programs = await GetOpenProgramsAsync(settings);
+                return View(model);
+            }
+
+            if (isProgramFsc && !settings.IsFscAdmissionsOpen)
+            {
+                ModelState.AddModelError(string.Empty, "Online admissions for Intermediate (F.Sc / ICS) programs are currently closed by order of the Principal's Office.");
+                model.Programs = await GetOpenProgramsAsync(settings);
                 return View(model);
             }
 
@@ -342,6 +392,23 @@ namespace College_Web_Application.Controllers
             }
 
             return $"/uploads/admissions/{subfolder}/{uniqueName}";
+        }
+
+        private async Task<List<AcademicProgram>> GetOpenProgramsAsync(AdmissionSettings settings)
+        {
+            var query = _context.AcademicPrograms.AsNoTracking().AsQueryable();
+
+            if (!settings.IsBsAdmissionsOpen)
+            {
+                query = query.Where(p => p.Level == "HSSC" || p.ProgramLevel == ProgramLevel.HSSC_FSc);
+            }
+
+            if (!settings.IsFscAdmissionsOpen)
+            {
+                query = query.Where(p => p.Level != "HSSC" && p.ProgramLevel != ProgramLevel.HSSC_FSc);
+            }
+
+            return await query.OrderBy(p => p.Level).ThenBy(p => p.Title).ToListAsync();
         }
     }
 }

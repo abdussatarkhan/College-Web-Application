@@ -409,6 +409,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdmissionSettings" ? "active" : "")" 
+                               asp-area="Admin" asp-controller="AdmissionSettings" asp-action="Index">
+                                <i class="bi bi-toggles2 text-warning"></i>
+                                <span>Admission Controls &amp; Toggles</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Admissions" asp-action="MeritLists">
                                 <i class="bi bi-card-checklist"></i>
                                 <span>Merit Lists & Admissions</span>
@@ -449,6 +456,16 @@
                                 <span>Exam Marks & GPA Engine</span>
                             </a>
                         </li>
+                        @if (User.IsInRole("HOD") || User.IsInRole("Principal") || User.IsInRole("SuperAdmin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "DepartmentManagement" ? "active" : "")" 
+                                   asp-area="Faculty" asp-controller="DepartmentManagement" asp-action="Index">
+                                    <i class="bi bi-building-gear text-warning"></i>
+                                    <span>HOD Department Console</span>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 }
 

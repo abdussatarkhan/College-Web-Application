@@ -1,6 +1,11 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject College_Web_Application.Services.IAdmissionSettingsService AdmissionSettingsService
+@{
+    var layoutAdmissionSettings = await AdmissionSettingsService.GetSettingsAsync();
+    bool isAnyAdmissionOpen = layoutAdmissionSettings.IsBsAdmissionsOpen || layoutAdmissionSettings.IsFscAdmissionsOpen;
+}
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-theme="light">
@@ -239,16 +244,16 @@
                                         <div class="row g-2">
                                             <div class="col-12 col-sm-6">
                                                 <ul class="mega-menu-list">
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="1"><i class="bi bi-laptop"></i>Computer Science & IT</a></li>
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="2"><i class="bi bi-virus2"></i>Microbiology (BS 4-Year)</a></li>
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="5"><i class="bi bi-flask"></i>Chemistry (BS & F.Sc)</a></li>
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="6"><i class="bi bi-flower1"></i>Botany (BS & F.Sc)</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="1"><i class="bi bi-laptop"></i>Computer Science &amp; IT</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="2"><i class="bi bi-virus2"></i>Microbiology (BS 4-Year)</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="5"><i class="bi bi-flask"></i>Chemistry (BS &amp; F.Sc)</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="6"><i class="bi bi-flower1"></i>Botany (BS &amp; F.Sc)</a></li>
                                                 </ul>
                                             </div>
                                             <div class="col-12 col-sm-6">
                                                 <ul class="mega-menu-list">
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="3"><i class="bi bi-translate"></i>English Literature</a></li>
-                                                    <li><a asp-controller="FacultyDirectory" asp-action="Index" asp-route-departmentId="4"><i class="bi bi-feather"></i>Urdu Literature (Adab)</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="3"><i class="bi bi-translate"></i>English Literature</a></li>
+                                                    <li><a asp-controller="Departments" asp-action="Details" asp-route-id="4"><i class="bi bi-feather"></i>Urdu Literature (Adab)</a></li>
                                                     <li><a asp-controller="FacultyDirectory" asp-action="Index"><i class="bi bi-person-lines-fill"></i>View All Teaching Faculty</a></li>
                                                 </ul>
                                             </div>
@@ -266,11 +271,14 @@
                         </a>
                         <ul class="dropdown-menu shadow-sm border-0 rounded-3 p-2" aria-labelledby="admissionsDropdown">
                             <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="Guide"><i class="bi bi-book-half text-warning me-2"></i>Comprehensive Admissions Guide</a></li>
-                            <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="Apply"><i class="bi bi-pencil-square text-warning me-2"></i>Apply Online for Admission</a></li>
+                            @if (isAnyAdmissionOpen)
+                            {
+                                <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="Apply"><i class="bi bi-pencil-square text-warning me-2"></i>Apply Online for Admission</a></li>
+                            }
                             <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="MeritLists"><i class="bi bi-card-checklist text-warning me-2"></i>Official Marks-Based Merit Lists</a></li>
                             <li><a class="dropdown-item py-2" asp-controller="Admissions" asp-action="TrackStatus"><i class="bi bi-search text-warning me-2"></i>Track Application Status</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Downloads"><i class="bi bi-download text-warning me-2"></i>Download Prospectus & Affidavits</a></li>
+                            <li><a class="dropdown-item py-2" asp-controller="Home" asp-action="Downloads"><i class="bi bi-download text-warning me-2"></i>Download Prospectus &amp; Affidavits</a></li>
                         </ul>
                     </li>
 
@@ -294,12 +302,15 @@
                         <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Contact">Contact</a>
                     </li>
 
-                    <!-- 9. GOLD APPLY CTA BUTTON -->
-                    <li class="nav-item ms-xl-2 mt-2 mt-xl-0 flex-shrink-0">
-                        <a asp-controller="Admissions" asp-action="Apply" class="btn nav-cta-apply">
-                            <i class="bi bi-pencil-square me-1"></i> Apply Online
-                        </a>
-                    </li>
+                    @if (isAnyAdmissionOpen)
+                    {
+                        <!-- 9. GOLD APPLY CTA BUTTON -->
+                        <li class="nav-item ms-xl-2 mt-2 mt-xl-0 flex-shrink-0">
+                            <a asp-controller="Admissions" asp-action="Apply" class="btn nav-cta-apply">
+                                <i class="bi bi-pencil-square me-1"></i> Apply Online
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

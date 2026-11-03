@@ -26,6 +26,9 @@ namespace College_Web_Application.Data
         public DbSet<RusticationRecord> RusticationRecords => Set<RusticationRecord>();
         public DbSet<AttendanceCondonation> AttendanceCondonations => Set<AttendanceCondonation>();
         public DbSet<ParentNotificationLog> ParentNotificationLogs => Set<ParentNotificationLog>();
+        public DbSet<AdmissionSettings> AdmissionSettings => Set<AdmissionSettings>();
+        public DbSet<DepartmentGalleryItem> DepartmentGalleryItems => Set<DepartmentGalleryItem>();
+        public DbSet<DepartmentResource> DepartmentResources => Set<DepartmentResource>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

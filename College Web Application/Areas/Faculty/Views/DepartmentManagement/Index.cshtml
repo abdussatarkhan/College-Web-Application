@@ -1,0 +1,482 @@
+@model College_Web_Application.Models.Department
+@{
+    ViewData["Title"] = $"HOD Console - Department of {Model.Name}";
+    var allDepts = ViewBag.AllDepartments as List<College_Web_Application.Models.Department> ?? new();
+}
+
+<div class="container-fluid px-0">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-30 px-2.5 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-person-workspace text-warning me-1"></i> Head of Department (HOD) Console
+                </span>
+                <span class="text-muted small">| Department Content &amp; Media Administration</span>
+            </div>
+            <h2 class="h3 fw-bold text-dark mt-2 mb-0">Department of @Model.Name (@Model.Code)</h2>
+            <p class="text-muted small mb-0">
+                Manage department photo gallery, add faculty members with photos, and publish syllabi and reference books in PDF.
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <!-- Department Selector for Principal / SuperAdmin -->
+            @if (User.IsInRole("Principal") || User.IsInRole("SuperAdmin"))
+            {
+                <div class="dropdown">
+                    <button class="btn btn-outline-dark btn-sm dropdown-toggle fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-arrow-left-right me-1"></i> Switch Department: <strong>@Model.Code</strong>
+                    </button>
+                    <ul class="dropdown-menu shadow-sm">
+                        @foreach (var d in allDepts)
+                        {
+                            <li>
+                                <a class="dropdown-item @(d.Id == Model.Id ? "active fw-bold" : "")" asp-action="Index" asp-route-departmentId="@d.Id">
+                                    @d.Name (@d.Code)
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <a asp-area="" asp-controller="Departments" asp-action="Details" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-primary btn-sm shadow-sm fw-semibold">
+                <i class="bi bi-box-arrow-up-right me-1"></i> View Live Department Portal
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+            <div>@TempData["SuccessMessage"]</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+            <div>@TempData["ErrorMessage"]</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- 4 Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card card-portal p-3 h-100">
+                <span class="text-muted small fw-semibold text-uppercase">Faculty &amp; Staff</span>
+                <div class="h3 fw-bold text-dark mt-2 mb-0">@Model.FacultyMembers.Count(f => f.IsActive)</div>
+                <div class="text-muted small mt-auto">Assigned to this department</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card card-portal p-3 h-100">
+                <span class="text-muted small fw-semibold text-uppercase">Gallery Pictures</span>
+                <div class="h3 fw-bold text-dark mt-2 mb-0">@Model.GalleryItems.Count</div>
+                <div class="text-muted small mt-auto">HOD visual event archives</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card card-portal p-3 h-100">
+                <span class="text-muted small fw-semibold text-uppercase">Academic Syllabi</span>
+                <div class="h3 fw-bold text-dark mt-2 mb-0">@Model.Resources.Count(r => r.Category == "Syllabus")</div>
+                <div class="text-muted small mt-auto">Approved schemes of study</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card card-portal p-3 h-100">
+                <span class="text-muted small fw-semibold text-uppercase">Books in PDF</span>
+                <div class="h3 fw-bold text-dark mt-2 mb-0">@Model.Resources.Count(r => r.Category == "Book")</div>
+                <div class="text-muted small mt-auto">Curated reference textbooks</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Tabs -->
+    <div class="card card-portal shadow-sm">
+        <div class="card-header bg-white border-bottom p-0">
+            <ul class="nav nav-tabs card-header-tabs m-0 border-0" id="hodTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active fw-bold py-3 px-4" id="gallery-mgt-tab" data-bs-toggle="tab" data-bs-target="#gallery-mgt" type="button" role="tab">
+                        <i class="bi bi-images text-warning me-1.5"></i> Department Gallery Photos (@Model.GalleryItems.Count)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold py-3 px-4" id="staff-mgt-tab" data-bs-toggle="tab" data-bs-target="#staff-mgt" type="button" role="tab">
+                        <i class="bi bi-people-fill text-success me-1.5"></i> Faculty &amp; Staff (@Model.FacultyMembers.Count(f => f.IsActive))
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold py-3 px-4" id="resources-mgt-tab" data-bs-toggle="tab" data-bs-target="#resources-mgt" type="button" role="tab">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger me-1.5"></i> Syllabi &amp; Books (PDF) (@Model.Resources.Count)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-bold py-3 px-4" id="info-mgt-tab" data-bs-toggle="tab" data-bs-target="#info-mgt" type="button" role="tab">
+                        <i class="bi bi-info-circle-fill text-primary me-1.5"></i> Department Profile Info
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="tab-content" id="hodTabsContent">
+
+                <!-- ==============================================================
+                     TAB 1: GALLERY PHOTO MANAGEMENT
+                     ============================================================== -->
+                <div class="tab-pane fade show active" id="gallery-mgt" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Upload New Picture Form -->
+                        <div class="col-12 col-lg-5">
+                            <div class="p-4 bg-light rounded-4 border">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="bi bi-cloud-arrow-up-fill text-warning me-1"></i> Upload New Gallery Picture
+                                </h5>
+                                <p class="text-muted small mb-3">
+                                    Pictures uploaded here will strictly appear inside the <strong>Department of @Model.Name</strong> gallery.
+                                </p>
+                                <form asp-action="UploadGalleryPhoto" method="post" enctype="multipart/form-data">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="departmentId" value="@Model.Id" />
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Photo Title / Activity Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="title" class="form-control" placeholder="e.g. Annual AI Workshop 2026" required maxlength="200" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Caption / Description (Optional)</label>
+                                        <textarea name="caption" class="form-control" rows="2" placeholder="Brief summary of event..." maxlength="500"></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Select Image File <span class="text-danger">*</span></label>
+                                        <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp" required />
+                                        <div class="form-text">JPG, PNG or WEBP (Max: 10MB)</div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-warning fw-bold text-dark w-100 rounded-pill shadow-sm">
+                                        <i class="bi bi-upload me-1"></i> Upload to Department Gallery
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Current Gallery Items -->
+                        <div class="col-12 col-lg-7">
+                            <h5 class="fw-bold text-dark mb-3">Currently Published Pictures (@Model.GalleryItems.Count)</h5>
+                            @if (!Model.GalleryItems.Any())
+                            {
+                                <div class="text-center py-5 bg-light rounded-3 text-muted">
+                                    <i class="bi bi-images fs-1 text-muted opacity-50"></i>
+                                    <div class="mt-2">No photos in this department gallery yet.</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="row g-3">
+                                    @foreach (var photo in Model.GalleryItems.OrderByDescending(g => g.UploadedAt))
+                                    {
+                                        <div class="col-12 col-sm-6">
+                                            <div class="card h-100 border rounded-3 overflow-hidden shadow-xs">
+                                                <img src="@photo.ImageUrl" alt="@photo.Title" style="height: 140px; object-fit: cover;" onerror="this.src='/images/gallery/2-main-academic-block.jpg'" />
+                                                <div class="card-body p-2 d-flex flex-column">
+                                                    <div class="fw-bold text-dark small text-truncate" title="@photo.Title">@photo.Title</div>
+                                                    <div class="text-muted" style="font-size: 0.72rem;">Uploaded: @photo.UploadedAt.ToString("dd MMM yyyy")</div>
+                                                    
+                                                    <form asp-action="DeleteGalleryPhoto" method="post" class="mt-auto pt-2 border-top text-end" onsubmit="return confirm('Are you sure you want to remove this photo?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="photoId" value="@photo.Id" />
+                                                        <input type="hidden" name="departmentId" value="@Model.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.74rem;">
+                                                            <i class="bi bi-trash me-1"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================================================
+                     TAB 2: FACULTY & STAFF MANAGEMENT
+                     ============================================================== -->
+                <div class="tab-pane fade" id="staff-mgt" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Add Staff Member Form -->
+                        <div class="col-12 col-lg-5">
+                            <div class="p-4 bg-light rounded-4 border">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="bi bi-person-plus-fill text-success me-1"></i> Add Faculty / Staff Member
+                                </h5>
+                                <form asp-action="AddFacultyMember" method="post" enctype="multipart/form-data">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="departmentId" value="@Model.Id" />
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Full Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="fullName" class="form-control" placeholder="e.g. Dr. Muhammad Ahmad" required maxlength="150" />
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-7">
+                                            <label class="form-label fw-semibold text-dark small">Designation <span class="text-danger">*</span></label>
+                                            <select name="designation" class="form-select" required>
+                                                <option value="Professor">Professor</option>
+                                                <option value="Associate Professor">Associate Professor</option>
+                                                <option value="Assistant Professor">Assistant Professor</option>
+                                                <option value="Lecturer" selected>Lecturer</option>
+                                                <option value="Lab Demonstrator">Lab Demonstrator</option>
+                                                <option value="Office Assistant">Office Assistant</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <label class="form-label fw-semibold text-dark small">BPS Grade</label>
+                                            <select name="bpsGrade" class="form-select">
+                                                <option value="BPS-20">BPS-20</option>
+                                                <option value="BPS-19">BPS-19</option>
+                                                <option value="BPS-18">BPS-18</option>
+                                                <option value="BPS-17" selected>BPS-17</option>
+                                                <option value="BPS-16">BPS-16</option>
+                                                <option value="BPS-14">BPS-14</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Academic Qualifications</label>
+                                        <input type="text" name="qualification" class="form-control" placeholder="e.g. Ph.D (UOS) / MS English Linguistics" maxlength="200" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Employee Code (Optional)</label>
+                                        <input type="text" name="employeeCode" class="form-control" placeholder="e.g. EMP-GDCM-012" maxlength="50" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Profile Photo (Optional)</label>
+                                        <input type="file" name="staffPhoto" class="form-control" accept="image/jpeg,image/png,image/webp" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success fw-bold w-100 rounded-pill shadow-sm">
+                                        <i class="bi bi-person-check-fill me-1"></i> Add Faculty to Department
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Current Faculty Members -->
+                        <div class="col-12 col-lg-7">
+                            <h5 class="fw-bold text-dark mb-3">Active Faculty Roster (@Model.FacultyMembers.Count(f => f.IsActive))</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle border bg-white rounded-3">
+                                    <thead class="table-light small">
+                                        <tr>
+                                            <th>Faculty Member</th>
+                                            <th>Designation</th>
+                                            <th>BPS</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        @foreach (var staff in Model.FacultyMembers.Where(f => f.IsActive).OrderByDescending(f => f.BPSGrade))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <img src="@(string.IsNullOrEmpty(staff.PhotoUrl) ? "/images/crest-placeholder.png" : staff.PhotoUrl)" 
+                                                             style="width: 36px; height: 36px; object-fit: cover; border-radius: 50%;" 
+                                                             onerror="this.src='/images/crest-placeholder.png'" />
+                                                        <div>
+                                                            <div class="fw-bold text-dark">@staff.FullName</div>
+                                                            <div class="text-muted" style="font-size: 0.72rem;">@staff.Qualification</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>@staff.Designation</td>
+                                                <td><span class="badge bg-light text-secondary border">@staff.BPSGrade</span></td>
+                                                <td>
+                                                    <form asp-action="DeleteFacultyMember" method="post" onsubmit="return confirm('Remove @staff.FullName from department roster?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="staffId" value="@staff.Id" />
+                                                        <input type="hidden" name="departmentId" value="@Model.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.74rem;">
+                                                            Remove
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================================================
+                     TAB 3: SYLLABI & BOOKS (PDF) MANAGEMENT
+                     ============================================================== -->
+                <div class="tab-pane fade" id="resources-mgt" role="tabpanel">
+                    <div class="row g-4">
+                        <!-- Upload PDF Resource Form -->
+                        <div class="col-12 col-lg-5">
+                            <div class="p-4 bg-light rounded-4 border">
+                                <h5 class="fw-bold text-dark mb-3">
+                                    <i class="bi bi-file-earmark-plus-fill text-danger me-1"></i> Upload Book / Syllabus (PDF)
+                                </h5>
+                                <form asp-action="UploadResource" method="post" enctype="multipart/form-data">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="departmentId" value="@Model.Id" />
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Document Title <span class="text-danger">*</span></label>
+                                        <input type="text" name="title" class="form-control" placeholder="e.g. BS English 4-Year Scheme of Studies" required maxlength="200" />
+                                    </div>
+
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-7">
+                                            <label class="form-label fw-semibold text-dark small">Category <span class="text-danger">*</span></label>
+                                            <select name="category" class="form-select" required>
+                                                <option value="Syllabus" selected>Scheme of Studies / Syllabus</option>
+                                                <option value="Book">Recommended Textbook / Book</option>
+                                                <option value="CourseOutline">Course Outline</option>
+                                                <option value="LabManual">Practical Lab Manual</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-5">
+                                            <label class="form-label fw-semibold text-dark small">Semester</label>
+                                            <select name="targetSemester" class="form-select">
+                                                <option value="">All Semesters</option>
+                                                <option value="1">Semester 1</option>
+                                                <option value="2">Semester 2</option>
+                                                <option value="3">Semester 3</option>
+                                                <option value="4">Semester 4</option>
+                                                <option value="5">Semester 5</option>
+                                                <option value="6">Semester 6</option>
+                                                <option value="7">Semester 7</option>
+                                                <option value="8">Semester 8</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">Author / Publisher / Academic Body</label>
+                                        <input type="text" name="authorOrPublisher" class="form-control" placeholder="e.g. University of Swat / Oxford Press" maxlength="200" />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-dark small">PDF File <span class="text-danger">*</span></label>
+                                        <input type="file" name="pdfFile" class="form-control" accept="application/pdf" required />
+                                        <div class="form-text">PDF format only (Max: 30MB)</div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-danger fw-bold w-100 rounded-pill shadow-sm">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Upload &amp; Publish PDF Resource
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Current PDF Resources -->
+                        <div class="col-12 col-lg-7">
+                            <h5 class="fw-bold text-dark mb-3">Published Syllabi &amp; Books (@Model.Resources.Count)</h5>
+                            @if (!Model.Resources.Any())
+                            {
+                                <div class="text-center py-5 bg-light rounded-3 text-muted">
+                                    <i class="bi bi-file-earmark-pdf fs-1 text-muted opacity-50"></i>
+                                    <div class="mt-2">No PDF documents published for this department yet.</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle border bg-white rounded-3">
+                                        <thead class="table-light small">
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Semester</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="small">
+                                            @foreach (var res in Model.Resources.OrderBy(r => r.Category).ThenBy(r => r.Title))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="fw-bold text-dark">@res.Title</div>
+                                                        <div class="text-muted" style="font-size: 0.72rem;">@((res.FileSizeBytes / (1024.0 * 1024.0)).ToString("0.0")) MB &bull; @res.AuthorOrPublisher</div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge @(res.Category == "Syllabus" ? "bg-primary" : "bg-success") font-monospace">@res.Category</span>
+                                                    </td>
+                                                    <td>@(res.TargetSemester.HasValue ? $"Sem {res.TargetSemester}" : "General")</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            <a href="@res.FileUrl" download target="_blank" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;">
+                                                                <i class="bi bi-download"></i>
+                                                            </a>
+                                                            <form asp-action="DeleteResource" method="post" onsubmit="return confirm('Delete this PDF resource?');">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="resourceId" value="@res.Id" />
+                                                                <input type="hidden" name="departmentId" value="@Model.Id" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.72rem;">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==============================================================
+                     TAB 4: DEPARTMENT PROFILE INFO
+                     ============================================================== -->
+                <div class="tab-pane fade" id="info-mgt" role="tabpanel">
+                    <div class="p-4 bg-light rounded-4 border" style="max-width: 800px;">
+                        <h5 class="fw-bold text-dark mb-3">
+                            <i class="bi bi-pencil-square text-primary me-1"></i> Update Department Information
+                        </h5>
+                        <form asp-action="UpdateDepartmentInfo" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="departmentId" value="@Model.Id" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark small">Head of Department (HOD) Name <span class="text-danger">*</span></label>
+                                <input type="text" name="hodName" class="form-control" value="@Model.HODName" required maxlength="150" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-dark small">Department Overview &amp; Description <span class="text-danger">*</span></label>
+                                <textarea name="description" class="form-control" rows="4" required maxlength="500">@Model.Description</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+                                Save Profile Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

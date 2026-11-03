@@ -1,0 +1,51 @@
+@model College_Web_Application.Models.AdmissionSettings
+@{
+    ViewData["Title"] = "Admissions Closed - Government Degree College Madyan Swat";
+}
+
+<div class="container py-5 my-md-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 text-center">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+                <div class="mx-auto mb-3" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-clock-history text-warning fs-1"></i>
+                </div>
+
+                <span class="badge bg-dark text-warning border border-warning border-opacity-50 px-3.5 py-1.5 rounded-pill fw-bold text-uppercase mx-auto mb-3" style="font-size: 0.76rem; letter-spacing: 0.8px;">
+                    @Model.AdmissionSession
+                </span>
+
+                <h2 class="fw-bold text-dark mb-2">Online Admissions Are Currently Closed</h2>
+                <div class="arabic-motto text-muted fs-5 mb-3">رَبِّ زِدْنِي عِلْماً</div>
+
+                <div class="p-3 bg-light rounded-3 border mb-4 text-start">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-dark fw-bold">
+                        <i class="bi bi-info-circle-fill text-warning"></i>
+                        <span>Executive Notification from Principal's Office:</span>
+                    </div>
+                    <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                        @(string.IsNullOrWhiteSpace(Model.ClosureNotice) 
+                            ? "Online admissions for the current academic session have officially concluded pursuant to Higher Education Department (HED) Khyber Pakhtunkhwa guidelines. The application intake portal has been securely closed." 
+                            : Model.ClosureNotice)
+                    </p>
+                </div>
+
+                <p class="text-muted small mb-4">
+                    Applicants who have already applied can verify their merit ranking on the official merit lists, download the prospectus, or contact the college administration.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a asp-controller="Admissions" asp-action="MeritLists" class="btn btn-warning fw-bold px-4 py-2.5 rounded-pill shadow-sm text-dark">
+                        <i class="bi bi-card-checklist me-1.5"></i> Check Marks-Based Merit Lists
+                    </a>
+                    <a asp-controller="Admissions" asp-action="TrackStatus" class="btn btn-outline-dark fw-semibold px-4 py-2.5 rounded-pill">
+                        <i class="bi bi-search me-1.5"></i> Track Application Status
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-light fw-semibold px-4 py-2.5 rounded-pill shadow-xs">
+                        <i class="bi bi-house-door me-1.5"></i> Back to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

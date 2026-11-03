@@ -1,0 +1,223 @@
+@model College_Web_Application.Models.AdmissionSettings
+@{
+    ViewData["Title"] = "Admission Session & Program Controls";
+}
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-30 px-2.5 py-1.5 rounded-pill fw-semibold">
+                    <i class="bi bi-shield-lock-fill text-warning me-1"></i> Principal &amp; Executive Administration
+                </span>
+                <span class="text-muted small">| Online Admission Enforcement</span>
+            </div>
+            <h2 class="h3 fw-bold text-dark mt-2 mb-0">Admission Session &amp; Portal Controls</h2>
+            <p class="text-muted small mb-0">
+                Instantly control or pause online admissions for BS 4-Year and F.Sc Intermediate streams. Disabling a level hides all apply buttons and forms across the website.
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Return to Executive Dashboard
+            </a>
+            <a asp-area="" asp-controller="Admissions" asp-action="Guide" target="_blank" class="btn btn-outline-primary btn-sm shadow-sm">
+                <i class="bi bi-box-arrow-up-right me-1"></i> View Public Guide
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 d-flex align-items-center gap-3" role="alert">
+            <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+            <div>
+                <strong>Settings Enforced:</strong> @TempData["SuccessMessage"]
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Live Status Overview Cards -->
+    <div class="row g-3 mb-4">
+        <!-- BS Admission Status Card -->
+        <div class="col-12 col-md-6">
+            <div class="card card-portal h-100 p-3 @(Model.IsBsAdmissionsOpen ? "border-success border-2" : "border-danger border-2")">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-light text-secondary border font-monospace text-uppercase" style="font-size: 0.72rem;">Undergraduate</span>
+                        <h4 class="fw-bold text-dark mb-0 mt-1">BS 4-Year Admissions</h4>
+                        <div class="text-muted small">6 Accredited Departments (Univ. of Swat)</div>
+                    </div>
+                    <div>
+                        @if (Model.IsBsAdmissionsOpen)
+                        {
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> OPEN &amp; ACCEPTING
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-slash-circle me-1"></i> CLOSED / HIDDEN
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class="small mt-2 pt-2 border-top text-secondary">
+                    @if (Model.IsBsAdmissionsOpen)
+                    {
+                        <span class="text-success fw-semibold"><i class="bi bi-eye-fill me-1"></i> Visible on Portal:</span> <span>BS programs appear in application form &amp; hero CTA.</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger fw-semibold"><i class="bi bi-eye-slash-fill me-1"></i> Hidden on Portal:</span> <span>BS degree options are hidden from the application dropdown.</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- F.Sc Admission Status Card -->
+        <div class="col-12 col-md-6">
+            <div class="card card-portal h-100 p-3 @(Model.IsFscAdmissionsOpen ? "border-success border-2" : "border-danger border-2")">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-light text-secondary border font-monospace text-uppercase" style="font-size: 0.72rem;">Intermediate</span>
+                        <h4 class="fw-bold text-dark mb-0 mt-1">F.Sc / HSSC Admissions</h4>
+                        <div class="text-muted small">Pre-Med, Pre-Eng &amp; ICS (BISE Swat)</div>
+                    </div>
+                    <div>
+                        @if (Model.IsFscAdmissionsOpen)
+                        {
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> OPEN &amp; ACCEPTING
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-bold">
+                                <i class="bi bi-slash-circle me-1"></i> CLOSED / HIDDEN
+                            </span>
+                        }
+                    </div>
+                </div>
+                <div class="small mt-2 pt-2 border-top text-secondary">
+                    @if (Model.IsFscAdmissionsOpen)
+                    {
+                        <span class="text-success fw-semibold"><i class="bi bi-eye-fill me-1"></i> Visible on Portal:</span> <span>F.Sc programs appear in application form &amp; hero CTA.</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger fw-semibold"><i class="bi bi-eye-slash-fill me-1"></i> Hidden on Portal:</span> <span>F.Sc degree options and Intermediate CTA buttons are hidden.</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Form -->
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card card-portal shadow-sm">
+                <div class="card-header-portal">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-sliders2-vertical text-warning fs-5"></i>
+                        <span>Enforce Live Admission Status</span>
+                    </div>
+                    <span class="badge bg-light text-muted border font-monospace" style="font-size: 0.74rem;">
+                        Last updated: @Model.LastUpdated.ToString("dd MMM yyyy, hh:mm tt")
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Update" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Toggles Section -->
+                        <div class="p-3 bg-light rounded-3 border mb-4">
+                            <h5 class="fw-bold text-dark mb-3">Admission Level Toggles</h5>
+                            
+                            <!-- BS Toggle -->
+                            <div class="form-check form-switch d-flex align-items-center justify-content-between p-2 rounded-2 mb-3 bg-white border">
+                                <div>
+                                    <label class="form-check-label fw-bold text-dark mb-0" for="isBsAdmissionsOpen" style="cursor: pointer;">
+                                        BS 4-Year (Undergraduate) Admissions
+                                    </label>
+                                    <div class="text-muted small">
+                                        When toggled off, candidates cannot submit applications for BS Computer Science, Microbiology, English, Urdu, Chemistry, or Botany.
+                                    </div>
+                                </div>
+                                <input class="form-check-input ms-3" type="checkbox" role="switch" id="isBsAdmissionsOpen" name="isBsAdmissionsOpen" value="true" @(Model.IsBsAdmissionsOpen ? "checked" : "") style="width: 3rem; height: 1.6rem; cursor: pointer;">
+                            </div>
+
+                            <!-- F.Sc Toggle -->
+                            <div class="form-check form-switch d-flex align-items-center justify-content-between p-2 rounded-2 bg-white border">
+                                <div>
+                                    <label class="form-check-label fw-bold text-dark mb-0" for="isFscAdmissionsOpen" style="cursor: pointer;">
+                                        F.Sc / ICS (Intermediate) Admissions
+                                    </label>
+                                    <div class="text-muted small">
+                                        When toggled off, candidates cannot apply for Pre-Medical, Pre-Engineering, or ICS streams, and the Intermediate application buttons are hidden.
+                                    </div>
+                                </div>
+                                <input class="form-check-input ms-3" type="checkbox" role="switch" id="isFscAdmissionsOpen" name="isFscAdmissionsOpen" value="true" @(Model.IsFscAdmissionsOpen ? "checked" : "") style="width: 3rem; height: 1.6rem; cursor: pointer;">
+                            </div>
+                        </div>
+
+                        <!-- Session Title -->
+                        <div class="mb-3">
+                            <label for="admissionSession" class="form-label fw-semibold text-dark">
+                                Active Academic Session Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="admissionSession" name="admissionSession" value="@Model.AdmissionSession" required maxlength="100" />
+                            <div class="form-text">e.g. Academic Session 2026-2027 or Fall 2026. Displayed across the portal.</div>
+                        </div>
+
+                        <!-- Closure Notice Text -->
+                        <div class="mb-4">
+                            <label for="closureNotice" class="form-label fw-semibold text-dark">
+                                Official Closure Notice / Instructions for Visitors
+                            </label>
+                            <textarea class="form-control" id="closureNotice" name="closureNotice" rows="3" maxlength="500">@Model.ClosureNotice</textarea>
+                            <div class="form-text">This institutional message is presented to public visitors when all admissions are stopped or when an applicant navigates to a closed degree level.</div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                            <div class="text-muted small">
+                                <i class="bi bi-person-check-fill text-success me-1"></i> Enforced by: <strong>@Model.UpdatedBy</strong>
+                            </div>
+                            <button type="submit" class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm text-dark">
+                                <i class="bi bi-save2-fill me-1"></i> Save &amp; Enforce Live Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Institutional Rule Explanations -->
+        <div class="col-12 col-lg-4">
+            <div class="card card-portal bg-light border-0 shadow-sm p-4 mb-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="p-2 bg-warning bg-opacity-25 rounded-circle text-dark">
+                        <i class="bi bi-info-circle-fill text-warning fs-5"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-0">Automated Portal Visibility</h5>
+                </div>
+                <p class="small text-secondary mb-3" style="line-height: 1.6;">
+                    When you turn off admissions here, the changes take effect <strong>immediately</strong> without requiring an application restart:
+                </p>
+                <ul class="small text-secondary ps-3 mb-3" style="line-height: 1.7;">
+                    <li><strong>Navbar &ldquo;Apply Online&rdquo; Button:</strong> Disappears completely if both BS and F.Sc are paused.</li>
+                    <li><strong>Hero Banner Action:</strong> Hides or dynamically adapts to reflect only the open level.</li>
+                    <li><strong>Application Form:</strong> Only displays disciplines belonging to the currently open program level.</li>
+                    <li><strong>Merit Lists:</strong> Merit lists remain permanently accessible for verification and transparency.</li>
+                </ul>
+                <div class="p-2.5 bg-white rounded-3 border small text-muted">
+                    <i class="bi bi-shield-check text-success me-1"></i> Regulated by Higher Education Department (HED) KP guidelines.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

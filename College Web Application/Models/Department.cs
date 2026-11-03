@@ -23,5 +23,7 @@ namespace College_Web_Application.Models
 
         public virtual ICollection<AcademicProgram> Programs { get; set; } = new List<AcademicProgram>();
         public virtual ICollection<StaffProfile> FacultyMembers { get; set; } = new List<StaffProfile>();
+        public virtual ICollection<DepartmentGalleryItem> GalleryItems { get; set; } = new List<DepartmentGalleryItem>();
+        public virtual ICollection<DepartmentResource> Resources { get; set; } = new List<DepartmentResource>();
     }
 }
