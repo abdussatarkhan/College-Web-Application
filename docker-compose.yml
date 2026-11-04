@@ -1,0 +1,47 @@
+services:
+  # 1. PostgreSQL Database Service
+  db:
+    image: postgres:16-alpine
+    container_name: gdc_madyan_db
+    restart: always
+    environment:
+      POSTGRES_DB: GdcMadyanSwatDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-GdcMadyanSecret2026!}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - college_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. ASP.NET Core 10 Web Application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gdc_madyan_web
+    restart: always
+    ports:
+      - "80:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - UseInMemoryDatabase=false
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=GdcMadyanSwatDb;Username=postgres;Password=${DB_PASSWORD:-GdcMadyanSecret2026!};
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - college_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  college_network:
+    driver: bridge
